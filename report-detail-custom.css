@@ -6,7 +6,7 @@
 .report-front-custom .gaia-argoui-app-show-sidebar{
   position: relative!important;
   padding: 2rem;
-  top: 4.5rem !important;
+  top: 0!important;
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged{
