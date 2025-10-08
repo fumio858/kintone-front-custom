@@ -44,4 +44,5 @@
 .report-front-custom #record-gaia{
   height: 20rem;
   overflow: scroll;
+  transition: height 0.3s ease;
 }
