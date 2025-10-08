@@ -10,7 +10,7 @@
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged{
-  width: 100%;
+  width: calc(100% - 50px -1rem);
 }
 
 .report-front-custom .layout-gaia{
@@ -22,19 +22,19 @@
 /* タブ移動 */
 .report-front-custom .gaia-argoui-app-show-sidebartabs {
   position: absolute;
-  top: -50px;
-  left: 100px;
+  top: 0;
+  left: auto;
+  right: 0;
 }
 
-.report-front-custom .gaia-argoui-app-show-sidebartabs .goog-tab-bar-start{
+/* .report-front-custom .gaia-argoui-app-show-sidebartabs .goog-tab-bar-start{
   display: flex;
-}
+} */
 
 /* サイドバードラッガー削除 */
 .report-front-custom .gaia-argoui-app-show-sidebar-dragger{
   display: none!important;
 }
-
 
 /* レコード登録画面サイズ調整 */
 .report-front-custom #record-gaia{
