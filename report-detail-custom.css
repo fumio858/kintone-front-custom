@@ -6,7 +6,7 @@
 .report-front-custom .gaia-argoui-app-show-sidebar{
   position: relative!important;
   padding: 2rem;
-  top: 5rem !important;
+  top: 4.5rem !important;
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged{
@@ -30,10 +30,14 @@
   display: flex;
 }
 
-
 /* サイドバードラッガー削除 */
 .report-front-custom .gaia-argoui-app-show-sidebar-dragger{
   display: none!important;
 }
 
 
+/* レコード登録画面サイズ調整 */
+.report-front-custom #record-gaia{
+  height: 20rem;
+  overflow: scroll;
+}
