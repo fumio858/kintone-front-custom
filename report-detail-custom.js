@@ -32,7 +32,8 @@
     btn.style.borderRadius = '6px';
     btn.style.background = '#f5f5f5';
     btn.style.cursor = 'pointer';
-    btn.style.fontSize = '14px';
+    btn.style.fontSize = '12px';
+    btn.style.lineHeight = '1';
     btn.style.transition = 'all 0.2s ease';
     btn.onmouseover = () => (btn.style.background = '#e9e9e9');
     btn.onmouseout = () => (btn.style.background = '#f5f5f5');
