@@ -10,13 +10,17 @@
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged{
-  width: calc(100% - 50px -1rem);
+  width: calc(100% - 50px - 1rem);
 }
 
 .report-front-custom .layout-gaia{
   padding-right: 0!important;
   width: 100% !important;
   padding: 1rem;
+}
+
+.report-front-custom .gaia-argoui-app-show-toolbar {
+  border-bottom: none;
 }
 
 /* タブ移動 */
