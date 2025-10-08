@@ -3,5 +3,5 @@
 } */
 
 .report-front-custom .gaia-argoui-app-show-sidebar{
-  position: relative;
+  position: relative!important;
 }
