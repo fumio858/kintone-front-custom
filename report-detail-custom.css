@@ -50,3 +50,9 @@
   overflow: scroll;
   transition: height 0.3s ease;
 }
+
+
+/* 通知ページ */
+.notification-iframe-gaia{
+  height: auto!important;
+}
