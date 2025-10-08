@@ -14,9 +14,25 @@
 
 .report-front-custom .layout-gaia{
   padding-right: 0!important;
+  width: 100% !important;
+  padding: 1rem;
 }
+
+/* タブ移動 */
+.report-front-custom .gaia-argoui-app-show-sidebartabs {
+  position: absolute;
+  top: -50px;
+  left: 100px;
+}
+
+.report-front-custom .gaia-argoui-app-show-sidebartabs .goog-tab-bar-start{
+  display: flex;
+}
+
 
 /* サイドバードラッガー削除 */
 .report-front-custom .gaia-argoui-app-show-sidebar-dragger{
   display: none!important;
 }
+
+
