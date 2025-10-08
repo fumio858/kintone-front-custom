@@ -2,6 +2,21 @@
   font-size: 40px;
 } */
 
+/* サイドバーコメント欄を下に移動 */
 .report-front-custom .gaia-argoui-app-show-sidebar{
   position: relative!important;
+  padding: 2rem;
+}
+
+.report-front-custom .gaia-argoui-app-show-sidebar-dragged{
+  width: 100%;
+}
+
+.report-front-custom .layout-gaia{
+  padding-right: 0!important;
+}
+
+/* サイドバードラッガー削除 */
+.report-front-custom .gaia-argoui-app-show-sidebar-dragger{
+  display: none!important;
 }
