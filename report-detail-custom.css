@@ -11,7 +11,8 @@
   position: relative !important;
   padding: 2rem;
   top: 0 !important;
-  width: 60vw;
+  width: 65vw;
+  box-sizing: border-box;
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged {
@@ -49,7 +50,7 @@
 .report-front-custom #record-gaia {
   position: absolute;
   right: 0;
-  z-index: 1;
+  /* z-index: 1; */
   height: auto;
   width: 35vw;
   overflow: scroll;
