@@ -16,7 +16,7 @@
     if (!firstDiv) return event;
 
     // ====== タイトル要素を用意（なければ作る） ======
-    const TITLE_FIELD = '案件事件名';   // ← 実際のフィールドコードに合わせて変更
+    const TITLE_FIELD = 'タイトル';   // ← 実際のフィールドコードに合わせて変更
     const NOTES_FIELD = '特記事項';        // ← 実際のフィールドコードに合わせて変更
     const OVERVIEW_FIELD = '概要';         // ← 実際のフィールドコードに合わせて変更
 
