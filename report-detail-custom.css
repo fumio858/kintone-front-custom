@@ -149,3 +149,9 @@
   max-height: 36rem;   /* 開きすぎ防止（必要なら外す） */
   overflow: auto;
 }
+
+
+/* レコード作成時 */
+.editablelayout-gaia{
+  margin: auto;
+}
