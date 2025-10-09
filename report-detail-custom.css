@@ -33,7 +33,7 @@
 
 .report-front-custom .layout-gaia {
   padding-right: 0 !important;
-  width: 100% !important;
+  box-sizing: border-box;
   padding: 1rem;
 }
 
