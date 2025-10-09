@@ -20,6 +20,7 @@
   padding: 2rem;
   top: 0 !important;
   width: 65vw;
+  max-width: calc( 100vw - 518px);
   box-sizing: border-box;
   /* max-height: 80vh; */
 }
@@ -64,6 +65,7 @@
   width: 35vw;
   overflow: scroll;
   max-height: calc( 100vh - 80px - 64px );
+  min-width: 518px;
 }
 
 /* 通知ページ */
