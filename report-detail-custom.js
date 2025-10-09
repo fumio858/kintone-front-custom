@@ -25,6 +25,7 @@
       titleEl.style.color = '#333';
       titleEl.style.display = 'inline-block';
       titleEl.style.verticalAlign = 'middle';
+      titleEl.style.lineHeight = '48px';
 
       firstDiv.appendChild(titleEl);
       console.log('🪶 事案タイトルをツールバーの最初のdivに追加しました');
