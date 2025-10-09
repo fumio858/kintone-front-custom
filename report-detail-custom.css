@@ -11,6 +11,7 @@
   position: relative !important;
   padding: 2rem;
   top: 0 !important;
+  width: 60vw;
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged {
@@ -46,13 +47,15 @@
 
 /* レコード登録画面サイズ調整 */
 .report-front-custom #record-gaia {
-  height: 20rem;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  height: auto;
+  width: 35vw;
   overflow: scroll;
-  transition: height 0.3s ease;
 }
-
 
 /* 通知ページ */
-.notification-iframe-gaia{
+/* .notification-iframe-gaia{
   height: auto!important;
-}
+} */
