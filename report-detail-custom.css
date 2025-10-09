@@ -17,11 +17,11 @@
   top: 0 !important;
   width: 65vw;
   box-sizing: border-box;
-  max-height: 80vh;
+  /* max-height: 80vh; */
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged {
-  width: calc(100% - 50px - 1rem);
+  width: calc(100% - 2rem - 1rem);
 }
 
 .report-front-custom .layout-gaia {
@@ -59,7 +59,7 @@
   height: auto;
   width: 35vw;
   overflow: scroll;
-  max-height: 80vh;
+  /* max-height: 80vh; */
 }
 
 /* 通知ページ */
