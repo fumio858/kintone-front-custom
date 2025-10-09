@@ -152,7 +152,7 @@
 
 
 /* レコード作成時 */
-.editablelayout-gaia{
+.body-record-edit .editablelayout-gaia{
   margin: auto;
   zoom: 1.2;
 }
