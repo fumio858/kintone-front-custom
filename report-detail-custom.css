@@ -83,7 +83,7 @@
   flex-direction: column;
   gap: 6px;           /* タイトル/付箋/アコーディオンの間隔 */
   margin-left: 8px;   /* 既存ボタンと間を取る */
-  max-width: 70ch;    /* はみ出し過ぎ防止（調整OK） */
+  max-width: 60vw;    /* はみ出し過ぎ防止（調整OK） */
 }
 
 /* タイトル（前回と同等。必要に応じて調整） */
