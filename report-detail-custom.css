@@ -28,6 +28,7 @@
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged {
   width: calc(100% - 2rem - 1rem);
   padding: 1rem;
+  box-sizing: border-box;
 }
 
 .report-front-custom .layout-gaia {
