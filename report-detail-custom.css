@@ -13,6 +13,7 @@
   top: 0 !important;
   width: 65vw;
   box-sizing: border-box;
+  max-height: 80vh;
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged {
@@ -42,9 +43,9 @@
 } */
 
 /* サイドバードラッガー削除 */
-.report-front-custom .gaia-argoui-app-show-sidebar-dragger {
+/* .report-front-custom .gaia-argoui-app-show-sidebar-dragger {
   display: none !important;
-}
+} */
 
 /* レコード登録画面サイズ調整 */
 .report-front-custom #record-gaia {
@@ -54,6 +55,7 @@
   height: auto;
   width: 35vw;
   overflow: scroll;
+  max-height: 80vh;
 }
 
 /* 通知ページ */
