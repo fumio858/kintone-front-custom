@@ -74,3 +74,75 @@
 /* .notification-iframe-gaia{
   height: auto!important;
 } */
+
+
+
+/* タイトル・下段まとめる箱 */
+.custom-headerbox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;           /* タイトル/付箋/アコーディオンの間隔 */
+  margin-left: 8px;   /* 既存ボタンと間を取る */
+  max-width: 70ch;    /* はみ出し過ぎ防止（調整OK） */
+}
+
+/* タイトル（前回と同等。必要に応じて調整） */
+.custom-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 特記事項：付箋風 */
+.custom-sticky-note {
+  background: #fffbe6;                 /* 付箋っぽい淡黄 */
+  border-left: 4px solid #f0c036;      /* のりしろ風アクセント */
+  padding: 8px 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  color: #3b3b3b;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* 概要：アコーディオン */
+.custom-accordion {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: #fff;
+}
+
+.custom-accordion-summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none; /* Safari 対応 */
+}
+
+.custom-accordion-summary::-webkit-details-marker {
+  display: none;     /* デフォルトマーカー非表示 */
+}
+
+/* 開閉アイコンっぽい疑似要素（▶ / ▼） */
+.custom-accordion-summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 6px;
+  transform: translateY(-0.5px);
+}
+.custom-accordion[open] .custom-accordion-summary::before {
+  content: '▼';
+}
+
+/* 本文 */
+.custom-accordion-body {
+  margin-top: 6px;
+  color: #333;
+  line-height: 1.6;
+  max-height: 36rem;   /* 開きすぎ防止（必要なら外す） */
+  overflow: auto;
+}
