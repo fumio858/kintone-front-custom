@@ -99,11 +99,11 @@
 
 /* 特記事項：付箋風 */
 .custom-sticky-note {
-  background: #fffbe6;                 /* 付箋っぽい淡黄 */
-  border-left: 4px solid #f0c036;      /* のりしろ風アクセント */
+  background: #d5d7d740;
+  border-left: 4px solid #3599dc;
   padding: 8px 10px;
-  border-radius: 6px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  font-size: .85rem;
+  border-radius: 4px;
   color: #3b3b3b;
   line-height: 1.5;
   word-break: break-word;
@@ -115,6 +115,8 @@
   border-radius: 6px;
   padding: 6px 10px;
   background: #fff;
+  font-size: .85rem;
+  margin: 0 .5rem;
 }
 
 .custom-accordion-summary {
