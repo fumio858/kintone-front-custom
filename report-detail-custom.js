@@ -11,19 +11,23 @@
       console.log('✅ report-front-custom クラスを追加しました');
     }
 
-    // --- ツールバーに事案タイトルを表示 ---
+    // --- ツールバー直下の最初のdivに事案タイトルを挿入 ---
     const toolbar = document.querySelector('.gaia-argoui-app-toolbar');
-    if (toolbar && !toolbar.querySelector('.custom-title')) {
-      const titleDiv = document.createElement('div');
-      titleDiv.className = 'custom-title';
-      titleDiv.textContent = record['案件事件名'].value || '(タイトル未設定)';
-      titleDiv.style.fontSize = '1.1rem';
-      titleDiv.style.fontWeight = 'bold';
-      titleDiv.style.marginLeft = '12px';
-      titleDiv.style.color = '#333';
-      titleDiv.style.flexGrow = '1';
-      toolbar.appendChild(titleDiv);
-      console.log('🪶 事案タイトルをツールバーに追加しました');
+    const firstDiv = toolbar?.querySelector('div:first-child');
+
+    if (firstDiv && !firstDiv.querySelector('.custom-title')) {
+      const titleEl = document.createElement('div');
+      titleEl.className = 'custom-title';
+      titleEl.textContent = record['案件事件名'].value || '(タイトル未設定)';
+      titleEl.style.fontSize = '1.1rem';
+      titleEl.style.fontWeight = 'bold';
+      titleEl.style.marginLeft = '12px';
+      titleEl.style.color = '#333';
+      titleEl.style.display = 'inline-block';
+      titleEl.style.verticalAlign = 'middle';
+
+      firstDiv.appendChild(titleEl);
+      console.log('🪶 事案タイトルをツールバーの最初のdivに追加しました');
     }
 
     return event;
