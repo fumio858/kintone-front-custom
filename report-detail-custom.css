@@ -19,8 +19,8 @@
   position: relative !important;
   padding: 1rem;
   top: 0 !important;
-  width: 65vw;
-  max-width: calc( 100vw - 518px);
+  /* width: 65vw; */
+  width: calc( 100vw - 520px);
   box-sizing: border-box;
   /* max-height: 80vh; */
 }
@@ -64,10 +64,10 @@
   right: 0;
   /* z-index: 1; */
   height: auto;
-  width: 35vw;
+  /* width: 35vw; */
   overflow: scroll;
   max-height: calc( 100vh - 80px - 64px );
-  min-width: 518px;
+  width: 528px;
 }
 
 /* 通知ページ */
