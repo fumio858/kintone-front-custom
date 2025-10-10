@@ -91,7 +91,7 @@
   font-size: 1.2rem;
   font-weight: 700;
   color: #2c3e50;
-  line-height: 1.25;
+  line-height: 1.5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -101,10 +101,10 @@
 .custom-info-grid {
   display: flex;
   flex-direction: column; /* 縦並びにする */
-  gap: 8px; /* 各項目の間隔 */
+  gap: 6px; /* 各項目の間隔 */
   /* margin: 0 .5rem; */
   font-size: 0.75rem;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .custom-info-item {
