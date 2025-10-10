@@ -99,22 +99,25 @@
 
 /* 特記事項・概要 */
 .custom-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 可変2カラム */
-  gap: 8px 16px;
+  display: flex;
+  flex-direction: column; /* 縦並びにする */
+  gap: 8px; /* 各項目の間隔 */
   margin: 0 .5rem;
   font-size: 0.75rem;
   line-height: 1.6;
 }
 
 .custom-info-item {
-  word-break: break-word; /* 長いテキストでも折り返す */
+  display: flex; /* ラベルと値を横に並べる */
+  align-items: baseline; /* テキストのベースラインを揃える */
+  word-break: break-word;
 }
 
 .custom-info-label {
+  flex-shrink: 0; /* ラベルが縮まないようにする */
+  width: 70px; /* ラベルの幅を固定（必要に応じて調整） */
   font-weight: 600;
   color: #555;
-  margin-right: 4px;
 }
 
 .custom-info-value {
