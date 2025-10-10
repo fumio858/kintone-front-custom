@@ -59,7 +59,7 @@
       const notesItem = document.createElement('div');
       notesItem.className = 'custom-info-item';
       // HTMLとして挿入するため、改行を<br>に変換
-      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value">${notesVal.replace(/\n/g, '<br>')}</span>`;
+      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value custom-notes-value">${notesVal.replace(/\n/g, '<br>')}</span>`;
       infoGrid.appendChild(notesItem);
     }
 
