@@ -115,7 +115,7 @@
 
 .custom-info-label {
   flex-shrink: 0; /* ラベルが縮まないようにする */
-  width: 110px; /* ラベルの幅を固定（必要に応じて調整） */
+  width: 3.5rem; /* ラベルの幅を固定（必要に応じて調整） */
   font-weight: 600;
   color: #555;
 }
