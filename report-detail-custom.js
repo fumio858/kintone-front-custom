@@ -42,32 +42,34 @@
     titleEl.textContent = (record[TITLE_FIELD]?.value ?? '(タイトル未設定)');
     headerBox.appendChild(titleEl);
 
-    // 特記事項（付箋風）
+    // 特記事項と概要のコンテナ
+    const infoGrid = document.createElement('div');
+    infoGrid.className = 'custom-info-grid';
+
     const notesVal = (record[NOTES_FIELD]?.value ?? '').trim();
-    if (notesVal) {
-      const note = document.createElement('div');
-      note.className = 'custom-sticky-note';
-      note.textContent = notesVal;
-      headerBox.appendChild(note);
+    const overviewVal = (record[OVERVIEW_FIELD]?.value ?? '').trim();
+
+    // コンテナを追加（どちらかの値が存在する場合のみ）
+    if (notesVal || overviewVal) {
+      headerBox.appendChild(infoGrid);
     }
 
-    // 概要（アコーディオン）
-    const overviewVal = (record[OVERVIEW_FIELD]?.value ?? '').trim();
+    // 特記事項
+    if (notesVal) {
+      const notesItem = document.createElement('div');
+      notesItem.className = 'custom-info-item';
+      // HTMLとして挿入するため、改行を<br>に変換
+      notesItem.innerHTML = `<span class="custom-info-label">特記事項：</span><span class="custom-info-value">${notesVal.replace(/\n/g, '<br>')}</span>`;
+      infoGrid.appendChild(notesItem);
+    }
+
+    // 概要
     if (overviewVal) {
-      const details = document.createElement('details');
-      details.className = 'custom-accordion'; // 既定は閉じる。開きたければ details.open = true;
-
-      const summary = document.createElement('summary');
-      summary.className = 'custom-accordion-summary';
-      summary.textContent = '概要';
-
-      const body = document.createElement('div');
-      body.className = 'custom-accordion-body';
-      body.innerHTML = overviewVal.replace(/\n/g, '<br>');
-
-      details.appendChild(summary);
-      details.appendChild(body);
-      headerBox.appendChild(details);
+      const overviewItem = document.createElement('div');
+      overviewItem.className = 'custom-info-item';
+      // HTMLとして挿入するため、改行を<br>に変換
+      overviewItem.innerHTML = `<span class="custom-info-label">概要：</span><span class="custom-info-value">${overviewVal.replace(/\n/g, '<br>')}</span>`;
+      infoGrid.appendChild(overviewItem);
     }
 
     return event;
