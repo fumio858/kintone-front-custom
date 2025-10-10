@@ -97,57 +97,28 @@
   text-overflow: ellipsis;
 }
 
-/* 特記事項：付箋風 */
-.custom-sticky-note {
-  background: #d5d7d740;
-  border-left: 4px solid #3599dc;
-  padding: 5px 10px;
-  font-size: .8rem;
-  border-radius: 4px;
-  color: #3b3b3b;
-  line-height: 1.5;
-  word-break: break-word;
+/* 特記事項・概要 */
+.custom-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 可変2カラム */
+  gap: 8px 16px;
   margin: 0 .5rem;
-}
-
-/* 概要：アコーディオン */
-.custom-accordion {
-  border: 1px solid #e8e8e8;
-  border-radius: 6px;
-  padding: 6px 10px;
-  background: #fff;
-  font-size: .85rem;
-  margin: 0 .5rem;
-}
-
-.custom-accordion-summary {
-  cursor: pointer;
-  font-weight: 600;
-  list-style: none; /* Safari 対応 */
-}
-
-.custom-accordion-summary::-webkit-details-marker {
-  display: none;     /* デフォルトマーカー非表示 */
-}
-
-/* 開閉アイコンっぽい疑似要素（▶ / ▼） */
-.custom-accordion-summary::before {
-  content: '▶';
-  display: inline-block;
-  margin-right: 6px;
-  transform: translateY(-0.5px);
-}
-.custom-accordion[open] .custom-accordion-summary::before {
-  content: '▼';
-}
-
-/* 本文 */
-.custom-accordion-body {
-  margin-top: 6px;
-  color: #333;
+  font-size: 0.75rem;
   line-height: 1.6;
-  max-height: 36rem;   /* 開きすぎ防止（必要なら外す） */
-  overflow: auto;
+}
+
+.custom-info-item {
+  word-break: break-word; /* 長いテキストでも折り返す */
+}
+
+.custom-info-label {
+  font-weight: 600;
+  color: #555;
+  margin-right: 4px;
+}
+
+.custom-info-value {
+  color: #333;
 }
 
 
