@@ -133,7 +133,9 @@
 
 /* 特記の値に二重下線を追加 */
 .custom-notes-value {
-  text-decoration: underline;
+  /* text-decoration: underline;
   text-decoration-style: double;
-  text-decoration-color: #d6d6d6;
+  text-decoration-color: #d6d6d6; */
+  color: #b30009;
+  font-weight: bold;
 }
