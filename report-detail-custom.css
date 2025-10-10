@@ -91,7 +91,7 @@
   font-size: 1.2rem;
   font-weight: 700;
   color: #2c3e50;
-  line-height: 1.5;
+  line-height: 1.6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -115,7 +115,7 @@
 
 .custom-info-label {
   flex-shrink: 0; /* ラベルが縮まないようにする */
-  width: 4rem; /* ラベルの幅を固定（必要に応じて調整） */
+  width: 5em; /* ラベルの幅を固定（必要に応じて調整） */
   font-weight: 600;
   color: #555;
 }
