@@ -59,7 +59,7 @@
       const notesItem = document.createElement('div');
       notesItem.className = 'custom-info-item';
       // HTMLとして挿入するため、改行を<br>に変換
-      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記</span><span class="custom-info-value">${notesVal.replace(/\n/g, '<br>')}</span>`;
+      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value">${notesVal.replace(/\n/g, '<br>')}</span>`;
       infoGrid.appendChild(notesItem);
     }
 
@@ -68,7 +68,7 @@
       const overviewItem = document.createElement('div');
       overviewItem.className = 'custom-info-item';
       // HTMLとして挿入するため、改行を<br>に変換
-      overviewItem.innerHTML = `<span class="custom-info-label">📄 概要</span><span class="custom-info-value">${overviewVal.replace(/\n/g, '<br>')}</span>`;
+      overviewItem.innerHTML = `<span class="custom-info-label">📄 概要：</span><span class="custom-info-value">${overviewVal.replace(/\n/g, '<br>')}</span>`;
       infoGrid.appendChild(overviewItem);
     }
 

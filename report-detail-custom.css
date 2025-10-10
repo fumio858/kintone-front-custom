@@ -101,31 +101,27 @@
 .custom-info-grid {
   display: flex;
   flex-direction: column; /* 縦並びにする */
-  gap: 8px; /* 項目の間隔を調整 */
+  gap: 6px; /* 各項目の間隔 */
+  /* margin: 0 .5rem; */
   font-size: 0.75rem;
   line-height: 1.5;
 }
 
 .custom-info-item {
   display: flex; /* ラベルと値を横に並べる */
-  align-items: center; /* タグとテキストを垂直方向に中央揃え */
+  align-items: baseline; /* テキストのベースラインを揃える */
   word-break: break-word;
 }
 
 .custom-info-label {
   flex-shrink: 0; /* ラベルが縮まないようにする */
-  width: 8em; /* タグの幅を固定して、値の開始位置を揃える */
-  padding: 0.3em 0.6em;
-  border-radius: 1em; /* 角を丸めてタグ風に */
-  background-color: #e9ecef; /* タグの背景色 */
-  color: #495057; /* タグの文字色 */
-  font-weight: 700;
-  box-sizing: border-box;
+  width: 4.8em; /* ラベルの幅を固定（必要に応じて調整） */
+  font-weight: 600;
+  color: #555;
 }
 
 .custom-info-value {
   color: #333;
-  margin-left: 0.8em; /* タグと値の間隔 */
 }
 
 
