@@ -103,7 +103,7 @@
   flex-direction: column; /* 縦並びにする */
   gap: 6px; /* 各項目の間隔 */
   /* margin: 0 .5rem; */
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   line-height: 1.5;
 }
 
