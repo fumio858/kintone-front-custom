@@ -54,8 +54,8 @@ const COMMENT_FETCH_LIMIT = 10;
     wrap.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <strong>予定登録</strong>
-        <button id="sch-refresh" type="button">コメント再読込</button>
         <span style="margin-left:auto; font-size:12px; color:#666;">スレッドの内容から予定を作成できます</span>
+        <button id="sch-refresh" type="button">再読込</button>
       </div>
       <style>
         button{ font-size:13px;}
@@ -63,8 +63,7 @@ const COMMENT_FETCH_LIMIT = 10;
         .k-schedule-form input[type="date"],
         .k-schedule-form textarea,
         .k-schedule-form select,
-        .k-schedule-actions button,
-        .k-schedule-cmt-acts button {
+        .k-schedule-actions button {
           border: 1px solid #e3e7e8;
           border-radius: 6px;
         }
@@ -79,6 +78,10 @@ const COMMENT_FETCH_LIMIT = 10;
           outline: none;
           box-shadow: 0 0 0 3px rgba(227,231,232,.4); /* フォーカスも淡く */
           border-color: #e3e7e8;
+        }
+        #sch-refresh,
+        .k-schedule-cmt-acts button {
+          border: 1px solid #e3e7e8;
         }
         .k-schedule-grid{ display:grid; grid-template-columns: 1fr 320px; gap:12px; }
         @media (max-width:800px){ .k-schedule-grid{ grid-template-columns:1fr; } }
