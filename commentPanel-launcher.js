@@ -1,8 +1,8 @@
 (function () {
   'use strict';
 
-  const SCHEDULE_PANEL_ID = 'user-js-schedulePanel';
-  const TASK_PANEL_ID     = 'user-js-taskPanel';
+  const BASE_SCHEDULE_ID = 'user-js-schedulePanel';
+  const BASE_TASK_ID     = 'user-js-taskPanel';
 
   // Spaceフィールドのフォールバック
   const _origGetSpace = kintone.app.record.getSpaceElement;
@@ -10,49 +10,58 @@
     return _origGetSpace.call(this, spaceId) || document.getElementById(spaceId) || null;
   };
 
-  // アイコンSVG
-  const ICONS = {
-    calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10zm-2 8H5v-6h14v6z"/></svg>`,
-    task: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24"><path d="M9 16.17l-3.88-3.88-1.41 1.41L9 19 20.3 7.71l-1.41-1.41z"/></svg>`
-  };
-
+  // リンク風UI用のボタン生成
   function createLink(iconSvg, text) {
     const link = document.createElement('button');
     link.type = 'button';
     link.innerHTML = `${iconSvg}<span style="margin-left:4px;">${text}</span>`;
     Object.assign(link.style, {
-      fontSize: '13px',
-      lineHeight: '1.5',
-      fontWeight: '800',
-      color: '#3598db',
-      border: 'none',
-      background: 'transparent',
-      textAlign: 'left',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      padding: '2px 0',
+      fontSize: '13px', lineHeight: '1.5', fontWeight: '800',
+      color: '#3598db', border: 'none', background: 'transparent',
+      textAlign: 'left', cursor: 'pointer', display: 'flex',
+      alignItems: 'center', padding: '2px 0',
     });
     link.addEventListener('mouseenter', () => link.style.textDecoration = 'underline');
     link.addEventListener('mouseleave', () => link.style.textDecoration = 'none');
     return link;
   }
 
-  function ensurePanelContainer(formEl, id) {
-    let el = document.getElementById(id);
-    if (el) return el;
+  const ICONS = {
+    calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10zm-2 8H5v-6h14v6z"/></svg>`,
+    task:     `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24"><path d="M9 16.17l-3.88-3.88-1.41 1.41L9 19 20.3 7.71l-1.41-1.41z"/></svg>`
+  };
 
-    el = document.createElement('div');
-    el.id = id;
-    el.style.marginTop = '12px';
-    el.style.marginBottom = '12px';
-    el.style.borderTop = '1px dashed #e5e7eb';
-    el.style.paddingTop = '12px';
+  // フォーム直後に「ミラー用の空コンテナ」を新規作成（常に作る＝複製先）
+  function createMirrorContainerAfterForm(formEl, baseId) {
+    const mirrorId = `${baseId}--mirror-${Date.now()}`;
+    const el = document.createElement('div');
+    el.id = mirrorId;
+    el.dataset.mirrorOf = baseId;
+    Object.assign(el.style, {
+      marginTop: '12px', marginBottom: '12px',
+      borderTop: '1px dashed #e5e7eb', paddingTop: '12px'
+    });
     el.textContent = 'ロード中…';
-
-    // 同じ階層（フォームの直後）に挿入
     formEl.insertAdjacentElement('afterend', el);
     return el;
+  }
+
+  // ミラー作成 → 初期化呼び出し（関数 or カスタムイベント）
+  function makeMirrorAndInit(formEl, baseId, initFnName, eventName) {
+    const mirror = createMirrorContainerAfterForm(formEl, baseId);
+
+    // ① グローバル関数があれば（推奨: 複製先へ描画）
+    if (typeof window[initFnName] === 'function') {
+      try { window[initFnName](mirror); } catch (e) { console.warn('initFn error:', e); }
+    }
+
+    // ② カスタムイベントでも通知（どちらかで拾えばOK）
+    document.dispatchEvent(new CustomEvent(eventName, {
+      detail: { mountEl: mirror, mountId: mirror.id, baseId }
+    }));
+
+    // 見える位置へ
+    mirror.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function injectButtonsOnce() {
@@ -61,12 +70,11 @@
     if (!form || !wrap) return false;
     if (document.querySelector('.kx-cmt-side-actions')) return true;
 
-    // テキストエリア右側に縦並びのリンクを配置
+    // コメントテキストエリア右側にリンク群
     const lane = document.createElement('div');
     lane.style.display = 'flex';
     lane.style.alignItems = 'flex-start';
     lane.style.gap = '8px';
-    lane.style.marginBottom = '1rem';
 
     const left = document.createElement('div');
     left.style.flex = '1 1 auto';
@@ -75,11 +83,8 @@
     const bar = document.createElement('div');
     bar.className = 'kx-cmt-side-actions';
     Object.assign(bar.style, {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '6px',
-      marginLeft: '8px',
-      marginTop: '2px',
+      display: 'flex', flexDirection: 'column', gap: '6px',
+      marginLeft: '8px', marginTop: '2px'
     });
 
     const btnSched = createLink(ICONS.calendar, 'スケジュール登録');
@@ -91,22 +96,12 @@
     lane.appendChild(bar);
     wrap.appendChild(lane);
 
-    // 挿入動作
+    // クリック：常に「複製（ミラー）をフォーム直後に新規作成」して初期化
     btnSched.addEventListener('click', () => {
-      const el = ensurePanelContainer(form, SCHEDULE_PANEL_ID);
-      // ここで他JSを呼び出す or カスタムイベント発火
-      document.dispatchEvent(new CustomEvent('user-js-open-schedule', {
-        detail: { mountEl: el, mountId: SCHEDULE_PANEL_ID }
-      }));
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      makeMirrorAndInit(form, BASE_SCHEDULE_ID, 'userSchedulePanelInit', 'user-js-open-schedule');
     });
-
     btnTask.addEventListener('click', () => {
-      const el = ensurePanelContainer(form, TASK_PANEL_ID);
-      document.dispatchEvent(new CustomEvent('user-js-open-task', {
-        detail: { mountEl: el, mountId: TASK_PANEL_ID }
-      }));
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      makeMirrorAndInit(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task');
     });
 
     return true;
