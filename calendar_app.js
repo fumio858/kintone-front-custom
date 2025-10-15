@@ -1,8 +1,8 @@
 // ==== 設定ここから ====
 const SCHEDULE_APP_ID = 45;
-const S_DATE  = 'date';          // 予定日のフィールドコード
+const S_DATE = 'date';          // 予定日のフィールドコード
 const S_TITLE = 'title';         // 予定タイトルのフィールドコード
-const S_DESC  = 'description';   // 予定説明のフィールドコード
+const S_DESC = 'description';   // 予定説明のフィールドコード
 const S_USERS = 'attendees';     // ユーザー選択のフィールドコード
 const SPACE_ID = 'schedulePanel';
 const COMMENT_FETCH_LIMIT = 10;
@@ -110,10 +110,13 @@ const COMMENT_FETCH_LIMIT = 10;
           border-color: #e3e7e8;
         }
         #sch-refresh,
-        .k-schedule-cmt-acts button,
-        .k-schedule-actions button {
+        .k-schedule-cmt-acts button{
           border: 1px solid #e3e7e8;
           font-size: 12px;
+        }
+        .k-schedule-actions button {
+          border: 1px solid #e3e7e8;
+          font-size: .9rem;
         }
         #sch-create{
           background-color: #3598db;
