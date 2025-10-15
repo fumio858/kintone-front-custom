@@ -77,12 +77,12 @@ const COMMENT_FETCH_LIMIT = 10;
           outline: none;
           box-shadow: 0 0 0 3px rgba(227,231,232,.4); /* フォーカスも淡く */
           border-color: #e3e7e8;
-          font-size: 12px;
         }
         #sch-refresh,
         .k-schedule-cmt-acts button ,
         .k-schedule-actions button {
           border: 1px solid #e3e7e8;
+          font-size: 12px;
         }
         .k-schedule-grid{ display:grid; grid-template-columns: 1fr 320px; gap:12px; }
         @media (max-width:800px){ .k-schedule-grid{ grid-template-columns:1fr; } }
