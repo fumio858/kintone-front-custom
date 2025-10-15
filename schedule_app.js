@@ -67,77 +67,77 @@ const SPACE_ID = 'schedulePanel';
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <strong>スケジュール登録</strong>
         <div style="margin-left:auto; display:flex; gap:6px;">
+          <button id="sch-clear" type="button">入力クリア</button>
           <button id="sch-close" type="button" aria-label="閉じる（Esc）">キャンセル</button>
         </div>
       </div>
       <style>
-        button{ font-size:13px; }
-        .k-schedule-form input[type="text"],
-        .k-schedule-form input[type="date"],
-        .k-schedule-form textarea,
-        .k-schedule-form select{
-          border: 1px solid #e3e7e8;
-          border-radius: 6px;
+        button { font-size:13px; }
+        .k-schedule-form-left, .k-schedule-form-right {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
         }
-        .k-schedule-actions button {
-          padding: .5rem .75rem;
-          background: #fff;
-          border-radius: 6px;
-        }
-        .k-schedule-form input:focus,
-        .k-schedule-form textarea:focus,
-        .k-schedule-form select:focus,
-        .k-schedule-actions button:focus {
-          outline: none;
-          box-shadow: 0 0 0 3px rgba(227,231,232,.4);
-          border-color: #e3e7e8;
-        }
-        .k-schedule-actions button {
-          border: 1px solid #e3e7e8;
-          font-size: .9rem;
-        }
-        #sch-create{
-          background-color: #3598db;
-          color: #FFF;
-        }
-        #sch-close{
-          border: 1px solid #e3e7e8;
-          background: #fff;
-          font-size: 12px;
-          padding: 6px 10px;
-        }
-        #sch-close:hover{ background: #f5f7f8; }
-        .k-schedule-form {
+        .k-schedule-form-wrapper {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 12px;
         }
-        .k-schedule-form label {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-        .k-schedule-form input[type="text"],
-        .k-schedule-form input[type="date"],
-        .k-schedule-form textarea,
-        .k-schedule-form select{
+        .k-schedule-form-wrapper input[type="text"],
+        .k-schedule-form-wrapper input[type="date"],
+        .k-schedule-form-wrapper textarea,
+        .k-schedule-form-wrapper select {
+          border: 1px solid #e3e7e8;
+          border-radius: 6px;
           width:100%; padding:8px; box-sizing:border-box;
         }
-        .k-schedule-actions{ display:flex; gap:8px; }
+        .k-schedule-form-left textarea {
+          flex-grow: 1;
+          resize: vertical;
+        }
+        .k-schedule-actions button, #sch-clear {
+          padding: .5rem .75rem;
+          background: #fff;
+          border-radius: 6px;
+          border: 1px solid #e3e7e8;
+          font-size: .9rem;
+        }
+        .k-schedule-form-wrapper input:focus,
+        .k-schedule-form-wrapper textarea:focus,
+        .k-schedule-form-wrapper select:focus,
+        .k-schedule-actions button:focus,
+        #sch-clear:focus {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(227,231,232,.4);
+          border-color: #e3e7e8;
+        }
+        #sch-create {
+          background-color: #3598db;
+          color: #FFF;
+          width: 100%;
+        }
+        #sch-close, #sch-clear {
+          font-size: 12px;
+          padding: 6px 10px;
+        }
+        #sch-close:hover, #sch-clear:hover { background: #f5f7f8; }
         @media (max-width:600px){
-          .k-schedule-form {
+          .k-schedule-form-wrapper {
             grid-template-columns: 1fr;
           }
         }
       </style>
-      <div class="k-schedule-form">
-        <label>予定日（終日） <input id="sch-date" type="date"></label>
-        <label>予定のタイトル <input id="sch-title" type="text" placeholder="例）打ち合わせ（顧問先）"></label>
-        <label style="grid-column: 1 / -1;">予定の説明 <textarea id="sch-desc" rows="6" placeholder="予定の詳細やメモを入力"></textarea></label>
-        <label style="grid-column: 1 / -1;">参加者（複数選択可） <select id="sch-users" multiple size="6"></select></label>
-        <div class="k-schedule-actions" style="grid-column: 1 / -1;">
-          <button id="sch-create" type="button">＋ 予定を登録</button>
-          <button id="sch-clear" type="button">入力クリア</button>
+      <div class="k-schedule-form-wrapper">
+        <div class="k-schedule-form-left">
+            <label>予定のタイトル <input id="sch-title" type="text" placeholder="例）打ち合わせ（顧問先）"></label>
+            <label style="display:flex; flex-direction:column; flex-grow:1;">予定の説明 <textarea id="sch-desc" placeholder="予定の詳細やメモを入力"></textarea></label>
+        </div>
+        <div class="k-schedule-form-right">
+            <label>予定日（終日） <input id="sch-date" type="date"></label>
+            <label>参加者（複数選択可） <select id="sch-users" multiple size="8"></select></label>
+            <div class="k-schedule-actions">
+              <button id="sch-create" type="button">＋ 予定を登録</button>
+            </div>
         </div>
       </div>
     `;

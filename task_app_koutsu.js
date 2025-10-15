@@ -77,7 +77,7 @@ const TASK_SPACE_ID = 'taskPanel';
           .task-add-left textarea{ width:100%; height:100%; min-height:120px; resize:vertical; padding:10px; box-sizing:border-box; }
           .task-add-right{ display:flex; flex-direction:column; gap:8px; }
           .task-add-right > *{ width:100%; box-sizing:border-box; }
-          .task-add-right button{ height:36px; background:#3598db; color:#fff; }
+          .task-add-right button{ height:36px; background:#3598db; color:#fff; border-radius: 6px;}
           @media (max-width: 640px){ .task-add-row{ grid-template-columns: 1fr; } }
           .k-task-panel .task-add-right .task-owner, .k-task-panel .task-add-right .task-due{ padding:8px 4px; min-height:36px; box-sizing:border-box; }
         </style>
