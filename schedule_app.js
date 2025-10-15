@@ -5,7 +5,6 @@ const S_TITLE = 'title';         // 予定タイトルのフィールドコー�
 const S_DESC = 'description';   // 予定説明のフィールドコード
 const S_USERS = 'attendees';     // ユーザー選択のフィールドコード
 const SPACE_ID = 'schedulePanel';
-const COMMENT_FETCH_LIMIT = 10;
 // ==== 設定ここまで ====
 
 (function () {
@@ -46,20 +45,6 @@ const COMMENT_FETCH_LIMIT = 10;
     }
   }
 
-  async function fetchComments(appId, recordId, limit = 10) {
-    try {
-      const res = await kintone.api(kUrl('/k/v1/record/comments'), 'GET', {
-        app: appId, record: recordId, order: 'desc', offset: 0, limit
-      });
-      return res.comments || [];
-    } catch (e) {
-      console.error('コメント取得失敗:', e);
-      return [];
-    }
-  }
-
-  function extractCommentText(c) { return (c.text || '').trim(); }
-
   async function createSchedule(record) {
     return kintone.api(kUrl('/k/v1/record'), 'POST', { app: SCHEDULE_APP_ID, record });
   }
@@ -81,9 +66,7 @@ const COMMENT_FETCH_LIMIT = 10;
     wrap.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <strong>スケジュール登録</strong>
-        <span style="margin-left:auto; font-size:12px; color:#666;">スレッドの内容から予定を作成できます</span>
-        <div style="display:flex; gap:6px;">
-          <button id="sch-refresh" type="button">再読込</button>
+        <div style="margin-left:auto; display:flex; gap:6px;">
           <button id="sch-close" type="button" aria-label="閉じる（Esc）">キャンセル</button>
         </div>
       </div>
@@ -109,11 +92,6 @@ const COMMENT_FETCH_LIMIT = 10;
           box-shadow: 0 0 0 3px rgba(227,231,232,.4);
           border-color: #e3e7e8;
         }
-        #sch-refresh,
-        .k-schedule-cmt-acts button{
-          border: 1px solid #e3e7e8;
-          font-size: 12px;
-        }
         .k-schedule-actions button {
           border: 1px solid #e3e7e8;
           font-size: .9rem;
@@ -129,42 +107,37 @@ const COMMENT_FETCH_LIMIT = 10;
           padding: 6px 10px;
         }
         #sch-close:hover{ background: #f5f7f8; }
-        .k-schedule-grid{ display:grid; grid-template-columns: 1fr 320px; gap:12px; }
-        @media (max-width:800px){ .k-schedule-grid{ grid-template-columns:1fr; } }
-        .k-schedule-form{ display:flex; flex-direction:column; gap:8px; }
+        .k-schedule-form {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .k-schedule-form label {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
         .k-schedule-form input[type="text"],
         .k-schedule-form input[type="date"],
         .k-schedule-form textarea,
         .k-schedule-form select{
           width:100%; padding:8px; box-sizing:border-box;
         }
-        .k-schedule-comments{
-          display:flex; flex-direction:column; gap:8px;
-          max-height:420px; overflow:auto;
-          border-left:1px dashed #e5e7eb; padding-left:12px; font-size: 12px;
-        }
-        .k-schedule-cmt{ background:#fafafa; border-radius:6px; padding:8px; display:flex; gap:8px; }
-        .k-schedule-cmt-acts{ display:flex; flex-direction: column; gap:6px; }
-        .k-schedule-cmt pre{
-          white-space:pre-wrap; word-break:break-word; margin:0;
-          font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-        }
         .k-schedule-actions{ display:flex; gap:8px; }
+        @media (max-width:600px){
+          .k-schedule-form {
+            grid-template-columns: 1fr;
+          }
+        }
       </style>
-      <div class="k-schedule-grid">
-        <div class="k-schedule-form">
-          <label>予定日（終日） <input id="sch-date" type="date"></label>
-          <label>予定のタイトル <input id="sch-title" type="text" placeholder="例）打ち合わせ（顧問先）"></label>
-          <label>予定の説明 <textarea id="sch-desc" rows="6" placeholder="スレッドの本文を取込ボタンで貼り付けできます"></textarea></label>
-          <label>参加者（複数選択可） <select id="sch-users" multiple size="6"></select></label>
-          <div class="k-schedule-actions">
-            <button id="sch-create" type="button">＋ 予定を登録</button>
-            <button id="sch-clear" type="button">入力クリア</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-weight:600; margin-bottom:6px;">スレッド（最近 ${COMMENT_FETCH_LIMIT} 件）</div>
-          <div id="sch-cmts" class="k-schedule-comments"></div>
+      <div class="k-schedule-form">
+        <label>予定日（終日） <input id="sch-date" type="date"></label>
+        <label>予定のタイトル <input id="sch-title" type="text" placeholder="例）打ち合わせ（顧問先）"></label>
+        <label style="grid-column: 1 / -1;">予定の説明 <textarea id="sch-desc" rows="6" placeholder="予定の詳細やメモを入力"></textarea></label>
+        <label style="grid-column: 1 / -1;">参加者（複数選択可） <select id="sch-users" multiple size="6"></select></label>
+        <div class="k-schedule-actions" style="grid-column: 1 / -1;">
+          <button id="sch-create" type="button">＋ 予定を登録</button>
+          <button id="sch-clear" type="button">入力クリア</button>
         </div>
       </div>
     `;
@@ -174,43 +147,11 @@ const COMMENT_FETCH_LIMIT = 10;
     const elTitle = wrap.querySelector('#sch-title');
     const elDesc = wrap.querySelector('#sch-desc');
     const elUsers = wrap.querySelector('#sch-users');
-    const elCmts = wrap.querySelector('#sch-cmts');
 
     elDate.value = todayLocalYMD();
     await populateUsersSelect(elUsers);
 
-    async function renderComments() {
-      elCmts.textContent = '読込中…';
-      const cmts = await fetchComments(appId, recordId, COMMENT_FETCH_LIMIT);
-      elCmts.innerHTML = '';
-      if (!cmts.length) { elCmts.textContent = 'コメントはありません。'; return; }
-      cmts.forEach(cmt => {
-        const box = document.createElement('div');
-        box.className = 'k-schedule-cmt';
-        const body = extractCommentText(cmt);
-        const at = cmt.createdAt?.replace('T', ' ').replace('Z', '') || '';
-        box.innerHTML = `
-          <div style="flex:1;">
-            <div style="font-size:10px; color:#666; margin-bottom:4px;">${at}</div>
-            <pre>${body || '(本文なし)'}</pre>
-          </div>
-          <div class="k-schedule-cmt-acts">
-            <button type="button" data-act="paste-title">タイトルに</button>
-            <button type="button" data-act="paste-desc">説明に</button>
-          </div>`;
-        box.addEventListener('click', (e) => {
-          const btn = e.target.closest('button'); if (!btn) return;
-          const act = btn.dataset.act; const firstLine = (body.split(/\r?\n/)[0] || '').trim();
-          if (act === 'paste-title' && firstLine) elTitle.value = firstLine.slice(0, 255);
-          if (act === 'paste-desc') elDesc.value = (elDesc.value ? (elDesc.value + '\n\n') : '') + body;
-        });
-        elCmts.appendChild(box);
-      });
-    }
-    await renderComments();
-
     // 便利アクション
-    wrap.querySelector('#sch-refresh').addEventListener('click', renderComments);
     wrap.querySelector('#sch-clear').addEventListener('click', () => {
       elDate.value = todayLocalYMD();
       elTitle.value = '';

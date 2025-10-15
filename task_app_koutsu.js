@@ -1,4 +1,4 @@
-// ==== 設定ここから ====
+// ==== 設定ここから ==== 
 const TASK_APP_ID = 31;
 const F_CASE_ID = '事案ID';
 const T_CASE_ID = '事案ID';
@@ -7,15 +7,15 @@ const T_DUE = '期限';
 const T_OWNER = '担当者';
 const T_STATUS = 'タスクステータス';
 const TASK_SPACE_ID = 'taskPanel';
-// ==== 設定ここまで ====
+// ==== 設定ここまで ==== 
 
 (function () {
   'use strict';
 
   const kUrl = (p) => kintone.api.url(p.endsWith('.json') ? p : `${p}.json`, true);
-  const esc = (s = '') => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  const esc = (s = '') => String(s).replace(/\\/g, '\\').replace(/"/g, '\"');
 
-  // --- フォールバックで mount を見つける（カレンダー互換 + さらに堅牢） ---
+  // --- フォールバックで mount を見つける（カレンダー互換 + さらに堅牢） --- 
   function resolveMountEl(mountEl) {
     if (mountEl && mountEl.nodeType === 1) return mountEl;
     // 1) ランチャーの mirror 既存？
@@ -29,7 +29,7 @@ const TASK_SPACE_ID = 'taskPanel';
     if (form) {
       const m = document.createElement('div');
       m.dataset.mirrorOf = 'user-js-taskPanel';
-      Object.assign(m.style, { marginTop:'12px', borderTop:'1px dashed #e5e7eb', paddingTop:'12px' });
+      Object.assign(m.style, {marginTop:'12px', borderTop:'1px dashed #e5e7eb', paddingTop:'12px'});
       form.insertAdjacentElement('afterend', m);
       return m;
     }
@@ -60,9 +60,8 @@ const TASK_SPACE_ID = 'taskPanel';
       wrap.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
           <strong>タスク</strong>
-          <span style="margin-left:auto; font-size:12px; color:#666;">スレッドの内容からタスクを作成できます</span>
-          <div style="display:flex; gap:6px;">
-            <button id="task-refresh" type="button">再読込</button>
+          <div style="margin-left:auto; display:flex; gap:6px;">
+            <button id="task-show-list" type="button">タスク一覧</button>
             <button id="task-close" type="button" aria-label="閉じる（Esc）">キャンセル</button>
           </div>
         </div>
@@ -74,7 +73,7 @@ const TASK_SPACE_ID = 'taskPanel';
           .k-task-panel input:focus, .k-task-panel textarea:focus, .k-task-panel select:focus, .k-task-panel button:focus {
             outline: none; box-shadow: 0 0 0 3px rgba(227,231,232,.4); border-color: #e3e7e8;
           }
-          #task-refresh, #task-close, .task-add-right button { border: 1px solid #e3e7e8; background:#fff; }
+          #task-show-list, #task-close, .task-add-right button { border: 1px solid #e3e7e8; background:#fff; }
           #task-close:hover { background: #f5f7f8; }
           .task-add-row{ display:grid; grid-template-columns: 1fr 260px; gap:12px; align-items:stretch; margin-top:8px; }
           .task-add-left textarea{ width:100%; height:100%; min-height:120px; resize:vertical; padding:10px; box-sizing:border-box; }
@@ -85,7 +84,7 @@ const TASK_SPACE_ID = 'taskPanel';
           .k-task-panel .task-add-right .task-owner, .k-task-panel .task-add-right .task-due{ padding:8px 4px; min-height:36px; box-sizing:border-box; }
         </style>
 
-        <div id="task-list" style="display:flex; flex-direction:column; gap:6px; margin-bottom:8px;"></div>
+        <div id="task-list" style="display:none; flex-direction:column; gap:6px; margin-bottom:8px;"></div>
         <hr/>
         <div class="task-add-row">
           <div class="task-add-left">
@@ -99,7 +98,7 @@ const TASK_SPACE_ID = 'taskPanel';
             <button id="task-add" type="button">＋ 追加</button>
           </div>
         </div>
-      `;
+        `;
       mountEl.appendChild(wrap);
 
       const listEl = wrap.querySelector('#task-list');
@@ -138,7 +137,7 @@ const TASK_SPACE_ID = 'taskPanel';
       // 取得系
       async function fetchTasks() {
         if (!caseId) return [];
-        const cEsc = caseId.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+        const cEsc = caseId.replace(/\\/g,'\\\\').replace(/"/g,'\"');
         const query = `${T_CASE_ID} = "${cEsc}" order by ${T_DUE} asc`;
         try {
           const resp = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query });
@@ -224,7 +223,22 @@ const TASK_SPACE_ID = 'taskPanel';
           alert('タスク作成に失敗しました。');
         }
       });
-      wrap.querySelector('#task-refresh').addEventListener('click', render);
+      const showListBtn = wrap.querySelector('#task-show-list');
+      let isListLoaded = false;
+      showListBtn.addEventListener('click', () => {
+        const isHidden = listEl.style.display === 'none';
+        if (isHidden) {
+          listEl.style.display = 'flex';
+          showListBtn.textContent = '一覧を隠す';
+          if (!isListLoaded) {
+            render();
+            isListLoaded = true;
+          }
+        } else {
+          listEl.style.display = 'none';
+          showListBtn.textContent = 'タスク一覧';
+        }
+      });
 
       // —— キャンセル（Esc対応 / カレンダー同様） —— //
       const doHide = () => {
@@ -240,8 +254,7 @@ const TASK_SPACE_ID = 'taskPanel';
         document.removeEventListener('keydown', onKey);
       });
 
-      // 初期描画
-      render();
+      // 初期描画はしない
 
     } catch (err) {
       console.error('[task] initTaskPanel fatal:', err);
