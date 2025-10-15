@@ -15,9 +15,10 @@ const SPACE_ID = 'taskPanel';
   const kUrl = (p) => kintone.api.url(p.endsWith('.json') ? p : `${p}.json`, true);
   const esc = (s = '') => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
-  // ★ ここから：任意のマウント先に描画する本体
+  // ★ 任意のマウント先に描画する本体（Spaceは自動描画せず、ここで表示状態に戻す）
   async function initTaskPanel(mountEl, rec) {
     if (!mountEl) return;
+    mountEl.style.display = '';           // ← カレンダー同様：表示に戻す
     mountEl.innerHTML = '';
 
     const wrap = document.createElement('div');
@@ -25,25 +26,41 @@ const SPACE_ID = 'taskPanel';
     wrap.style.padding = '12px';
     wrap.style.border = '1px solid #ddd';
     wrap.style.borderRadius = '8px';
+    wrap.style.background = '#f7f9fa';
+
     wrap.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <strong>タスク</strong>
-        <button id="task-refresh" type="button">再読込</button>
-        <span style="margin-left:auto;"></span>
+        <span style="margin-left:auto; font-size:12px; color:#666;">スレッドの内容からタスクを作成できます</span>
+        <div style="display:flex; gap:6px;">
+          <button id="task-refresh" type="button">再読込</button>
+          <button id="task-close" type="button" aria-label="閉じる（Esc）">キャンセル</button>
+        </div>
       </div>
-      <div id="task-list" style="display:flex; flex-direction:column; gap:6px;"></div>
-      <hr/>
       <style>
+        button{ font-size:13px; }
+        .k-task-panel input, .k-task-panel textarea, .k-task-panel select {
+          border: 1px solid #e3e7e8; border-radius: 6px;
+        }
+        .k-task-panel input:focus, .k-task-panel textarea:focus, .k-task-panel select:focus, .k-task-panel button:focus {
+          outline: none; box-shadow: 0 0 0 3px rgba(227,231,232,.4); border-color: #e3e7e8;
+        }
+        #task-refresh, #task-close, .task-add-right button {
+          border: 1px solid #e3e7e8; background: #fff;
+        }
+        #task-close:hover { background: #f5f7f8; }
         .task-add-row{ display:grid; grid-template-columns: 1fr 260px; gap:12px; align-items:stretch; margin-top:4px; }
         .task-add-left textarea{ width:100%; height:100%; min-height:120px; resize:vertical; padding:10px; box-sizing:border-box; }
         .task-add-right{ display:flex; flex-direction:column; gap:8px; }
         .task-add-right > *{ width:100%; box-sizing:border-box; }
-        .task-add-right button{ height:36px; }
+        .task-add-right button{ height:36px; background:#3598db; color:#fff; }
         @media (max-width: 640px){ .task-add-row{ grid-template-columns: 1fr; } }
         .k-task-panel .task-add-right .task-owner,
         .k-task-panel .task-add-right .task-due{ padding:8px 4px; min-height:36px; box-sizing:border-box; }
       </style>
 
+      <div id="task-list" style="display:flex; flex-direction:column; gap:6px; margin-bottom:8px;"></div>
+      <hr/>
       <div class="task-add-row">
         <div class="task-add-left">
           <textarea id="task-title" placeholder="件名を入力" rows="4"></textarea>
@@ -64,7 +81,7 @@ const SPACE_ID = 'taskPanel';
     const selOwner = wrap.querySelector('#task-owner');
     if (!caseId) {
       listEl.innerHTML = `<div style="color:#c00;">案件側フィールド「${F_CASE_ID}」が空です。値を入れるとタスクを表示・追加できます。</div>`;
-      return;
+      // キャンセルは使えるようにしておく
     }
 
     // 担当者セレクト
@@ -96,6 +113,7 @@ const SPACE_ID = 'taskPanel';
     function todayLocalYMD(){ const now=new Date(); const local=new Date(now.getTime()-now.getTimezoneOffset()*60000); return local.toISOString().slice(0,10); }
 
     async function fetchTasks() {
+      if (!caseId) return [];
       const c = (caseId || '').trim();
       const cEsc = c.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
       const query = `${T_CASE_ID} = "${cEsc}" order by ${T_DUE} asc`;
@@ -129,8 +147,8 @@ const SPACE_ID = 'taskPanel';
           <div style="font-weight:600">${title}</div>
           <div style="font-size:12px;color:#666">状態: ${status||'—'} / 担当: ${owners||'—'} / 期限: ${due||'—'}</div>
         </div>
-        <button data-act="start" type="button">進行中</button>
-        <button data-act="done" type="button">完了</button>
+        <button data-act="start" type="button" title="進行中にする">進行中</button>
+        <button data-act="done" type="button" title="完了にする">完了</button>
         <a href="${location.origin}/k/${TASK_APP_ID}/show#record=${id}" target="_blank">開く</a>`;
       div.addEventListener('click', async (e)=>{
         const btn=e.target.closest('button'); if(!btn) return;
@@ -158,8 +176,12 @@ const SPACE_ID = 'taskPanel';
       if(!title) return alert('件名を入力してください');
 
       const dupQ = `${T_CASE_ID} = "${esc(caseId)}" and ${T_TITLE} = "${esc(title)}" limit 1`;
-      const dup = await kintone.api(kUrl('/k/v1/records'), 'GET', { app: TASK_APP_ID, query: dupQ });
-      if((dup.records||[]).length) return alert('この案件に同名のタスクが既にあります。件名を変えてください。');
+      try{
+        const dup = await kintone.api(kUrl('/k/v1/records'), 'GET', { app: TASK_APP_ID, query: dupQ });
+        if((dup.records||[]).length) return alert('この案件に同名のタスクが既にあります。件名を変えてください。');
+      }catch(e){
+        console.warn('重複確認に失敗しましたが続行します:', e);
+      }
 
       const record = {
         [T_CASE_ID]: { value: caseId },
@@ -180,11 +202,28 @@ const SPACE_ID = 'taskPanel';
     });
     wrap.querySelector('#task-refresh').addEventListener('click', render);
 
+    // —— キャンセル（非表示にするだけ） —— //
+    const doHide = () => {
+      wrap.style.display = 'none'; // 中身を隠すだけ。再度 init を呼べば復活
+      mountEl.dispatchEvent(new CustomEvent('taskPanel:hidden', { bubbles: false }));
+    };
+    wrap.querySelector('#task-close').addEventListener('click', doHide);
+
+    // Esc でも閉じる（カレンダーと同じ挙動）
+    const onKey = (ev) => {
+      if (ev.key === 'Escape' && wrap.style.display !== 'none') doHide();
+    };
+    document.addEventListener('keydown', onKey);
+    mountEl.addEventListener('taskPanel:hidden', () => {
+      document.removeEventListener('keydown', onKey);
+    });
+
+    // 初期描画
     render();
   }
   // ★ ここまで：本体
 
-    // ランチャーからの呼び出し（イベント）に対応
+  // ランチャーからの呼び出し（イベント）に対応（カレンダーと同じイベント名方式）
   document.addEventListener('user-js-open-task', async (e) => {
     const mountEl = e?.detail?.mountEl || null;
     const recObj = kintone.app.record.get();
@@ -192,17 +231,17 @@ const SPACE_ID = 'taskPanel';
     await initTaskPanel(mountEl, rec);
   });
 
-  // 既存：Spaceに描画（従来どおり）
+  // Spaceは自動描画しない：表示だけ隠して、ランチャーから init された時に出す（カレンダーと同じ）
   kintone.events.on(['app.record.detail.show'], async (event) => {
     const space = kintone.app.record.getSpaceElement(SPACE_ID);
-    if (!space) { /* Spaceがない場合は黙って終了（ランチャーから呼ぶ想定）*/ return event; }
-    await initTaskPanel(space, event.record);
+    if (!space) return event;
+    space.style.display = 'none';    // ← 自動では描画しない
     return event;
   });
 
-  // 追加：ランチャーから呼べるフック
+  // 直呼びにも対応（ランチャーの「関数があれば直呼び」パス用）
   window.userTaskPanelInit = async function(mountEl){
-    const recObj = kintone.app.record.get();          // 現在のレコード取得
+    const recObj = kintone.app.record.get();
     const rec = recObj && recObj.record ? recObj.record : {};
     await initTaskPanel(mountEl, rec);
   };
