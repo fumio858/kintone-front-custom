@@ -71,7 +71,7 @@ const TASK_SPACE_ID = 'taskPanel';
           .k-task-panel input:focus, .k-task-panel textarea:focus, .k-task-panel select:focus, .k-task-panel button:focus {
             outline: none; box-shadow: 0 0 0 3px rgba(227,231,232,.4); border-color: #e3e7e8;
           }
-          #task-show-list, #task-close, .task-add-right button { border: 1px solid #e3e7e8; background:#fff; padding: .5rem .75rem; }
+          #task-show-list, #task-close, .task-add-right button { border: 1px solid #e3e7e8; background:#fff; padding: 6px 10px; border-radius: 6px; }
           #task-close:hover { background: #f5f7f8; }
           .task-add-row{ display:grid; grid-template-columns: 1fr 260px; gap:12px; align-items:stretch; margin-top:8px; }
           .task-add-left textarea{ width:100%; height:100%; min-height:120px; resize:vertical; padding:10px; box-sizing:border-box; }
