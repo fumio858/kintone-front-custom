@@ -97,8 +97,9 @@ const COMMENT_FETCH_LIMIT = 10;
           border-radius: 6px;
         }
         .k-schedule-actions button {
-          padding: 6px 10px;
+          padding: .5rem .75rem;
           background: #fff;
+          border-radius: 6px;
         }
         .k-schedule-form input:focus,
         .k-schedule-form textarea:focus,
@@ -113,13 +114,15 @@ const COMMENT_FETCH_LIMIT = 10;
         .k-schedule-actions button {
           border: 1px solid #e3e7e8;
           font-size: 12px;
-          border-radius: 6px;
+        }
+        #sch-create{
+          background-color: #3598db;
+          color: #FFF;
         }
         #sch-close{
           border: 1px solid #e3e7e8;
           background: #fff;
           font-size: 12px;
-          border-radius: 6px;
           padding: 6px 10px;
         }
         #sch-close:hover{ background: #f5f7f8; }
