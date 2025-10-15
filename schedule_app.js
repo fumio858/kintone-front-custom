@@ -130,7 +130,7 @@ const SPACE_ID = 'schedulePanel';
       </style>
       <div class="k-schedule-form-wrapper">
         <div class="k-schedule-form-left">
-            <label>予定のタイトル <input id="sch-title" type="text" placeholder="例）打ち合わせ（顧問先）"></label>
+            <label>予定のタイトル <input id="sch-title" type="text" placeholder="例）打ち合わせ"></label>
             <label style="display:flex; flex-direction:column; flex-grow:1;">予定の説明 <textarea id="sch-desc" placeholder="予定の詳細やメモを入力"></textarea></label>
         </div>
         <div class="k-schedule-form-right">
