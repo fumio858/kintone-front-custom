@@ -115,14 +115,12 @@ const COMMENT_FETCH_LIMIT = 10;
           <div class="k-schedule-cmt-acts">
             <button type="button" data-act="paste-title">タイトルに</button>
             <button type="button" data-act="paste-desc">説明に</button>
-            <button type="button" data-act="both">タイトル＋説明</button>
           </div>`;
         box.addEventListener('click',(e)=>{
           const btn=e.target.closest('button'); if(!btn) return;
           const act=btn.dataset.act; const firstLine=(body.split(/\r?\n/)[0]||'').trim();
           if(act==='paste-title' && firstLine) elTitle.value=firstLine.slice(0,255);
           if(act==='paste-desc') elDesc.value=(elDesc.value?(elDesc.value+'\n\n'):'')+body;
-          if(act==='both'){ if(firstLine) elTitle.value=firstLine.slice(0,255); elDesc.value=(elDesc.value?(elDesc.value+'\n\n'):'')+body; }
         });
         elCmts.appendChild(box);
       });
