@@ -95,7 +95,7 @@ const SPACE_ID = 'schedulePanel';
           flex-grow: 1;
           resize: vertical;
         }
-        .k-schedule-actions button, #sch-clear {
+        .k-schedule-actions button, #sch-clear, #sch-close {
           padding: .5rem .75rem;
           background: #fff;
           border-radius: 6px;
@@ -106,7 +106,8 @@ const SPACE_ID = 'schedulePanel';
         .k-schedule-form-wrapper textarea:focus,
         .k-schedule-form-wrapper select:focus,
         .k-schedule-actions button:focus,
-        #sch-clear:focus {
+        #sch-clear:focus,
+        #sch-close:focus {
           outline: none;
           box-shadow: 0 0 0 3px rgba(227,231,232,.4);
           border-color: #e3e7e8;
