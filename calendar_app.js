@@ -135,7 +135,7 @@ const COMMENT_FETCH_LIMIT = 10;
         const at = cmt.createdAt?.replace('T', ' ').replace('Z', '') || '';
         box.innerHTML = `
           <div style="flex:1;">
-            <div style="font-size:12px; color:#666; margin-bottom:4px;">${at}</div>
+            <div style="font-size:10px; color:#666; margin-bottom:4px;">${at}</div>
             <pre>${body || '(本文なし)'}</pre>
           </div>
           <div class="k-schedule-cmt-acts">
