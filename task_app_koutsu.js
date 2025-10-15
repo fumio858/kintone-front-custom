@@ -53,13 +53,11 @@ const TASK_SPACE_ID = 'taskPanel';
       const wrap = document.createElement('div');
       wrap.classList.add('k-task-panel');
       wrap.style.padding = '12px';
-      wrap.style.border = '1px solid #ddd';
-      wrap.style.borderRadius = '8px';
       wrap.style.background = '#f7f9fa';
 
       wrap.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-          <strong>タスク</strong>
+          <strong>タスク追加</strong>
           <div style="margin-left:auto; display:flex; gap:6px;">
             <button id="task-show-list" type="button">タスク一覧</button>
             <button id="task-close" type="button" aria-label="閉じる（Esc）">キャンセル</button>
@@ -85,7 +83,6 @@ const TASK_SPACE_ID = 'taskPanel';
         </style>
 
         <div id="task-list" style="display:none; flex-direction:column; gap:6px; margin-bottom:8px;"></div>
-        <hr/>
         <div class="task-add-row">
           <div class="task-add-left">
             <textarea id="task-title" placeholder="件名を入力" rows="4"></textarea>
@@ -95,7 +92,7 @@ const TASK_SPACE_ID = 'taskPanel';
               <option value="" disabled selected>担当者を選択</option>
             </select>
             <input id="task-due" type="date" class="task-due">
-            <button id="task-add" type="button">＋ 追加</button>
+            <button id="task-add" type="button">＋ タスクを追加</button>
           </div>
         </div>
         `;
