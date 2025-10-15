@@ -1,8 +1,8 @@
 // ==== 設定ここから ====
 const SCHEDULE_APP_ID = 45;
-const S_DATE  = 'date';          // 予定日のフィールドコード（例）
+const S_DATE = 'date';          // 予定日のフィールドコード（例）
 const S_TITLE = 'title';         // 予定タイトルのフィールドコード（例）
-const S_DESC  = 'description';   // 予定説明のフィールドコード（例）
+const S_DESC = 'description';   // 予定説明のフィールドコード（例）
 const S_USERS = 'attendees';     // ユーザー選択のフィールドコード（例）
 const SPACE_ID = 'schedulePanel';
 const COMMENT_FETCH_LIMIT = 10;
@@ -55,7 +55,10 @@ const COMMENT_FETCH_LIMIT = 10;
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <strong>予定登録</strong>
         <span style="margin-left:auto; font-size:12px; color:#666;">スレッドの内容から予定を作成できます</span>
-        <button id="sch-refresh" type="button">再読込</button>
+        <div style="display:flex; gap:6px;">
+          <button id="sch-refresh" type="button">再読込</button>
+          <button id="sch-close" type="button" aria-label="閉じる（Esc）">キャンセル</button>
+        </div>
       </div>
       <style>
         button{ font-size:13px;}
@@ -83,6 +86,16 @@ const COMMENT_FETCH_LIMIT = 10;
         .k-schedule-actions button {
           border: 1px solid #e3e7e8;
           font-size: 12px;
+        }
+        #sch-close{
+          border: 1px solid #e3e7e8;
+          background: #fff;
+          font-size: 12px;
+          border-radius: 6px;
+          padding: 6px 10px;
+        }
+        #sch-close:hover{
+          background: #f5f7f8;
         }
         .k-schedule-grid{ display:grid; grid-template-columns: 1fr 320px; gap:12px; }
         @media (max-width:800px){ .k-schedule-grid{ grid-template-columns:1fr; } }
@@ -177,6 +190,54 @@ const COMMENT_FETCH_LIMIT = 10;
       }
     });
   }
+
+  // 未保存チェック用：初期値を覚えておく
+  const initialState = () => ({
+    date: elDate.value,
+    title: elTitle.value,
+    desc: elDesc.value,
+    users: Array.from(elUsers.selectedOptions).map(o => o.value).join(',')
+  });
+  let baseline = initialState();
+
+  function isDirty() {
+    const now = initialState();
+    return (
+      now.date !== baseline.date ||
+      now.title !== baseline.title ||
+      now.desc !== baseline.desc ||
+      now.users !== baseline.users
+    );
+  }
+
+  function doClose() {
+    // パネルの中身を空に（呼び出し元のDOMは残す）
+    mountEl.innerHTML = '';
+    // お好みでイベント通知（ランチャーがUI状態を戻す等に使える）
+    mountEl.dispatchEvent(new CustomEvent('schedulePanel:closed', { bubbles: false }));
+  }
+
+  wrap.querySelector('#sch-close').addEventListener('click', () => {
+    if (isDirty() && !confirm('入力内容が破棄されます。閉じますか？')) return;
+    doClose();
+  });
+
+  // Esc キーで閉じる
+  const onKey = (ev) => {
+    if (ev.key === 'Escape') {
+      if (document.body.contains(wrap)) {
+        if (isDirty() && !confirm('入力内容が破棄されます。閉じますか？')) return;
+        doClose();
+      }
+    }
+  };
+  document.addEventListener('keydown', onKey);
+
+  // パネルが閉じられた後にリークしないように、閉じる時にリスナ解除
+  const cleanup = () => document.removeEventListener('keydown', onKey);
+  mountEl.addEventListener('schedulePanel:closed', cleanup);
+
+
   // ★ ここまで本体
 
   // 既存：Spaceに描画（従来どおり）
