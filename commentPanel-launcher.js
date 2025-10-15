@@ -66,6 +66,7 @@
     lane.style.display = 'flex';
     lane.style.alignItems = 'flex-start';
     lane.style.gap = '8px';
+    lane.style.marginBottom = '1rem';
 
     const left = document.createElement('div');
     left.style.flex = '1 1 auto';
