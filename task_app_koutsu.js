@@ -184,6 +184,14 @@ const SPACE_ID = 'taskPanel';
   }
   // ★ ここまで：本体
 
+    // ランチャーからの呼び出し（イベント）に対応
+  document.addEventListener('user-js-open-task', async (e) => {
+    const mountEl = e?.detail?.mountEl || null;
+    const recObj = kintone.app.record.get();
+    const rec = recObj && recObj.record ? recObj.record : {};
+    await initTaskPanel(mountEl, rec);
+  });
+
   // 既存：Spaceに描画（従来どおり）
   kintone.events.on(['app.record.detail.show'], async (event) => {
     const space = kintone.app.record.getSpaceElement(SPACE_ID);
