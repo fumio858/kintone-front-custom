@@ -26,7 +26,7 @@
       fontSize: '13px', lineHeight: '1.5', fontWeight: '800',
       color: '#3598db', border: 'none', background: 'transparent',
       textAlign: 'left', cursor: 'pointer', display: 'flex',
-      alignItems: 'center', padding: '0'
+      alignItems: 'center',justifyContent : 'flex-end', padding: '0'
     });
     return link;
   }
@@ -63,7 +63,7 @@
     const bar = document.createElement('div');
     bar.id = 'comment-panel-launcher';
     Object.assign(bar.style, {
-      display: 'flex', gap: '16px', alignItems: 'center',
+      display: 'flex', gap: '13px', alignItems: 'center',
       marginBottom: '8px', userSelect: 'none'
     });
 
