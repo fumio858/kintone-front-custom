@@ -88,7 +88,7 @@ const COMMENT_FETCH_LIMIT = 10;
         @media (max-width:800px){ .k-schedule-grid{ grid-template-columns:1fr; } }
         .k-schedule-form{ display:flex; flex-direction:column; gap:8px; }
         .k-schedule-form input[type="text"], .k-schedule-form input[type="date"], .k-schedule-form textarea, .k-schedule-form select{ width:100%; padding:8px; box-sizing:border-box; }
-        .k-schedule-comments{ display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; border-left:1px dashed #e5e7eb; padding-left:12px; }
+        .k-schedule-comments{ display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; border-left:1px dashed #e5e7eb; padding-left:12px; font-size: 12px; }
         .k-schedule-cmt{ background:#fafafa; border-radius:6px; padding:8px; display:flex; gap:8px; }
         .k-schedule-cmt-acts{ display:flex; flex-direction: column; gap:6px; }
         .k-schedule-cmt pre{ white-space:pre-wrap; word-break:break-word; margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
@@ -131,11 +131,11 @@ const COMMENT_FETCH_LIMIT = 10;
         const box = document.createElement('div');
         box.className = 'k-schedule-cmt';
         const body = extractCommentText(cmt);
-        const author = cmt.createdBy?.name || cmt.createdBy?.code || '（不明）';
+        // const author = cmt.createdBy?.name || cmt.createdBy?.code || '（不明）';
         const at = cmt.createdAt?.replace('T', ' ').replace('Z', '') || '';
         box.innerHTML = `
           <div style="flex:1;">
-            <div style="font-size:12px; color:#666; margin-bottom:4px;">${author} / ${at}</div>
+            <div style="font-size:12px; color:#666; margin-bottom:4px;">${at}</div>
             <pre>${body || '(本文なし)'}</pre>
           </div>
           <div class="k-schedule-cmt-acts">
