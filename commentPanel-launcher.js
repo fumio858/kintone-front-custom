@@ -2,90 +2,104 @@
   'use strict';
 
   // ====== 設定 ======
-  const SCHEDULE_PANEL_ID = 'schedulePanel';
-  const TASK_PANEL_ID = 'taskPanel';
+  const SCHEDULE_PANEL_ID = 'user-js-schedulePanel';
+  const TASK_PANEL_ID = 'user-js-taskPanel';
 
-  // Spaceが無くてもID直指定のdivを返すフォールバック（他JSからも効くように早期パッチ）
+  // Spaceフィールドのフォールバック（他JSとの整合）
   const _origGetSpace = kintone.app.record.getSpaceElement;
   kintone.app.record.getSpaceElement = function (spaceId) {
     return _origGetSpace.call(this, spaceId) || document.getElementById(spaceId) || null;
   };
 
-  // ボタンバーのDOMを作る
+  // --- SVGアイコン ---
+  const ICONS = {
+    calendar: `
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24">
+        <path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10zm-2 8H5v-6h14v6z"/>
+      </svg>`,
+    task: `
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24">
+        <path d="M9 16.17l-3.88-3.88-1.41 1.41L9 19 20.3 7.71l-1.41-1.41z"/>
+      </svg>`
+  };
+
+  // --- ボタンバー生成（リンク風） ---
   function createButtonBar() {
     const bar = document.createElement('div');
     bar.className = 'kx-cmt-side-actions';
     bar.style.display = 'flex';
     bar.style.flexDirection = 'column';
-    bar.style.gap = '8px';
+    bar.style.gap = '6px';
     bar.style.marginLeft = '8px';
+    bar.style.marginTop = '2px';
 
-    const btnSched = document.createElement('button');
-    btnSched.type = 'button';
-    btnSched.textContent = 'スケジュール登録';
-    btnSched.className = 'kx-btn-schedule';
-    btnSched.style.padding = '8px 10px';
+    const createLink = (iconSvg, text) => {
+      const link = document.createElement('button');
+      link.type = 'button';
+      link.innerHTML = `${iconSvg}<span style="margin-left:4px;">${text}</span>`;
+      link.style.fontSize = '13px';
+      link.style.lineHeight = '1.5';
+      link.style.fontWeight = '800';
+      link.style.color = '#3598db';
+      link.style.border = 'none';
+      link.style.background = 'transparent';
+      link.style.textAlign = 'left';
+      link.style.cursor = 'pointer';
+      link.style.display = 'flex';
+      link.style.alignItems = 'center';
+      link.style.padding = '2px 0';
+      link.classList.add('kx-cmt-action-link');
+      link.addEventListener('mouseenter', () => link.style.textDecoration = 'underline');
+      link.addEventListener('mouseleave', () => link.style.textDecoration = 'none');
+      return link;
+    };
 
-    const btnTask = document.createElement('button');
-    btnTask.type = 'button';
-    btnTask.textContent = 'タスク追加';
-    btnTask.className = 'kx-btn-task';
-    btnTask.style.padding = '8px 10px';
+    const btnSched = createLink(ICONS.calendar, 'スケジュール登録');
+    const btnTask  = createLink(ICONS.task, 'タスク追加');
 
     bar.appendChild(btnSched);
     bar.appendChild(btnTask);
+
     return { bar, btnSched, btnTask };
   }
 
-  // コメントフォーム直下にコンテナを確実に用意
+  // --- コメントフォーム下に挿入するパネルを用意 ---
   function ensurePanelContainer(formEl, id) {
-    // すでに存在すればそれを使う
     let el = document.getElementById(id);
     if (el) return el;
 
-    // フォームの直後に差し込む
     el = document.createElement('div');
     el.id = id;
     el.style.marginTop = '12px';
     el.style.marginBottom = '12px';
     el.style.borderTop = '1px dashed #e5e7eb';
     el.style.paddingTop = '12px';
-
-    // コメントフォームの「すぐ下」に置きたいので、親の直後へ
     formEl.insertAdjacentElement('afterend', el);
     return el;
   }
 
   function injectButtonsOnce() {
-    // コメント入力フォーム
     const form = document.querySelector('.ocean-ui-comments-commentform-form');
     const wrap = document.querySelector('.ocean-ui-comments-commentform-textarea-wrap');
-    const textarea = document.querySelector('.ocean-ui-comments-commentform-textarea');
+    if (!form || !wrap) return false;
+    if (document.querySelector('.kx-cmt-side-actions')) return true;
 
-    if (!form || !wrap || !textarea) return false;
-    if (document.querySelector('.kx-cmt-side-actions')) return true; // 二重挿入防止
-
-    // テキストエリアと横並びにするためのラッパ調整
-    // 既にFlexでなければFlex化（65vw調整はユーザーCSSに依存させる）
+    // flexで横並び
     const lane = document.createElement('div');
     lane.style.display = 'flex';
-    lane.style.alignItems = 'stretch';
+    lane.style.alignItems = 'flex-start';
     lane.style.gap = '8px';
 
-    // 既存のテキストエリアwrapの中身をlaneへ移す
-    // （wrap直下のtextarea/エディタ領域を lane の左ブロックへ）
     const left = document.createElement('div');
     left.style.flex = '1 1 auto';
     while (wrap.firstChild) left.appendChild(wrap.firstChild);
 
-    // ボタンバー
     const { bar, btnSched, btnTask } = createButtonBar();
 
     lane.appendChild(left);
     lane.appendChild(bar);
     wrap.appendChild(lane);
 
-    // クリック時：コンテナ生成 → スクロール
     btnSched.addEventListener('click', () => {
       const el = ensurePanelContainer(form, SCHEDULE_PANEL_ID);
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -98,12 +112,9 @@
     return true;
   }
 
-  // レコード詳細表示ごとに実行（SPA遷移にも対応）
   kintone.events.on('app.record.detail.show', () => {
-    // DOM生成は少し遅れて行うと安定（ツールバー等の描画後）
     const tryInject = () => {
       if (injectButtonsOnce()) return;
-      // 未描画なら少し待って再試行
       setTimeout(tryInject, 150);
     };
     tryInject();
