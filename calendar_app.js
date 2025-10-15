@@ -50,7 +50,7 @@ const COMMENT_FETCH_LIMIT = 10;
 
     const wrap=document.createElement('div');
     wrap.classList.add('k-schedule-panel');
-    wrap.style.padding='12px'; wrap.style.border='1px solid #ddd'; wrap.style.borderRadius='8px'; wrap.style.background='#fff';
+    wrap.style.padding='12px'; wrap.style.background='#f7f9fa';
     wrap.innerHTML=`
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <strong>予定登録（アプリID: ${SCHEDULE_APP_ID}）</strong>
@@ -58,13 +58,14 @@ const COMMENT_FETCH_LIMIT = 10;
         <span style="margin-left:auto; font-size:12px; color:#666;">スレッドの内容から予定を作成できます</span>
       </div>
       <style>
+        button{ font-size:13px;}
         .k-schedule-grid{ display:grid; grid-template-columns: 1fr 320px; gap:12px; }
         @media (max-width:800px){ .k-schedule-grid{ grid-template-columns:1fr; } }
         .k-schedule-form{ display:flex; flex-direction:column; gap:8px; }
         .k-schedule-form input[type="text"], .k-schedule-form input[type="date"], .k-schedule-form textarea, .k-schedule-form select{ width:100%; padding:8px; box-sizing:border-box; }
         .k-schedule-comments{ display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; border-left:1px dashed #e5e7eb; padding-left:12px; }
         .k-schedule-cmt{ background:#fafafa; border-radius:6px; padding:8px; display:flex; gap:8px; }
-        .k-schedule-cmt-acts{ display:flex; align-items:flex-start; gap:6px; }
+        .k-schedule-cmt-acts{ display:flex; flex-direction: column; gap:6px; }
         .k-schedule-cmt pre{ white-space:pre-wrap; word-break:break-word; margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
         .k-schedule-actions{ display:flex; gap:8px; }
       </style>
