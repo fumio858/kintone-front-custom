@@ -80,7 +80,7 @@ const COMMENT_FETCH_LIMIT = 10;
 
     wrap.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-        <strong>予定登録</strong>
+        <strong>スケジュール登録</strong>
         <span style="margin-left:auto; font-size:12px; color:#666;">スレッドの内容から予定を作成できます</span>
         <div style="display:flex; gap:6px;">
           <button id="sch-refresh" type="button">再読込</button>
