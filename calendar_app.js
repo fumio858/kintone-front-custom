@@ -62,8 +62,7 @@ const COMMENT_FETCH_LIMIT = 10;
         .k-schedule-form input[type="text"],
         .k-schedule-form input[type="date"],
         .k-schedule-form textarea,
-        .k-schedule-form select,
-        .k-schedule-actions button {
+        .k-schedule-form select{
           border: 1px solid #e3e7e8;
           border-radius: 6px;
         }
@@ -78,9 +77,11 @@ const COMMENT_FETCH_LIMIT = 10;
           outline: none;
           box-shadow: 0 0 0 3px rgba(227,231,232,.4); /* フォーカスも淡く */
           border-color: #e3e7e8;
+          font-size: 12px;
         }
         #sch-refresh,
-        .k-schedule-cmt-acts button {
+        .k-schedule-cmt-acts button ,
+        .k-schedule-actions button {
           border: 1px solid #e3e7e8;
         }
         .k-schedule-grid{ display:grid; grid-template-columns: 1fr 320px; gap:12px; }
