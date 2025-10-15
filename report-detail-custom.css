@@ -142,5 +142,5 @@
 
 /* 他調整 */
 .report-front-custom .control-group-field-gaia{
-  min-width: auto;
+  min-width: auto!important;
 }
