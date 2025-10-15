@@ -23,7 +23,7 @@
     link.className = 'launcher-link';
     link.innerHTML = `${iconSvg ? iconSvg : ''}<span style="margin-left:${iconSvg ? 4 : 0}px;">${text}</span>`;
     Object.assign(link.style, {
-      fontSize: '13px', lineHeight: '1.5', fontWeight: '800',
+      fontSize: '13px', lineHeight: '1', fontWeight: '800',
       color: '#3598db', border: 'none', background: 'transparent',
       textAlign: 'left', cursor: 'pointer', display: 'flex',
       alignItems: 'center',justifyContent : 'flex-end', padding: '0'
