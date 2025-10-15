@@ -158,9 +158,14 @@ const COMMENT_FETCH_LIMIT = 10;
   // 既存：Spaceに描画（従来どおり）
   kintone.events.on(['app.record.detail.show'], async (event) => {
     const space = kintone.app.record.getSpaceElement(SPACE_ID);
-    if (!space) { return event; }
-    const appId = kintone.app.getId();
-    await initSchedulePanel(space, event.record, event.recordId, appId);
+    if (!space) return event;
+  
+    // 非表示にしておく（レイアウト上必要なので削除はしない）
+    space.style.display = 'none';
+  
+    // 必要ならここでだけ初期化（デバッグ時用）
+    // await initTaskPanel(space, event.record);
+  
     return event;
   });
 
@@ -173,3 +178,4 @@ const COMMENT_FETCH_LIMIT = 10;
     await initSchedulePanel(mountEl, rec, recordId, appId);
   };
 })();
+

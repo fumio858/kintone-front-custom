@@ -46,23 +46,34 @@
     return el;
   }
 
-  // ミラー作成 → 初期化呼び出し（関数 or カスタムイベント）
-  function makeMirrorAndInit(formEl, baseId, initFnName, eventName) {
-    const mirror = createMirrorContainerAfterForm(formEl, baseId);
-
-    // ① グローバル関数があれば（推奨: 複製先へ描画）
-    if (typeof window[initFnName] === 'function') {
-      try { window[initFnName](mirror); } catch (e) { console.warn('initFn error:', e); }
+  function ensureSinglePanel(formEl, baseId, initFnName, eventName) {
+    // 既に mirror がある場合 → スクロールだけ
+    const existing = document.querySelector(`[data-mirror-of="${baseId}"]`);
+    if (existing) {
+      existing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
     }
-
-    // ② カスタムイベントでも通知（どちらかで拾えばOK）
-    document.dispatchEvent(new CustomEvent(eventName, {
-      detail: { mountEl: mirror, mountId: mirror.id, baseId }
-    }));
-
-    // 見える位置へ
+  
+    // 新規作成
+    const mirror = document.createElement('div');
+    mirror.id = `${baseId}--mirror`;
+    mirror.dataset.mirrorOf = baseId;
+    mirror.style.marginTop = '12px';
+    mirror.style.borderTop = '1px dashed #e5e7eb';
+    mirror.style.paddingTop = '12px';
+    formEl.insertAdjacentElement('afterend', mirror);
+  
+    // 初期化
+    if (typeof window[initFnName] === 'function') {
+      window[initFnName](mirror);
+    } else {
+      document.dispatchEvent(new CustomEvent(eventName, {
+        detail: { mountEl: mirror }
+      }));
+    }
     mirror.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+
 
   function injectButtonsOnce() {
     const form = document.querySelector('.ocean-ui-comments-commentform-form');
@@ -96,14 +107,15 @@
     lane.appendChild(bar);
     wrap.appendChild(lane);
 
-    // クリック：常に「複製（ミラー）をフォーム直後に新規作成」して初期化
+    // クリック
     btnSched.addEventListener('click', () => {
-      makeMirrorAndInit(form, BASE_SCHEDULE_ID, 'userSchedulePanelInit', 'user-js-open-schedule');
+      ensureSinglePanel(form, 'user-js-schedulePanel', 'userSchedulePanelInit', 'user-js-open-schedule');
     });
+    
     btnTask.addEventListener('click', () => {
-      makeMirrorAndInit(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task');
+      ensureSinglePanel(form, 'user-js-taskPanel', 'userTaskPanelInit', 'user-js-open-task');
     });
-
+  
     return true;
   }
 
@@ -114,4 +126,5 @@
     };
     tryInject();
   });
+  
 })();
