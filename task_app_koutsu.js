@@ -6,7 +6,7 @@ const T_TITLE = '件名';
 const T_DUE = '期限';
 const T_OWNER = '担当者';
 const T_STATUS = 'タスクステータス';
-const SPACE_ID = 'taskPanel';
+const TASK_SPACE_ID = 'taskPanel';
 // ==== 設定ここまで ====
 
 (function () {
@@ -22,7 +22,7 @@ const SPACE_ID = 'taskPanel';
     const mirror = document.querySelector('[data-mirror-of="user-js-taskPanel"]');
     if (mirror) return mirror;
     // 2) Space フィールド
-    const space = kintone.app.record.getSpaceElement(SPACE_ID);
+    const space = kintone.app.record.getSpaceElement(TASK_SPACE_ID);
     if (space) return space;
     // 3) コメントフォームの直後に mirror を自作（最終フォールバック）
     const form = document.querySelector('.ocean-ui-comments-commentform-form');
@@ -262,7 +262,7 @@ const SPACE_ID = 'taskPanel';
 
   // 詳細表示時：Space を自動描画せず、非表示だけ（カレンダー互換）
   kintone.events.on(['app.record.detail.show'], (event) => {
-    const space = kintone.app.record.getSpaceElement(SPACE_ID);
+    const space = kintone.app.record.getSpaceElement(TASK_SPACE_ID);
     if (space) space.style.display = 'none';
     return event;
   });
