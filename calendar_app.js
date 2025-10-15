@@ -1,57 +1,57 @@
 // ==== 設定ここから ====
 const SCHEDULE_APP_ID = 45;
-const S_DATE  = '予定日';
-const S_TITLE = '予定のタイトル';
-const S_DESC  = '予定の説明';
-const S_USERS = '参加者';
+const S_DATE  = 'date';          // 予定日のフィールドコード（例）
+const S_TITLE = 'title';         // 予定タイトルのフィールドコード（例）
+const S_DESC  = 'description';   // 予定説明のフィールドコード（例）
+const S_USERS = 'attendees';     // ユーザー選択のフィールドコード（例）
 const SPACE_ID = 'schedulePanel';
 const COMMENT_FETCH_LIMIT = 10;
 // ==== 設定ここまで ====
 
-(function(){
+(function () {
   'use strict';
   const kUrl = (p) => kintone.api.url(p.endsWith('.json') ? p : `${p}.json`, true);
 
-  function todayLocalYMD(){ const now=new Date(); const local=new Date(now.getTime()-now.getTimezoneOffset()*60000); return local.toISOString().slice(0,10); }
+  function todayLocalYMD() { const now = new Date(); const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000); return local.toISOString().slice(0, 10); }
 
-  async function populateUsersSelect(selectEl){
+  async function populateUsersSelect(selectEl) {
     const login = kintone.getLoginUser();
-    selectEl.innerHTML='';
-    const me=document.createElement('option');
-    me.value=login.code; me.textContent=`${login.name}（自分）`; me.selected=true; selectEl.appendChild(me);
-    try{
-      let offset=0,size=100;
-      while(true){
-        const res=await kintone.api(kUrl('/v1/users'),'GET',{offset,size});
-        const users=res.users||[];
-        for(const u of users){
-          if(!u.valid || u.code===login.code) continue;
-          const opt=document.createElement('option'); opt.value=u.code; opt.textContent=u.name; selectEl.appendChild(opt);
+    selectEl.innerHTML = '';
+    const me = document.createElement('option');
+    me.value = login.code; me.textContent = `${login.name}（自分）`; me.selected = true; selectEl.appendChild(me);
+    try {
+      let offset = 0, size = 100;
+      while (true) {
+        const res = await kintone.api(kUrl('/v1/users'), 'GET', { offset, size });
+        const users = res.users || [];
+        for (const u of users) {
+          if (!u.valid || u.code === login.code) continue;
+          const opt = document.createElement('option'); opt.value = u.code; opt.textContent = u.name; selectEl.appendChild(opt);
         }
-        if(users.length<size) break;
-        offset+=size;
+        if (users.length < size) break;
+        offset += size;
       }
-    }catch(e){ console.warn('ユーザー一覧取得失敗:', e); }
+    } catch (e) { console.warn('ユーザー一覧取得失敗:', e); }
   }
 
-  async function fetchComments(appId, recordId, limit=10){
-    try{
-      const res=await kintone.api(kUrl('/k/v1/record/comments'),'GET',{app:appId,record:recordId,order:'desc',offset:0,limit});
-      return res.comments||[];
-    }catch(e){ console.error('コメント取得失敗:', e); return []; }
+  async function fetchComments(appId, recordId, limit = 10) {
+    try {
+      const res = await kintone.api(kUrl('/k/v1/record/comments'), 'GET', { app: appId, record: recordId, order: 'desc', offset: 0, limit });
+      return res.comments || [];
+    } catch (e) { console.error('コメント取得失敗:', e); return []; }
   }
-  function extractCommentText(c){ return (c.text||'').trim(); }
-  async function createSchedule(record){ return kintone.api(kUrl('/k/v1/record'),'POST',{app:SCHEDULE_APP_ID,record}); }
+  function extractCommentText(c) { return (c.text || '').trim(); }
+  async function createSchedule(record) { return kintone.api(kUrl('/k/v1/record'), 'POST', { app: SCHEDULE_APP_ID, record }); }
 
   // ★ 任意のマウント先に描画する本体
-  async function initSchedulePanel(mountEl, rec, recordId, appId){
-    if(!mountEl) return;
-    mountEl.innerHTML='';
+  async function initSchedulePanel(mountEl, rec, recordId, appId) {
+    if (!mountEl) return;
+    mountEl.innerHTML = '';
 
-    const wrap=document.createElement('div');
+    const wrap = document.createElement('div');
     wrap.classList.add('k-schedule-panel');
-    wrap.style.padding='12px'; wrap.style.background='#f7f9fa';
-    wrap.innerHTML=`
+    wrap.style.padding = '12px'; wrap.style.background = '#f7f9fa';
+    wrap.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
         <strong>予定登録（アプリID: ${SCHEDULE_APP_ID}）</strong>
         <button id="sch-refresh" type="button">コメント再読込</button>
@@ -59,6 +59,26 @@ const COMMENT_FETCH_LIMIT = 10;
       </div>
       <style>
         button{ font-size:13px;}
+        .k-schedule-form input[type="text"],
+        .k-schedule-form input[type="date"],
+        .k-schedule-form textarea,
+        .k-schedule-form select,
+        .k-schedule-actions button {
+          border: 1px solid #e3e7e8;
+          border-radius: 6px;
+        }
+        .k-schedule-actions button {
+          padding: 6px 10px;
+          background: #fff; /* 必要なら */
+        }
+        .k-schedule-form input:focus,
+        .k-schedule-form textarea:focus,
+        .k-schedule-form select:focus,
+        .k-schedule-actions button:focus {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(227,231,232,.4); /* フォーカスも淡く */
+          border-color: #e3e7e8;
+        }
         .k-schedule-grid{ display:grid; grid-template-columns: 1fr 320px; gap:12px; }
         @media (max-width:800px){ .k-schedule-grid{ grid-template-columns:1fr; } }
         .k-schedule-form{ display:flex; flex-direction:column; gap:8px; }
@@ -88,40 +108,40 @@ const COMMENT_FETCH_LIMIT = 10;
     `;
     mountEl.appendChild(wrap);
 
-    const elDate=wrap.querySelector('#sch-date');
-    const elTitle=wrap.querySelector('#sch-title');
-    const elDesc=wrap.querySelector('#sch-desc');
-    const elUsers=wrap.querySelector('#sch-users');
-    const elCmts=wrap.querySelector('#sch-cmts');
+    const elDate = wrap.querySelector('#sch-date');
+    const elTitle = wrap.querySelector('#sch-title');
+    const elDesc = wrap.querySelector('#sch-desc');
+    const elUsers = wrap.querySelector('#sch-users');
+    const elCmts = wrap.querySelector('#sch-cmts');
 
-    elDate.value=todayLocalYMD();
+    elDate.value = todayLocalYMD();
     await populateUsersSelect(elUsers);
 
-    async function renderComments(){
-      elCmts.textContent='読込中…';
-      const cmts=await fetchComments(appId, recordId, COMMENT_FETCH_LIMIT);
-      elCmts.innerHTML='';
-      if(!cmts.length){ elCmts.textContent='コメントはありません。'; return; }
-      cmts.forEach(cmt=>{
-        const box=document.createElement('div');
-        box.className='k-schedule-cmt';
-        const body=extractCommentText(cmt);
-        const author=cmt.createdBy?.name||cmt.createdBy?.code||'（不明）';
-        const at=cmt.createdAt?.replace('T',' ').replace('Z','')||'';
-        box.innerHTML=`
+    async function renderComments() {
+      elCmts.textContent = '読込中…';
+      const cmts = await fetchComments(appId, recordId, COMMENT_FETCH_LIMIT);
+      elCmts.innerHTML = '';
+      if (!cmts.length) { elCmts.textContent = 'コメントはありません。'; return; }
+      cmts.forEach(cmt => {
+        const box = document.createElement('div');
+        box.className = 'k-schedule-cmt';
+        const body = extractCommentText(cmt);
+        const author = cmt.createdBy?.name || cmt.createdBy?.code || '（不明）';
+        const at = cmt.createdAt?.replace('T', ' ').replace('Z', '') || '';
+        box.innerHTML = `
           <div style="flex:1;">
             <div style="font-size:12px; color:#666; margin-bottom:4px;">${author} / ${at}</div>
-            <pre>${body||'(本文なし)'}</pre>
+            <pre>${body || '(本文なし)'}</pre>
           </div>
           <div class="k-schedule-cmt-acts">
             <button type="button" data-act="paste-title">タイトルに</button>
             <button type="button" data-act="paste-desc">説明に</button>
           </div>`;
-        box.addEventListener('click',(e)=>{
-          const btn=e.target.closest('button'); if(!btn) return;
-          const act=btn.dataset.act; const firstLine=(body.split(/\r?\n/)[0]||'').trim();
-          if(act==='paste-title' && firstLine) elTitle.value=firstLine.slice(0,255);
-          if(act==='paste-desc') elDesc.value=(elDesc.value?(elDesc.value+'\n\n'):'')+body;
+        box.addEventListener('click', (e) => {
+          const btn = e.target.closest('button'); if (!btn) return;
+          const act = btn.dataset.act; const firstLine = (body.split(/\r?\n/)[0] || '').trim();
+          if (act === 'paste-title' && firstLine) elTitle.value = firstLine.slice(0, 255);
+          if (act === 'paste-desc') elDesc.value = (elDesc.value ? (elDesc.value + '\n\n') : '') + body;
         });
         elCmts.appendChild(box);
       });
@@ -129,24 +149,24 @@ const COMMENT_FETCH_LIMIT = 10;
     await renderComments();
 
     wrap.querySelector('#sch-refresh').addEventListener('click', renderComments);
-    wrap.querySelector('#sch-clear').addEventListener('click', ()=>{
-      elDate.value=todayLocalYMD(); elTitle.value=''; elDesc.value='';
-      const login=kintone.getLoginUser(); for(const o of elUsers.options) o.selected=(o.value===login.code);
+    wrap.querySelector('#sch-clear').addEventListener('click', () => {
+      elDate.value = todayLocalYMD(); elTitle.value = ''; elDesc.value = '';
+      const login = kintone.getLoginUser(); for (const o of elUsers.options) o.selected = (o.value === login.code);
     });
 
-    wrap.querySelector('#sch-create').addEventListener('click', async ()=>{
-      const date=(elDate.value||'').trim();
-      const title=(elTitle.value||'').trim();
-      const desc=(elDesc.value||'').trim();
-      const users=Array.from(elUsers.selectedOptions).map(o=>({code:o.value}));
-      if(!date) return alert('予定日（終日）を入力してください。');
-      if(!title) return alert('予定のタイトルを入力してください。');
-      try{
-        await createSchedule({ [S_DATE]:{value:date}, [S_TITLE]:{value:title}, [S_DESC]:{value:desc}, [S_USERS]:{value:users} });
-        alert('予定を登録しました（アプリID: '+SCHEDULE_APP_ID+'）。');
-        elTitle.value=''; elDesc.value='';
-        const login=kintone.getLoginUser(); for(const o of elUsers.options) o.selected=(o.value===login.code);
-      }catch(e){
+    wrap.querySelector('#sch-create').addEventListener('click', async () => {
+      const date = (elDate.value || '').trim();
+      const title = (elTitle.value || '').trim();
+      const desc = (elDesc.value || '').trim();
+      const users = Array.from(elUsers.selectedOptions).map(o => ({ code: o.value }));
+      if (!date) return alert('予定日（終日）を入力してください。');
+      if (!title) return alert('予定のタイトルを入力してください。');
+      try {
+        await createSchedule({ [S_DATE]: { value: date }, [S_TITLE]: { value: title }, [S_DESC]: { value: desc }, [S_USERS]: { value: users } });
+        alert('予定を登録しました（アプリID: ' + SCHEDULE_APP_ID + '）。');
+        elTitle.value = ''; elDesc.value = '';
+        const login = kintone.getLoginUser(); for (const o of elUsers.options) o.selected = (o.value === login.code);
+      } catch (e) {
         console.error('予定登録エラー:', e);
         alert('予定登録に失敗しました。');
       }
@@ -158,18 +178,18 @@ const COMMENT_FETCH_LIMIT = 10;
   kintone.events.on(['app.record.detail.show'], async (event) => {
     const space = kintone.app.record.getSpaceElement(SPACE_ID);
     if (!space) return event;
-  
+
     // 非表示にしておく（レイアウト上必要なので削除はしない）
     space.style.display = 'none';
-  
+
     // 必要ならここでだけ初期化（デバッグ時用）
     // await initTaskPanel(space, event.record);
-  
+
     return event;
   });
 
   // 追加：ランチャーから呼べるフック
-  window.userSchedulePanelInit = async function(mountEl){
+  window.userSchedulePanelInit = async function (mountEl) {
     const recObj = kintone.app.record.get();
     const rec = recObj && recObj.record ? recObj.record : {};
     const appId = kintone.app.getId();
