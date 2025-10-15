@@ -80,7 +80,7 @@ const SPACE_ID = 'schedulePanel';
         }
         .k-schedule-form-wrapper {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr 260px;
           gap: 12px;
         }
         .k-schedule-form-wrapper input[type="text"],
