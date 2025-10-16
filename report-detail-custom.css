@@ -54,9 +54,9 @@
 } */
 
 /* サイドバードラッガー削除 */
-/* .report-front-custom .gaia-argoui-app-show-sidebar-dragger {
+.report-front-custom .gaia-argoui-app-show-sidebar-dragger {
   display: none !important;
-} */
+}
 
 /* レコード登録画面サイズ調整 */
 .report-front-custom #record-gaia {
