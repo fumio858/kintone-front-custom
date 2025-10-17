@@ -38,7 +38,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
     try {
       const id = kintone.app.getId();
       if (id) return Number(id);
-    } catch (_) {}
+    } catch (_) { }
     const m = location.pathname.match(/\/k\/(\d+)\//);
     return m ? Number(m[1]) : NaN;
   }
@@ -57,7 +57,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
     if (form) {
       const m = document.createElement('div');
       m.dataset.mirrorOf = 'user-js-taskPanel';
-      Object.assign(m.style, {marginTop:'12px', borderTop:'1px dashed #e5e7eb', paddingTop:'12px'});
+      Object.assign(m.style, { marginTop: '12px', borderTop: '1px dashed #e5e7eb', paddingTop: '12px' });
       form.insertAdjacentElement('afterend', m);
       return m;
     }
@@ -166,95 +166,119 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       // 取得系
       async function fetchTasks() {
         if (!caseId) return [];
-        const cEsc = caseId.replace(/\\/g,'\\\\').replace(/"/g,'\"');
+        const cEsc = caseId.replace(/\\/g, '\\\\').replace(/"/g, '\"');
         const query = `${T_CASE_ID} = "${cEsc}" order by ${T_DUE} asc`;
         try {
           const resp = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query });
-          if ((resp.records||[]).length===0 && /^[0-9]+$/.test(caseId)) {
+          if ((resp.records || []).length === 0 && /^[0-9]+$/.test(caseId)) {
             const resp2 = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query: `${T_CASE_ID} = ${caseId} order by ${T_DUE} asc` });
-            return resp2.records||[];
+            return resp2.records || [];
           }
-          return resp.records||[];
-        } catch(e){
+          return resp.records || [];
+        } catch (e) {
           console.error('[task] タスク取得エラー', e);
           listEl.innerHTML = `<div style="color:#c00;">タスク取得でエラー：${e?.message || JSON.stringify(e)}</div>`;
           return [];
         }
       }
 
-      function row(tRec){
-        const id=tRec.$id.value;
-        const title=tRec[T_TITLE]?.value||'(無題)';
-        const due=tRec[T_DUE]?.value||'';
-        const status=tRec[T_STATUS]?.value||'';
-        const owners = Array.isArray(tRec[T_OWNER]?.value) ? tRec[T_OWNER].value.map(u=>u.name||u.code).join(', ') : '';
+      function row(tRec) {
+        const id = tRec.$id.value;
+        const title = tRec[T_TITLE]?.value || '(無題)';
+        const due = tRec[T_DUE]?.value || '';
+        const status = tRec[T_STATUS]?.value || '';
+        const owners = Array.isArray(tRec[T_OWNER]?.value) ? tRec[T_OWNER].value.map(u => u.name || u.code).join(', ') : '';
 
-        const div=document.createElement('div');
-        div.style.display='grid'; div.style.gridTemplateColumns='1fr auto auto auto';
-        div.style.gap='8px'; div.style.alignItems='center'; div.style.padding='6px 8px';
-        div.style.background='#fafafa'; div.style.borderRadius='6px';
-        div.innerHTML=`
+        const div = document.createElement('div');
+        div.style.display = 'grid'; div.style.gridTemplateColumns = '1fr auto auto auto';
+        div.style.gap = '8px'; div.style.alignItems = 'center'; div.style.padding = '6px 8px';
+        div.style.background = '#fafafa'; div.style.borderRadius = '6px';
+        div.innerHTML = `
           <div>
             <div style="font-weight:600">${title}</div>
-            <div style="font-size:12px;color:#666">状態: ${status||'—'} / 担当: ${owners||'—'} / 期限: ${due||'—'}</div>
+            <div style="font-size:12px;color:#666">状態: ${status || '—'} / 担当: ${owners || '—'} / 期限: ${due || '—'}</div>
           </div>
           <button data-act="start" type="button" title="進行中にする">進行中</button>
           <button data-act="done" type="button" title="完了にする">完了</button>
           <a href="${location.origin}/k/${TASK_APP_ID}/show#record=${id}" target="_blank">開く</a>`;
-        div.addEventListener('click', async (e)=>{
-          const btn=e.target.closest('button'); if(!btn) return;
-          const newStatus = btn.dataset.act==='start'?'進行中':'完了';
-          try{
-            await kintone.api(kUrl('/k/v1/record'), 'PUT', { app: TASK_APP_ID, id, record:{[T_STATUS]:{value:newStatus}} });
+        div.addEventListener('click', async (e) => {
+          const btn = e.target.closest('button'); if (!btn) return;
+          const newStatus = btn.dataset.act === 'start' ? '進行中' : '完了';
+          try {
+            await kintone.api(kUrl('/k/v1/record'), 'PUT', { app: TASK_APP_ID, id, record: { [T_STATUS]: { value: newStatus } } });
             render();
-          }catch(e2){ console.error('[task] 更新エラー', e2); alert('タスク更新に失敗しました。'); }
+          } catch (e2) { console.error('[task] 更新エラー', e2); alert('タスク更新に失敗しました。'); }
         });
         return div;
       }
 
-      async function render(){
-        listEl.textContent='読込中…';
+      async function render() {
+        listEl.textContent = '読込中…';
         const records = await fetchTasks();
-        listEl.innerHTML='';
-        if(!records.length){ listEl.textContent='対象タスクはありません。'; return; }
-        for(const r of records) listEl.appendChild(row(r));
+        listEl.innerHTML = '';
+        if (!records.length) { listEl.textContent = '対象タスクはありません。'; return; }
+        for (const r of records) listEl.appendChild(row(r));
       }
 
-      wrap.querySelector('#task-add').addEventListener('click', async ()=>{
-        const title=(wrap.querySelector('#task-title').value||'').trim();
-        const due=(wrap.querySelector('#task-due').value||'').trim();
-        const owner=wrap.querySelector('#task-owner').value || kintone.getLoginUser().code;
-        if(!title) return alert('件名を入力してください');
-        if(!caseId) return alert(`案件側フィールド「${F_CASE_ID}」が空です。値を入れてから追加してください。`);
+      const addBtn = wrap.querySelector('#task-add');
 
-        // タイトル重複チェック（同一案件内）
+      addBtn.addEventListener('click', async () => {
+        const title = (wrap.querySelector('#task-title').value || '').trim();
+        const due = (wrap.querySelector('#task-due').value || '').trim();
+        const owner = wrap.querySelector('#task-owner').value || kintone.getLoginUser().code;
+
+        if (!title) return alert('件名を入力してください');
+        if (!caseId) return alert(`案件側フィールド「${F_CASE_ID}」が空です。値を入れてから追加してください。`);
+
+        // 重複チェック（必要なら分野も入れる）
         const dupQ = `${T_CASE_ID} = "${esc(caseId)}" and ${T_TITLE} = "${esc(title)}" limit 1`;
-        try{
+        try {
           const dup = await kintone.api(kUrl('/k/v1/records'), 'GET', { app: TASK_APP_ID, query: dupQ });
-          if((dup.records||[]).length) return alert('この案件に同名のタスクが既にあります。件名を変えてください。');
-        }catch(e){
+          if ((dup.records || []).length) return alert('この案件に同名のタスクが既にあります。件名を変えてください。');
+        } catch (e) {
           console.warn('[task] 重複確認に失敗（続行）:', e);
         }
 
-        // ▼ タスクレコード作成ペイロード
+        // 作成ペイロード
         const record = {
           [T_CASE_ID]: { value: caseId },
           [T_TITLE]: { value: title },
-          [T_DUE]: { value: due || "" },
+          [T_DUE]: { value: due || '' },
           [T_OWNER]: { value: [{ code: owner }] },
           [T_STATUS]: { value: '未着手' },
-          // NEW: 分野を書き込み（対応するアプリ以外の場合は空文字を格納）
           [T_CASE_TYPE_FIELD]: { value: caseTypeLabel || '' },
         };
 
-        try{
-          await kintone.api(kUrl('/k/v1/record'), 'POST', { app: TASK_APP_ID, record });
-          wrap.querySelector('#task-title').value=''; wrap.querySelector('#task-due').value='';
-          const login=kintone.getLoginUser(); if(login?.code) selOwner.value=login.code;
-          render();
-        }catch(e){
+        // 二重クリック防止
+        addBtn.disabled = true;
+        const prevText = addBtn.textContent;
+        addBtn.textContent = '作成中…';
+
+        try {
+          // ★ ここでPOSTして、成功したらアラート
+          const resp = await kintone.api(kUrl('/k/v1/record'), 'POST', { app: TASK_APP_ID, record });
+          // resp には {id, revision} が返る
+          alert(`タスクを作成しました（#${resp.id}）。`);
+
+          // フォームリセット
+          wrap.querySelector('#task-title').value = '';
+          wrap.querySelector('#task-due').value = '';
+          const login = kintone.getLoginUser();
+          if (login?.code) selOwner.value = login.code;
+
+          // 一覧を更新
+          await render();
+        } catch (e) {
           console.error('[task] 作成エラー', e);
-          alert('タスク作成に失敗しました。');
+          // kintoneの典型エラーをできるだけ表示
+          const msg =
+            e?.message ||
+            e?.errors && JSON.stringify(e.errors) ||
+            e?.code || '不明なエラー';
+          alert(`タスク作成に失敗しました。\n${msg}`);
+        } finally {
+          addBtn.disabled = false;
+          addBtn.textContent = prevText;
         }
       });
 
@@ -296,7 +320,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
     }
   }
 
-  // イベント経由（カレンダー互換）
+  // イベント経由
   document.addEventListener('user-js-open-task', async (e) => {
     try {
       const mountEl = e?.detail?.mountEl || null;
@@ -308,7 +332,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
     }
   });
 
-  // 詳細表示時：Space を自動描画せず、非表示だけ（カレンダー互換）
+  // 詳細表示時：Space を自動描画せず、非表示だけ
   kintone.events.on(['app.record.detail.show'], (event) => {
     const space = kintone.app.record.getSpaceElement(TASK_SPACE_ID);
     if (space) space.style.display = 'none';
@@ -316,7 +340,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
   });
 
   // 直呼びにも対応（ランチャーの直呼びパス）
-  window.userTaskPanelInit = async function(mountEl){
+  window.userTaskPanelInit = async function (mountEl) {
     const recObj = kintone.app.record.get();
     const rec = recObj && recObj.record ? recObj.record : {};
     await initTaskPanel(mountEl, rec);

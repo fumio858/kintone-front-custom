@@ -176,7 +176,7 @@ const SPACE_ID = 'schedulePanel';
           [S_DESC]: { value: desc },
           [S_USERS]: { value: users }
         });
-        alert('予定を登録しました（アプリID: ' + SCHEDULE_APP_ID + '）。');
+        alert('予定を登録しました。');
         elTitle.value = '';
         elDesc.value = '';
         const login = kintone.getLoginUser();
