@@ -1,5 +1,5 @@
-// ==== 設定ここから ==== 
-const TASK_APP_ID = 31;
+// ==== 設定ここから ====
+const TASK_APP_ID = 23;
 const F_CASE_ID = '事案ID';
 const T_CASE_ID = '事案ID';
 const T_TITLE = '件名';
@@ -7,7 +7,25 @@ const T_DUE = '期限';
 const T_OWNER = '担当者';
 const T_STATUS = 'タスクステータス';
 const TASK_SPACE_ID = 'taskPanel';
-// ==== 設定ここまで ==== 
+
+// ▼ タスクアプリ側の「分野」フィールドのフィールドコード
+const T_CASE_TYPE_FIELD = '分野'; // NEW: タスクアプリに作成したフィールドコード
+
+// ▼ 分野ラベル定義（要望どおりの定数名で用意）
+const T_CASE_TYPE = { // NEW
+  CRIMINAL: '刑事事件',
+  TRAFFIC: '交通事故',
+  OTHER: 'その他',
+};
+
+// ▼ 「どのアプリから登録しているか」→ 分野ラベル の対応表
+//    k/22=刑事事件, k/26=交通事故, k/41=その他
+const APP_ID_TO_CASE_TYPE = { // NEW
+  22: T_CASE_TYPE.CRIMINAL,
+  26: T_CASE_TYPE.TRAFFIC,
+  41: T_CASE_TYPE.OTHER,
+};
+// ==== 設定ここまで ====
 
 (function () {
   'use strict';
@@ -15,7 +33,17 @@ const TASK_SPACE_ID = 'taskPanel';
   const kUrl = (p) => kintone.api.url(p.endsWith('.json') ? p : `${p}.json`, true);
   const esc = (s = '') => String(s).replace(/\\/g, '\\').replace(/"/g, '\"');
 
-  // --- フォールバックで mount を見つける（カレンダー互換 + さらに堅牢） --- 
+  // NEW: 現在のアプリIDを安全に取得（kintone.app.getId()優先、だめならURL解析）
+  function getCurrentAppId() {
+    try {
+      const id = kintone.app.getId();
+      if (id) return Number(id);
+    } catch (_) {}
+    const m = location.pathname.match(/\/k\/(\d+)\//);
+    return m ? Number(m[1]) : NaN;
+  }
+
+  // --- フォールバックで mount を見つける（カレンダー互換 + さらに堅牢） ---
   function resolveMountEl(mountEl) {
     if (mountEl && mountEl.nodeType === 1) return mountEl;
     // 1) ランチャーの mirror 既存？
@@ -100,6 +128,10 @@ const TASK_SPACE_ID = 'taskPanel';
 
       const listEl = wrap.querySelector('#task-list');
       const selOwner = wrap.querySelector('#task-owner');
+
+      // ▼ この画面のアプリIDから分野ラベルを決定
+      const currentAppId = getCurrentAppId(); // NEW
+      const caseTypeLabel = APP_ID_TO_CASE_TYPE[currentAppId] || ''; // NEW
 
       // 案件ID（空でも UI は表示し、メッセージを出す）
       const caseId = (rec?.[F_CASE_ID]?.value || '').trim();
@@ -195,6 +227,7 @@ const TASK_SPACE_ID = 'taskPanel';
         if(!title) return alert('件名を入力してください');
         if(!caseId) return alert(`案件側フィールド「${F_CASE_ID}」が空です。値を入れてから追加してください。`);
 
+        // タイトル重複チェック（同一案件内）
         const dupQ = `${T_CASE_ID} = "${esc(caseId)}" and ${T_TITLE} = "${esc(title)}" limit 1`;
         try{
           const dup = await kintone.api(kUrl('/k/v1/records'), 'GET', { app: TASK_APP_ID, query: dupQ });
@@ -203,13 +236,17 @@ const TASK_SPACE_ID = 'taskPanel';
           console.warn('[task] 重複確認に失敗（続行）:', e);
         }
 
+        // ▼ タスクレコード作成ペイロード
         const record = {
           [T_CASE_ID]: { value: caseId },
           [T_TITLE]: { value: title },
           [T_DUE]: { value: due || "" },
           [T_OWNER]: { value: [{ code: owner }] },
-          [T_STATUS]: { value: '未着手' }
+          [T_STATUS]: { value: '未着手' },
+          // NEW: 分野を書き込み（対応するアプリ以外の場合は空文字を格納）
+          [T_CASE_TYPE_FIELD]: { value: caseTypeLabel || '' },
         };
+
         try{
           await kintone.api(kUrl('/k/v1/record'), 'POST', { app: TASK_APP_ID, record });
           wrap.querySelector('#task-title').value=''; wrap.querySelector('#task-due').value='';
@@ -220,6 +257,7 @@ const TASK_SPACE_ID = 'taskPanel';
           alert('タスク作成に失敗しました。');
         }
       });
+
       const showListBtn = wrap.querySelector('#task-show-list');
       let isListLoaded = false;
       showListBtn.addEventListener('click', () => {
