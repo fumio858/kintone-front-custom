@@ -157,6 +157,7 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
           outline:none; box-shadow:0 0 0 3px rgba(227,231,232,.4); border-color:#e3e7e8;
         }
         #sch-create { background-color:#3598db; color:#FFF; width:100%; }
+        #sch-create:hover { background-color:#1182ce; }
         #sch-close, #sch-clear, #sch-show-list { font-size:12px; padding:6px 10px; }
         #sch-close:hover, #sch-clear:hover, #sch-show-list:hover { background:#f5f7f8; }
         @media (max-width:600px){ .k-schedule-form-wrapper { grid-template-columns:1fr; } }

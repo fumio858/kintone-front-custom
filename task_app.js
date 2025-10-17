@@ -106,6 +106,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
           .task-add-right{ display:flex; flex-direction:column; gap:8px; }
           .task-add-right > *{ width:100%; box-sizing:border-box; }
           .task-add-right button{ height:36px; background:#3598db; color:#fff; border-radius: 6px;font-size: .9rem; border: none;}
+          .task-add-right button:hover{ background:#1182ce;}
           @media (max-width: 640px){ .task-add-row{ grid-template-columns: 1fr; } }
           .k-task-panel .task-add-right .task-owner, .k-task-panel .task-add-right .task-due{ padding:8px 4px; min-height:36px; box-sizing:border-box; }
         </style>
