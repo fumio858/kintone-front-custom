@@ -1,10 +1,31 @@
 // ==== 設定ここから ====
 const SCHEDULE_APP_ID = 45;
-const S_DATE = 'date';          // 予定日のフィールドコード
+const S_DATE  = 'date';         // 予定日のフィールドコード
 const S_TITLE = 'title';         // 予定タイトルのフィールドコード
-const S_DESC = 'description';   // 予定説明のフィールドコード
+const S_DESC  = 'description';   // 予定説明のフィールドコード
 const S_USERS = 'attendees';     // ユーザー選択のフィールドコード
 const SPACE_ID = 'schedulePanel';
+
+// ▼ スケジュールアプリ側に追加した「案件ID／分野」フィールド
+const S_CASE_ID_FIELD   = 'case_id';   // NEW: スケジュールアプリの案件ID
+const S_CASE_TYPE_FIELD = 'case_type'; // NEW: スケジュールアプリの分野
+
+// ▼ 元アプリ（呼び出し側）に存在する案件IDフィールドコード
+const F_CASE_ID = 'case_id'; // NEW: 呼び出し元レコードから拾う
+
+// ▼ 分野ラベル定義（タスクと同じ）
+const CASE_TYPE = {          // NEW
+  CRIMINAL: '刑事事件',
+  TRAFFIC:  '交通事故',
+  OTHER:    'その他',
+};
+
+// ▼ URLの k/{appId}/ に応じた分野マッピング
+const APP_ID_TO_CASE_TYPE = { // NEW
+  22: CASE_TYPE.CRIMINAL,
+  26: CASE_TYPE.TRAFFIC,
+  41: CASE_TYPE.OTHER,
+};
 // ==== 設定ここまで ====
 
 (function () {
@@ -15,6 +36,16 @@ const SPACE_ID = 'schedulePanel';
     const now = new Date();
     const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     return local.toISOString().slice(0, 10);
+  }
+
+  // NEW: 現在のアプリIDを取得（getId優先、ダメならURLから）
+  function getCurrentAppId() {
+    try {
+      const id = kintone.app.getId();
+      if (id) return Number(id);
+    } catch (_) {}
+    const m = location.pathname.match(/\/k\/(\d+)\//);
+    return m ? Number(m[1]) : NaN;
   }
 
   async function populateUsersSelect(selectEl) {
@@ -52,6 +83,11 @@ const SPACE_ID = 'schedulePanel';
   // ★ 任意のマウント先に描画する本体
   async function initSchedulePanel(mountEl, rec, recordId, appId) {
     if (!mountEl) return;
+
+    // NEW: 分野ラベルと案件IDを決定
+    const currentAppId   = getCurrentAppId();                               // NEW
+    const caseTypeLabel  = APP_ID_TO_CASE_TYPE[currentAppId] ?? CASE_TYPE.OTHER; // NEW
+    const caseId         = (rec?.[F_CASE_ID]?.value || '').toString().trim();    // NEW
 
     // Space が非表示指定されている可能性に備えて必ず表示状態へ
     mountEl.style.display = '';
@@ -123,9 +159,7 @@ const SPACE_ID = 'schedulePanel';
         }
         #sch-close:hover, #sch-clear:hover { background: #f5f7f8; }
         @media (max-width:600px){
-          .k-schedule-form-wrapper {
-            grid-template-columns: 1fr;
-          }
+          .k-schedule-form-wrapper { grid-template-columns: 1fr; }
         }
       </style>
       <div class="k-schedule-form-wrapper">
@@ -144,9 +178,9 @@ const SPACE_ID = 'schedulePanel';
     `;
     mountEl.appendChild(wrap);
 
-    const elDate = wrap.querySelector('#sch-date');
+    const elDate  = wrap.querySelector('#sch-date');
     const elTitle = wrap.querySelector('#sch-title');
-    const elDesc = wrap.querySelector('#sch-desc');
+    const elDesc  = wrap.querySelector('#sch-desc');
     const elUsers = wrap.querySelector('#sch-users');
 
     elDate.value = todayLocalYMD();
@@ -162,28 +196,47 @@ const SPACE_ID = 'schedulePanel';
     });
 
     // 予定登録
-    wrap.querySelector('#sch-create').addEventListener('click', async () => {
-      const date = (elDate.value || '').trim();
+    const createBtn = wrap.querySelector('#sch-create'); // NEW
+    createBtn.addEventListener('click', async () => {
+      const date  = (elDate.value || '').trim();
       const title = (elTitle.value || '').trim();
-      const desc = (elDesc.value || '').trim();
+      const desc  = (elDesc.value || '').trim();
       const users = Array.from(elUsers.selectedOptions).map(o => ({ code: o.value }));
-      if (!date) return alert('予定日（終日）を入力してください。');
+      if (!date)  return alert('予定日（終日）を入力してください。');
       if (!title) return alert('予定のタイトルを入力してください。');
+
+      // タスク側と揃えるなら、案件ID必須にするのがおすすめ
+      if (!caseId) {
+        return alert(`案件側フィールド「${F_CASE_ID}」が空です。値を入れてから登録してください。`);
+      }
+
+      // 二重クリック防止
+      createBtn.disabled = true;                         // NEW
+      const prev = createBtn.textContent;                // NEW
+      createBtn.textContent = '登録中…';                // NEW
+
       try {
         await createSchedule({
-          [S_DATE]: { value: date },
+          [S_DATE]:  { value: date },
           [S_TITLE]: { value: title },
-          [S_DESC]: { value: desc },
-          [S_USERS]: { value: users }
+          [S_DESC]:  { value: desc },
+          [S_USERS]: { value: users },
+          // ▼ ここで案件IDと分野をスケジュールアプリへ保存
+          [S_CASE_ID_FIELD]:   { value: caseId },        // NEW
+          [S_CASE_TYPE_FIELD]: { value: caseTypeLabel }, // NEW
         });
         alert('予定を登録しました。');
         elTitle.value = '';
-        elDesc.value = '';
+        elDesc.value  = '';
         const login = kintone.getLoginUser();
         for (const o of elUsers.options) o.selected = (o.value === login.code);
       } catch (e) {
         console.error('予定登録エラー:', e);
-        alert('予定登録に失敗しました。');
+        const msg = e?.message || (e?.errors && JSON.stringify(e.errors)) || e?.code || '不明なエラー';
+        alert(`予定登録に失敗しました。\n${msg}`);
+      } finally {
+        createBtn.disabled = false;                      // NEW
+        createBtn.textContent = prev;                    // NEW
       }
     });
 
