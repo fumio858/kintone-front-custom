@@ -81,7 +81,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       const wrap = document.createElement('div');
       wrap.classList.add('k-task-panel');
       wrap.style.padding = '12px';
-      wrap.style.background = '#f7f9fa';
+      wrap.style.background = '#E7ECF2';
 
       wrap.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
@@ -192,7 +192,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         const div = document.createElement('div');
         div.style.display = 'grid'; div.style.gridTemplateColumns = '1fr auto auto auto';
         div.style.gap = '8px'; div.style.alignItems = 'center'; div.style.padding = '6px 8px';
-        div.style.background = '#fafafa'; div.style.borderRadius = '6px';
+        div.style.background = '#F7F9FB'; div.style.borderRadius = '6px';
         div.innerHTML = `
           <div>
             <div style="font-weight:600">${title}</div>
