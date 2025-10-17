@@ -1,6 +1,6 @@
 // ==== 設定ここから ====
 const TASK_APP_ID = 23;
-const F_CASE_ID = '事案ID';
+const F_CASE_ID = 'case_id';
 const T_CASE_ID = '事案ID';
 const T_TITLE = '件名';
 const T_DUE = '期限';
@@ -9,7 +9,7 @@ const T_STATUS = 'タスクステータス';
 const TASK_SPACE_ID = 'taskPanel';
 
 // ▼ タスクアプリ側の「分野」フィールドのフィールドコード
-const T_CASE_TYPE_FIELD = '分野'; // NEW: タスクアプリに作成したフィールドコード
+const T_CASE_TYPE_FIELD = 'case_type';
 
 // ▼ 分野ラベル定義（要望どおりの定数名で用意）
 const T_CASE_TYPE = { // NEW
