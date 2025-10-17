@@ -1,30 +1,30 @@
 // ==== 設定ここから ====
 const SCHEDULE_APP_ID = 45;
-const S_DATE  = 'date';         // 予定日のフィールドコード
-const S_TITLE = 'title';         // 予定タイトルのフィールドコード
-const S_DESC  = 'description';   // 予定説明のフィールドコード
-const S_USERS = 'attendees';     // ユーザー選択のフィールドコード
-const SPACE_ID = 'schedulePanel';
+const SCHEDULE_S_DATE  = 'date';         // 予定日のフィールドコード
+const SCHEDULE_S_TITLE = 'title';         // 予定タイトルのフィールドコード
+const SCHEDULE_S_DESC  = 'description';   // 予定説明のフィールドコード
+const SCHEDULE_S_USERS = 'attendees';     // ユーザー選択のフィールドコード
+const SCHEDULE_SPACE_ID = 'schedulePanel';
 
 // ▼ スケジュールアプリ側に追加した「案件ID／分野」フィールド
-const S_CASE_ID_FIELD   = 'case_id';   // NEW: スケジュールアプリの案件ID
-const S_CASE_TYPE_FIELD = 'case_type'; // NEW: スケジュールアプリの分野
+const SCHEDULE_S_CASE_ID_FIELD   = 'case_id';   // NEW: スケジュールアプリの案件ID
+const SCHEDULE_S_CASE_TYPE_FIELD = 'case_type'; // NEW: スケジュールアプリの分野
 
 // ▼ 元アプリ（呼び出し側）に存在する案件IDフィールドコード
 const F_CASE_ID = 'case_id'; // NEW: 呼び出し元レコードから拾う
 
 // ▼ 分野ラベル定義（タスクと同じ）
-const CASE_TYPE = {          // NEW
+const SCHEDULE_CASE_TYPE = {          // NEW
   CRIMINAL: '刑事事件',
   TRAFFIC:  '交通事故',
   OTHER:    'その他',
 };
 
 // ▼ URLの k/{appId}/ に応じた分野マッピング
-const APP_ID_TO_CASE_TYPE = { // NEW
-  22: CASE_TYPE.CRIMINAL,
-  26: CASE_TYPE.TRAFFIC,
-  41: CASE_TYPE.OTHER,
+const SCHEDULE_APP_ID_TO_CASE_TYPE = { // NEW
+  22: SCHEDULE_CASE_TYPE.CRIMINAL,
+  26: SCHEDULE_CASE_TYPE.TRAFFIC,
+  41: SCHEDULE_CASE_TYPE.OTHER,
 };
 // ==== 設定ここまで ====
 
@@ -86,7 +86,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
     // NEW: 分野ラベルと案件IDを決定
     const currentAppId   = getCurrentAppId();                               // NEW
-    const caseTypeLabel  = APP_ID_TO_CASE_TYPE[currentAppId] ?? CASE_TYPE.OTHER; // NEW
+    const caseTypeLabel  = SCHEDULE_APP_ID_TO_CASE_TYPE[currentAppId] ?? CASE_TYPE.OTHER; // NEW
     const caseId         = (rec?.[F_CASE_ID]?.value || '').toString().trim();    // NEW
 
     // Space が非表示指定されている可能性に備えて必ず表示状態へ
@@ -217,13 +217,13 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
       try {
         await createSchedule({
-          [S_DATE]:  { value: date },
-          [S_TITLE]: { value: title },
-          [S_DESC]:  { value: desc },
-          [S_USERS]: { value: users },
+          [SCHEDULE_S_DATE]:  { value: date },
+          [SCHEDULE_S_TITLE]: { value: title },
+          [SCHEDULE_S_DESC]:  { value: desc },
+          [SCHEDULE_S_USERS]: { value: users },
           // ▼ ここで案件IDと分野をスケジュールアプリへ保存
-          [S_CASE_ID_FIELD]:   { value: caseId },        // NEW
-          [S_CASE_TYPE_FIELD]: { value: caseTypeLabel }, // NEW
+          [SCHEDULE_S_CASE_ID_FIELD]:   { value: caseId },        // NEW
+          [SCHEDULE_S_CASE_TYPE_FIELD]: { value: caseTypeLabel }, // NEW
         });
         alert('予定を登録しました。');
         elTitle.value = '';
@@ -262,7 +262,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
   // Space 自動初期化（ランチャーが無くても出す／二重初期化ガード付き）
   kintone.events.on(['app.record.detail.show'], async (event) => {
-    const space = kintone.app.record.getSpaceElement(SPACE_ID);
+    const space = kintone.app.record.getSpaceElement(SCHEDULE_SPACE_ID);
     if (!space) return event;
     if (!space.dataset.initedSchedulePanel) {
       space.dataset.initedSchedulePanel = '1';

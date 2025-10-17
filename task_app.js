@@ -1,18 +1,18 @@
 // ==== 設定ここから ====
 const TASK_APP_ID = 23;
-const F_CASE_ID = 'case_id';
-const T_CASE_ID = 'case_id';
-const T_TITLE = '件名';
-const T_DUE = '期限';
-const T_OWNER = '担当者';
-const T_STATUS = 'タスクステータス';
+const TASK_F_CASE_ID = 'case_id';
+const TASK_T_CASE_ID = 'case_id';
+const TASK_T_TITLE = '件名';
+const TASK_T_DUE = '期限';
+const TASK_T_OWNER = '担当者';
+const TASK_T_STATUS = 'タスクステータス';
 const TASK_SPACE_ID = 'taskPanel';
 
 // ▼ タスクアプリ側の「分野」フィールドのフィールドコード
-const T_CASE_TYPE_FIELD = 'case_type';
+const TASK_T_CASE_TYPE_FIELD = 'case_type';
 
 // ▼ 分野ラベル定義（要望どおりの定数名で用意）
-const T_CASE_TYPE = { // NEW
+const TASK_CASE_TYPE = { // NEW
   CRIMINAL: '刑事事件',
   TRAFFIC: '交通事故',
   OTHER: 'その他',
@@ -21,9 +21,9 @@ const T_CASE_TYPE = { // NEW
 // ▼ 「どのアプリから登録しているか」→ 分野ラベル の対応表
 //    k/22=刑事事件, k/26=交通事故, k/41=その他
 const APP_ID_TO_CASE_TYPE = { // NEW
-  22: T_CASE_TYPE.CRIMINAL,
-  26: T_CASE_TYPE.TRAFFIC,
-  41: T_CASE_TYPE.OTHER,
+  22: TASK_CASE_TYPE.CRIMINAL,
+  26: TASK_CASE_TYPE.TRAFFIC,
+  41: TASK_CASE_TYPE.OTHER,
 };
 // ==== 設定ここまで ====
 
@@ -134,9 +134,9 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       const caseTypeLabel = APP_ID_TO_CASE_TYPE[currentAppId] || ''; // NEW
 
       // 案件ID（空でも UI は表示し、メッセージを出す）
-      const caseId = (rec?.[F_CASE_ID]?.value || '').trim();
+      const caseId = (rec?.[TASK_F_CASE_ID]?.value || '').trim();
       if (!caseId) {
-        listEl.innerHTML = `<div style="color:#c00;">案件側フィールド「${F_CASE_ID}」が空です。値を入れるとタスクを表示・追加できます。</div>`;
+        listEl.innerHTML = `<div style="color:#c00;">案件側フィールド「${TASK_F_CASE_ID}」が空です。値を入れるとタスクを表示・追加できます。</div>`;
       }
 
       // 担当者セレクト
@@ -167,11 +167,11 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       async function fetchTasks() {
         if (!caseId) return [];
         const cEsc = caseId.replace(/\\/g, '\\\\').replace(/"/g, '\"');
-        const query = `${T_CASE_ID} = "${cEsc}" order by ${T_DUE} asc`;
+        const query = `${TASK_T_CASE_ID} = "${cEsc}" order by ${TASK_T_DUE} asc`;
         try {
           const resp = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query });
           if ((resp.records || []).length === 0 && /^[0-9]+$/.test(caseId)) {
-            const resp2 = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query: `${T_CASE_ID} = ${caseId} order by ${T_DUE} asc` });
+            const resp2 = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query: `${TASK_T_CASE_ID} = ${caseId} order by ${TASK_T_DUE} asc` });
             return resp2.records || [];
           }
           return resp.records || [];
@@ -184,10 +184,10 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
       function row(tRec) {
         const id = tRec.$id.value;
-        const title = tRec[T_TITLE]?.value || '(無題)';
-        const due = tRec[T_DUE]?.value || '';
-        const status = tRec[T_STATUS]?.value || '';
-        const owners = Array.isArray(tRec[T_OWNER]?.value) ? tRec[T_OWNER].value.map(u => u.name || u.code).join(', ') : '';
+        const title = tRec[TASK_T_TITLE]?.value || '(無題)';
+        const due = tRec[TASK_T_DUE]?.value || '';
+        const status = tRec[TASK_T_STATUS]?.value || '';
+        const owners = Array.isArray(tRec[TASK_T_OWNER]?.value) ? tRec[TASK_T_OWNER].value.map(u => u.name || u.code).join(', ') : '';
 
         const div = document.createElement('div');
         div.style.display = 'grid'; div.style.gridTemplateColumns = '1fr auto auto auto';
@@ -205,7 +205,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
           const btn = e.target.closest('button'); if (!btn) return;
           const newStatus = btn.dataset.act === 'start' ? '進行中' : '完了';
           try {
-            await kintone.api(kUrl('/k/v1/record'), 'PUT', { app: TASK_APP_ID, id, record: { [T_STATUS]: { value: newStatus } } });
+            await kintone.api(kUrl('/k/v1/record'), 'PUT', { app: TASK_APP_ID, id, record: { [TASK_T_STATUS]: { value: newStatus } } });
             render();
           } catch (e2) { console.error('[task] 更新エラー', e2); alert('タスク更新に失敗しました。'); }
         });
@@ -228,10 +228,10 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         const owner = wrap.querySelector('#task-owner').value || kintone.getLoginUser().code;
 
         if (!title) return alert('件名を入力してください');
-        if (!caseId) return alert(`案件側フィールド「${F_CASE_ID}」が空です。値を入れてから追加してください。`);
+        if (!caseId) return alert(`案件側フィールド「${TASK_F_CASE_ID}」が空です。値を入れてから追加してください。`);
 
         // 重複チェック（必要なら分野も入れる）
-        const dupQ = `${T_CASE_ID} = "${esc(caseId)}" and ${T_TITLE} = "${esc(title)}" limit 1`;
+        const dupQ = `${TASK_T_CASE_ID} = "${esc(caseId)}" and ${TASK_T_TITLE} = "${esc(title)}" limit 1`;
         try {
           const dup = await kintone.api(kUrl('/k/v1/records'), 'GET', { app: TASK_APP_ID, query: dupQ });
           if ((dup.records || []).length) return alert('この案件に同名のタスクが既にあります。件名を変えてください。');
@@ -241,12 +241,12 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
         // 作成ペイロード
         const record = {
-          [T_CASE_ID]: { value: caseId },
-          [T_TITLE]: { value: title },
-          [T_DUE]: { value: due || '' },
-          [T_OWNER]: { value: [{ code: owner }] },
-          [T_STATUS]: { value: '未着手' },
-          [T_CASE_TYPE_FIELD]: { value: caseTypeLabel || '' },
+          [TASK_T_CASE_ID]: { value: caseId },
+          [TASK_T_TITLE]: { value: title },
+          [TASK_T_DUE]: { value: due || '' },
+          [TASK_T_OWNER]: { value: [{ code: owner }] },
+          [TASK_T_STATUS]: { value: '未着手' },
+          [TASK_T_CASE_TYPE_FIELD]: { value: caseTypeLabel || '' },
         };
 
         // 二重クリック防止
