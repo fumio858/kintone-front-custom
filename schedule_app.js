@@ -260,13 +260,18 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
   // ★ ここまで本体
 
-  // 既存：Spaceに描画（従来どおり）
+  // Space 自動初期化（ランチャーが無くても出す／二重初期化ガード付き）
   kintone.events.on(['app.record.detail.show'], async (event) => {
     const space = kintone.app.record.getSpaceElement(SPACE_ID);
     if (!space) return event;
-
-    // ここで非表示にしている場合、ランチャーから表示する時は init 内で display を戻します
-    space.style.display = 'none';
+    if (!space.dataset.initedSchedulePanel) {
+      space.dataset.initedSchedulePanel = '1';
+      try {
+        await window.userSchedulePanelInit(space);
+      } catch (e) {
+        console.warn('[schedule] auto init failed:', e);
+      }
+    }
     return event;
   });
 

@@ -332,10 +332,18 @@ const APP_ID_TO_CASE_TYPE = { // NEW
     }
   });
 
-  // 詳細表示時：Space を自動描画せず、非表示だけ
-  kintone.events.on(['app.record.detail.show'], (event) => {
+  // Space 自動初期化（ランチャーが無くても出す／二重初期化ガード付き）
+  kintone.events.on(['app.record.detail.show'], async (event) => {
     const space = kintone.app.record.getSpaceElement(TASK_SPACE_ID);
-    if (space) space.style.display = 'none';
+    if (!space) return event;
+    if (!space.dataset.initedTaskPanel) {
+      space.dataset.initedTaskPanel = '1';
+      try {
+        await window.userTaskPanelInit(space);
+      } catch (e) {
+        console.warn('[task] auto init failed:', e);
+      }
+    }
     return event;
   });
 
