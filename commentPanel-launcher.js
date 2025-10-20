@@ -156,13 +156,27 @@
     console.log('[Launcher] URL changed detected:', e.detail.url);
     // 少し遅延させて、kintoneのDOM構築を待つ
     setTimeout(() => {
-      console.log('[Launcher] Attempting to re-inject launcher.');
-      // 既存のランチャーがあれば一旦削除する
+      console.log('[Launcher] Attempting to re-inject launcher and panels.');
+
+      // 既存のランチャーを削除
       const existingLauncher = document.querySelector('#comment-panel-launcher');
       if (existingLauncher) {
-        console.log('[Launcher] Removing existing launcher before re-injection.');
+        console.log('[Launcher] Removing existing launcher.');
         existingLauncher.remove();
       }
+
+      // 既存のパネル（ミラー）も削除して、中身が古くなるのを防ぐ
+      const taskMirror = document.querySelector('[data-mirror-of="user-js-taskPanel"]');
+      if (taskMirror) {
+        console.log('[Launcher] Removing existing task panel mirror.');
+        taskMirror.remove();
+      }
+      const scheduleMirror = document.querySelector('[data-mirror-of="user-js-schedulePanel"]');
+      if (scheduleMirror) {
+        console.log('[Launcher] Removing existing schedule panel mirror.');
+        scheduleMirror.remove();
+      }
+
       tryInject();
     }, 200);
   });
