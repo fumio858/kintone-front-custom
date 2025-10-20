@@ -100,7 +100,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
             outline: none; box-shadow: 0 0 0 3px rgba(227,231,232,.4); border-color: #e3e7e8;
           }
           #task-show-list, #task-close { border: 1px solid #e3e7e8; background:#fff; padding: 6px 10px; border-radius: 6px; font-size: 12px; }
-          #task-close:hover { background: #f5f7f8; }
+          #task-show-list:hover, #task-close:hover { background: #f5f7f8; }
           .task-add-row{ display:grid; grid-template-columns: 1fr 260px; gap:12px; align-items:stretch; margin-top:8px; }
           .task-add-left textarea{ width:100%; height:100%; min-height:120px; resize:vertical; padding:10px; box-sizing:border-box; }
           .task-add-right{ display:flex; flex-direction:column; gap:8px; }
