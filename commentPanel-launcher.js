@@ -152,9 +152,17 @@
   })(window.history);
 
   // URL変更時にもインジェクションを試みる
-  window.addEventListener('urlchanged', () => {
+  window.addEventListener('urlchanged', (e) => {
+    console.log('[Launcher] URL changed detected:', e.detail.url);
     // 少し遅延させて、kintoneのDOM構築を待つ
     setTimeout(() => {
+      console.log('[Launcher] Attempting to re-inject launcher.');
+      // 既存のランチャーがあれば一旦削除する
+      const existingLauncher = document.querySelector('#comment-panel-launcher');
+      if (existingLauncher) {
+        console.log('[Launcher] Removing existing launcher before re-injection.');
+        existingLauncher.remove();
+      }
       tryInject();
     }, 200);
   });
