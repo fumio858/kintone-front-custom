@@ -17,7 +17,7 @@ const SCHEDULE_F_CASE_ID = 'case_id'; // ★RENAME: 旧 F_CASE_ID 衝突回避
 const SCHEDULE_CASE_TYPE = {
   CRIMINAL: '刑事事件',
   TRAFFIC:  '交通事故',
-  OTHER:    'その他',
+  OTHER:    '刑事交通以外',
 };
 
 // ▼ URLの k/{appId}/ に応じた分野マッピング

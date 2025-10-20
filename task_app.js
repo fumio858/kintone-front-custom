@@ -15,7 +15,7 @@ const TASK_T_CASE_TYPE_FIELD = 'case_type';
 const TASK_CASE_TYPE = { // NEW
   CRIMINAL: '刑事事件',
   TRAFFIC: '交通事故',
-  OTHER: 'その他',
+  OTHER: '刑事交通以外',
 };
 
 // ▼ 「どのアプリから登録しているか」→ 分野ラベル の対応表
