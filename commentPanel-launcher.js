@@ -112,11 +112,50 @@
     return true;
   }
 
+  const tryInject = () => {
+    if (injectLauncherOnce()) return;
+    setTimeout(tryInject, 150);
+  };
+
   kintone.events.on('app.record.detail.show', () => {
-    const tryInject = () => {
-      if (injectLauncherOnce()) return;
-      setTimeout(tryInject, 150);
-    };
     tryInject();
+  });
+
+  // --- URL変更監視（SPA対応） ---
+  (function(history) {
+    const pushState = history.pushState;
+    const replaceState = history.replaceState;
+    let lastUrl = location.href;
+
+    const dispatchUrlChange = (newUrl) => {
+      if (newUrl && newUrl.toString() !== lastUrl) {
+        lastUrl = newUrl.toString();
+        window.dispatchEvent(new CustomEvent('urlchanged', { detail: { url: lastUrl } }));
+      }
+    };
+
+    history.pushState = function(state, title, url) {
+      const result = pushState.apply(history, [state, title, url]);
+      dispatchUrlChange(url);
+      return result;
+    };
+
+    history.replaceState = function(state, title, url) {
+      const result = replaceState.apply(history, [state, title, url]);
+      dispatchUrlChange(url);
+      return result;
+    };
+
+    window.addEventListener('popstate', () => {
+      dispatchUrlChange(location.href);
+    });
+  })(window.history);
+
+  // URL変更時にもインジェクションを試みる
+  window.addEventListener('urlchanged', () => {
+    // 少し遅延させて、kintoneのDOM構築を待つ
+    setTimeout(() => {
+      tryInject();
+    }, 200);
   });
 })();
