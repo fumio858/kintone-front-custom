@@ -102,7 +102,7 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
     const t  = r[SCHEDULE_S_TITLE]?.value || '(無題)';
     const users = Array.isArray(r[SCHEDULE_S_USERS]?.value) ? r[SCHEDULE_S_USERS].value.map(u => u.name || u.code).join(', ') : '—';
     const div = document.createElement('div');
-    Object.assign(div.style, {display:'grid', gridTemplateColumns:'1fr auto', gap:'8px', padding:'6px 8px', alignItems:'center', background:'#fafafa', borderRadius:'6px'});
+    Object.assign(div.style, {display:'grid', gridTemplateColumns:'1fr auto', gap:'8px', padding:'6px 8px', alignItems:'center', background:'#fafafa', borderBottom :'dotted 1px #e4e1e1'});
     div.innerHTML = `
       <div>
         <div style="font-weight:600">${t}</div>
