@@ -111,7 +111,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
           .k-task-panel .task-add-right .task-owner, .k-task-panel .task-add-right .task-due{ padding:8px 4px; min-height:36px; box-sizing:border-box; }
         </style>
 
-        <div id="task-list" style="display:none; flex-direction:column; gap:6px; margin-bottom:8px;"></div>
+        <div id="task-list" style="display:none; flex-direction:column; gap:6px; margin-bottom:12px;"></div>
         <div class="task-add-row">
           <div class="task-add-left">
             <textarea id="task-title" placeholder="件名を入力" rows="4"></textarea>
@@ -143,7 +143,12 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       // 担当者セレクト
       await (async function populateOwnerSelect() {
         const login = kintone.getLoginUser();
-        selOwner.innerHTML = `<option value="${login.code}">${login.name}（自分）</option>`;
+        selOwner.innerHTML = ''; // 一旦クリア
+        const me = document.createElement('option');
+        me.value = login.code;
+        me.textContent = `${login.name}（自分）`;
+        selOwner.appendChild(me);
+
         try {
           let offset = 0, size = 100;
           while (true) {
@@ -191,9 +196,15 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         const owners = Array.isArray(tRec[TASK_T_OWNER]?.value) ? tRec[TASK_T_OWNER].value.map(u => u.name || u.code).join(', ') : '';
 
         const div = document.createElement('div');
-        div.style.display = 'grid'; div.style.gridTemplateColumns = '1fr auto auto auto';
-        div.style.gap = '8px'; div.style.alignItems = 'center'; div.style.padding = '6px 8px';
-        div.style.background = 'transparent'; div.style.borderBottom = 'dotted 1px #bcced5';
+        Object.assign(div.style, {
+          display: 'grid',
+          gridTemplateColumns: '1fr auto auto auto',
+          gap: '8px',
+          alignItems: 'center',
+          padding: '6px 8px',
+          background: 'transparent',
+          borderBottom: 'dotted 1px #bcced5',
+        });
         div.innerHTML = `
           <div>
             <div style="font-weight:600">${title}</div>

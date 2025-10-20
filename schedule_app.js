@@ -113,16 +113,44 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
     return div;
   }
 
+  // --- フォールバックで mount を見つける（カレンダー互換 + さらに堅牢） ---
+  function resolveMountEl(mountEl) {
+    if (mountEl && mountEl.nodeType === 1) return mountEl;
+    // 1) ランチャーの mirror 既存？
+    const mirror = document.querySelector('[data-mirror-of="user-js-schedulePanel"]');
+    if (mirror) return mirror;
+    // 2) Space フィールド
+    const space = kintone.app.record.getSpaceElement(SCHEDULE_SPACE_ID);
+    if (space) return space;
+    // 3) コメントフォームの直後に mirror を自作（最終フォールバック）
+    const form = document.querySelector('.ocean-ui-comments-commentform-form');
+    if (form) {
+      const m = document.createElement('div');
+      m.dataset.mirrorOf = 'user-js-schedulePanel';
+      Object.assign(m.style, { marginTop: '12px', borderTop: '1px dashed #e5e7eb', paddingTop: '12px' });
+      form.insertAdjacentElement('afterend', m);
+      return m;
+    }
+    // 4) 最後の手段：レコード詳細の末尾
+    const container = document.querySelector('#record-gaia, .contents-gaia, body');
+    const m2 = document.createElement('div');
+    m2.dataset.mirrorOf = 'user-js-schedulePanel';
+    container.appendChild(m2);
+    return m2;
+  }
+
   // ★ 任意のマウント先に描画する本体
   async function initSchedulePanel(mountEl, rec, recordId, appId) {
-    if (!mountEl) return;
+    try {
+      mountEl = resolveMountEl(mountEl);
+      if (!mountEl) return console.warn('[schedule] mountEl not found');
 
-    const currentAppId  = getCurrentAppId();
-    const caseTypeLabel = SCHEDULE_APP_ID_TO_CASE_TYPE[currentAppId] ?? SCHEDULE_CASE_TYPE.OTHER; // FIX
-    const caseId        = (rec?.[SCHEDULE_F_CASE_ID]?.value || '').toString().trim();
+      const currentAppId  = getCurrentAppId();
+      const caseTypeLabel = APP_ID_TO_CASE_TYPE[currentAppId] ?? CASE_TYPE.OTHER; // FIX
+      const caseId        = (rec?.[SCHEDULE_F_CASE_ID]?.value || '').toString().trim();
 
-    mountEl.style.display = '';
-    mountEl.innerHTML = '';
+      mountEl.style.display = '';
+      mountEl.innerHTML = '';
 
     const wrap = document.createElement('div');
     wrap.classList.add('k-schedule-panel');
@@ -163,7 +191,7 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
         @media (max-width:600px){ .k-schedule-form-wrapper { grid-template-columns:1fr; } }
       </style>
 
-      <div id="sch-list" style="display:none; flex-direction:column; gap:6px; margin-bottom:8px;"></div> <!-- NEW -->
+      <div id="sch-list" style="display:none; flex-direction:column; gap:6px; margin-bottom:12px;"></div> <!-- NEW -->
 
       <div class="k-schedule-form-wrapper">
         <div class="k-schedule-form-left">
@@ -277,9 +305,10 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
     const onKey = (ev) => { if (ev.key === 'Escape' && wrap.style.display !== 'none') doHide(); };
     document.addEventListener('keydown', onKey);
     mountEl.addEventListener('schedulePanel:hidden', () => { document.removeEventListener('keydown', onKey); });
+    } catch (err) {
+      console.error('[schedule] initSchedulePanel fatal:', err);
+    }
   }
-
-  // ★ ここまで本体
 
   // Space 自動初期化（ランチャーが無くても出す／二重初期化ガード付き）
   kintone.events.on(['app.record.detail.show'], async (event) => {
