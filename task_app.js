@@ -82,6 +82,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       wrap.classList.add('k-task-panel');
       wrap.style.padding = '12px';
       wrap.style.background = '#E9F1F8';
+      wrap.style.display = '';
 
       wrap.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
