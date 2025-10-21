@@ -172,7 +172,7 @@ const TASK_APP_ID_TO_CASE_TYPE = { // NEW
       // 取得系
       async function fetchTasks() {
         if (!caseId) return [];
-        const cEsc = caseId.replace(///g, '\\').replace(/"/g, '\"');
+        const cEsc = caseId.replace(/\\/g, '\\').replace(/"/g, '\"');
 
         // ★現在のアプリの分野（case_type）で絞り込む条件を追加
         const caseTypeFilter = caseTypeLabel ? ` and ${TASK_T_CASE_TYPE_FIELD} = "${esc(caseTypeLabel)}"` : '';
