@@ -49,6 +49,11 @@
       return event;
     }
 
+    console.log('現在のレコードID:', currentRecordId);
+    console.log('現在の分野:', currentCaseType);
+    console.log('対象アプリID:', targetAppId);
+    console.log('検索クエリ:', query); // query変数の直後
+    
     // 関連レコードの取得
     try {
       spaceElement.innerHTML = '<p>関連レコードを読み込み中...</p>';
