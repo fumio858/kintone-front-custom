@@ -9,7 +9,7 @@ const TASK_T_STATUS = 'タスクステータス';
 const TASK_SPACE_ID = 'taskPanel';
 
 // ▼ タスクアプリ側の「分野」フィールドのフィールドコード
-const TASK_T_CATEGORY_FIELD = 'カテゴリー';
+const TASK_T_CASE_TYPE_FIELD = 'case_type';
 
 // ▼ 分野ラベル定義（要望どおりの定数名で用意）
 const TASK_CASE_TYPE = { // NEW
@@ -243,13 +243,13 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         if (!caseId) return alert(`案件側フィールド「${TASK_F_CASE_ID}」が空です。値を入れてから追加してください。`);
 
         // 重複チェック（必要なら分野も入れる）
-        // const dupQ = `${TASK_T_CASE_ID} = "${esc(caseId)}" and ${TASK_T_TITLE} = "${esc(title)}" limit 1`;
-        // try {
-        //   const dup = await kintone.api(kUrl('/k/v1/records'), 'GET', { app: TASK_APP_ID, query: dupQ });
-        //   if ((dup.records || []).length) return alert('この案件に同名のタスクが既にあります。件名を変えてください。');
-        // } catch (e) {
-        //   console.warn('[task] 重複確認に失敗（続行）:', e);
-        // }
+        const dupQ = `${TASK_T_CASE_ID} = "${esc(caseId)}" and ${TASK_T_TITLE} = "${esc(title)}" limit 1`;
+        try {
+          const dup = await kintone.api(kUrl('/k/v1/records'), 'GET', { app: TASK_APP_ID, query: dupQ });
+          if ((dup.records || []).length) return alert('この案件に同名のタスクが既にあります。件名を変えてください。');
+        } catch (e) {
+          console.warn('[task] 重複確認に失敗（続行）:', e);
+        }
 
         // 作成ペイロード
         const record = {
@@ -258,8 +258,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
           [TASK_T_DUE]: { value: due || '' },
           [TASK_T_OWNER]: { value: [{ code: owner }] },
           [TASK_T_STATUS]: { value: '未着手' },
-          [TASK_T_CATEGORY_FIELD]: { value: caseTypeLabel ?
-            [caseTypeLabel] : [] },
+          [TASK_T_CASE_TYPE_FIELD]: { value: caseTypeLabel || '' },
         };
 
         // 二重クリック防止
@@ -269,7 +268,6 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
         try {
           // ★ ここでPOSTして、成功したらアラート
-          console.log('Sending record:', JSON.stringify(record, null, 2));
           const resp = await kintone.api(kUrl('/k/v1/record'), 'POST', { app: TASK_APP_ID, record });
           // resp には {id, revision} が返る
           alert(`タスクを作成しました（#${resp.id}）。`);
