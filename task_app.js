@@ -234,8 +234,6 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
       const addBtn = wrap.querySelector('#task-add');
 
-      console.log('Sending record:', JSON.stringify(record, null, 2));
-      
       addBtn.addEventListener('click', async () => {
         const title = (wrap.querySelector('#task-title').value || '').trim();
         const due = (wrap.querySelector('#task-due').value || '').trim();
@@ -270,6 +268,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
         try {
           // ★ ここでPOSTして、成功したらアラート
+          console.log('Sending record:', JSON.stringify(record, null, 2));
           const resp = await kintone.api(kUrl('/k/v1/record'), 'POST', { app: TASK_APP_ID, record });
           // resp には {id, revision} が返る
           alert(`タスクを作成しました（#${resp.id}）。`);
