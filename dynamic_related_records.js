@@ -86,11 +86,7 @@
 
         relatedRecords.forEach(relRecord => {
           const li = document.createElement('li');
-          li.style.marginBottom = '5px';
           li.style.padding = '5px';
-          li.style.backgroundColor = '#fff';
-          li.style.border = '1px solid #eee';
-          li.style.borderRadius = '4px';
 
           const recordId = relRecord.$id.value;
           const displayValue = relRecord[DISPLAY_FIELD_CODE]?.value || '(タイトルなし)';
