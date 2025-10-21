@@ -2,9 +2,9 @@
   'use strict';
 
   // ==== 設定ここから ====
-  // 現在のアプリ（タスク/スケジュール）のIDはkintone.app.getId()で取得
   const CASE_TYPE_FIELD_CODE = 'case_type'; // 現在のレコードの分野フィールド
   const RELATED_RECORDS_SPACE_FIELD_CODE = 'related_records_space'; // 関連レコードを表示するスペースフィールド
+  const CURRENT_RECORD_CASE_ID_FIELD = 'case_id'; // 現在のレコードのcase_idフィールド
 
   // 分野の値と、関連レコードを取得するアプリIDの対応
   const CASE_TYPE_TO_APP_ID_MAP = {
@@ -21,8 +21,9 @@
 
   kintone.events.on(['app.record.detail.show'], async (event) => {
     const record = event.record;
-    const currentRecordId = kintone.app.record.getId(); // 現在のレコードID
+    const currentRecordId = kintone.app.record.getId(); // 現在のレコードID (これは表示用)
     const currentCaseType = record[CASE_TYPE_FIELD_CODE]?.value; // 現在のレコードの分野
+    const currentRecordCaseId = record[CURRENT_RECORD_CASE_ID_FIELD]?.value; // 現在のレコードのcase_idフィールドの値
 
     const spaceElement = kintone.app.record.getSpaceElement(RELATED_RECORDS_SPACE_FIELD_CODE);
     if (!spaceElement) {
@@ -42,6 +43,11 @@
       return event;
     }
 
+    if (!currentRecordCaseId) {
+      spaceElement.innerHTML = '<p style="color:#c00;">現在のレコードのcase_idが設定されていません。関連レコードを表示できません。</p>';
+      return event;
+    }
+
     const targetAppId = CASE_TYPE_TO_APP_ID_MAP[currentCaseType];
 
     if (!targetAppId) {
@@ -49,15 +55,19 @@
       return event;
     }
 
-    console.log('現在のレコードID:', currentRecordId);
-    console.log('現在の分野:', currentCaseType);
-    console.log('対象アプリID:', targetAppId);
-    console.log('検索クエリ:', query); // query変数の直後
-    
     // 関連レコードの取得
     try {
       spaceElement.innerHTML = '<p>関連レコードを読み込み中...</p>';
-      const query = `case_id = "${currentRecordId}" order by $id asc`; // case_idが現在のレコードIDと一致するものを検索
+      // クエリを修正: 関連アプリのレコードIDが現在のレコードのcase_idと一致するものを検索
+      const query = `$id = "${currentRecordCaseId}"`; // レコードIDは数値だが、kintone APIは文字列として受け入れる
+      
+      // Debug logs
+      console.log('現在のレコードID:', currentRecordId); // For context
+      console.log('現在の分野:', currentCaseType);
+      console.log('現在のレコードのcase_id:', currentRecordCaseId); // New log
+      console.log('対象アプリID:', targetAppId);
+      console.log('検索クエリ:', query); // New log
+
       const resp = await kintone.api(kUrl('/k/v1/records'), 'GET', {
         app: targetAppId,
         query: query,
