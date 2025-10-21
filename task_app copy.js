@@ -20,7 +20,7 @@ const TASK_CASE_TYPE = { // NEW
 
 // ▼ 「どのアプリから登録しているか」→ 分野ラベル の対応表
 //    k/22=刑事事件, k/26=交通事故, k/41=その他
-const TASK_APP_ID_TO_CASE_TYPE = { // NEW
+const APP_ID_TO_CASE_TYPE = { // NEW
   22: TASK_CASE_TYPE.CRIMINAL,
   26: TASK_CASE_TYPE.TRAFFIC,
   55: TASK_CASE_TYPE.OTHER,
@@ -132,7 +132,7 @@ const TASK_APP_ID_TO_CASE_TYPE = { // NEW
 
       // ▼ この画面のアプリIDから分野ラベルを決定
       const currentAppId = getCurrentAppId(); // NEW
-      const caseTypeLabel = TASK_APP_ID_TO_CASE_TYPE[currentAppId] || ''; // NEW
+      const caseTypeLabel = APP_ID_TO_CASE_TYPE[currentAppId] || ''; // NEW
 
       // 案件ID（空でも UI は表示し、メッセージを出す）
       const caseId = (rec?.[TASK_F_CASE_ID]?.value || '').trim();

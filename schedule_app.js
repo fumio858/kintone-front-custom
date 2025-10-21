@@ -78,12 +78,16 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
   }
 
   // NEW: 一覧取得
-  async function fetchSchedules(caseId) {
+  async function fetchSchedules(caseId, caseTypeLabel) {
     try {
       let query = '';
       if (caseId) {
         const c = esc(caseId);
-        query = `${SCHEDULE_S_CASE_ID_FIELD} = "${c}" order by ${SCHEDULE_S_DATE} asc`;
+        query = `${SCHEDULE_S_CASE_ID_FIELD} = "${c}"`;
+        if (caseTypeLabel) {
+          query += ` and ${SCHEDULE_S_CASE_TYPE_FIELD} = "${esc(caseTypeLabel)}"`;
+        }
+        query += ` order by ${SCHEDULE_S_DATE} asc`;
       } else {
         query = `order by ${SCHEDULE_S_DATE} desc limit 50`; // 案件IDなし時は直近50件
       }
@@ -146,7 +150,7 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
       if (!mountEl) return console.warn('[schedule] mountEl not found');
 
       const currentAppId  = getCurrentAppId();
-      const caseTypeLabel = APP_ID_TO_CASE_TYPE[currentAppId] ?? CASE_TYPE.OTHER; // FIX
+      const caseTypeLabel = SCHEDULE_APP_ID_TO_CASE_TYPE[currentAppId] ?? SCHEDULE_CASE_TYPE.OTHER;
       const caseId        = (rec?.[SCHEDULE_F_CASE_ID]?.value || '').toString().trim();
 
       mountEl.style.display = '';
@@ -224,7 +228,7 @@ const SCHEDULE_APP_ID_TO_CASE_TYPE = {
     let listLoaded = false;
     async function renderList() {
       listEl.textContent = '読込中…';
-      const records = await fetchSchedules(caseId);
+      const records = await fetchSchedules(caseId, caseTypeLabel);
       listEl.innerHTML = '';
       if (!records.length) {
         listEl.textContent = caseId ? 'この案件の予定はありません。' : '予定が見つかりません。';
