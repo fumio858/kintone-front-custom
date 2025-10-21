@@ -9,7 +9,7 @@ const TASK_T_STATUS = 'タスクステータス';
 const TASK_SPACE_ID = 'taskPanel';
 
 // ▼ タスクアプリ側の「分野」フィールドのフィールドコード
-const TASK_T_CASE_TYPE_FIELD = 'case_type';
+const TASK_T_CASE_TYPE_FIELD = 'カテゴリー';
 
 // ▼ 分野ラベル定義（要望どおりの定数名で用意）
 const TASK_CASE_TYPE = { // NEW

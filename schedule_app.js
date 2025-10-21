@@ -8,7 +8,7 @@ const SCHEDULE_SPACE_ID = 'schedulePanel';
 
 // ▼ スケジュールアプリ側に追加した「案件ID／分野」フィールド
 const SCHEDULE_S_CASE_ID_FIELD   = 'case_id';
-const SCHEDULE_S_CASE_TYPE_FIELD = 'case_type';
+const SCHEDULE_S_CASE_TYPE_FIELD = 'カテゴリー';
 
 // ▼ 元アプリ（呼び出し側）に存在する案件IDフィールドコード
 const SCHEDULE_F_CASE_ID = 'case_id'; // ★RENAME: 旧 F_CASE_ID 衝突回避
