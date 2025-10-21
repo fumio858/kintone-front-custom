@@ -172,12 +172,17 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       // 取得系
       async function fetchTasks() {
         if (!caseId) return [];
-        const cEsc = caseId.replace(/\\/g, '\\\\').replace(/"/g, '\"');
-        const query = `${TASK_T_CASE_ID} = "${cEsc}" order by ${TASK_T_DUE} asc`;
+        const cEsc = caseId.replace(///g, '\\').replace(/"/g, '\"');
+
+        // ★現在のアプリの分野（case_type）で絞り込む条件を追加
+        const caseTypeFilter = caseTypeLabel ? ` and ${TASK_T_CASE_TYPE_FIELD} = "${esc(caseTypeLabel)}"` : '';
+
+        const query = `${TASK_T_CASE_ID} = "${cEsc}"${caseTypeFilter} order by ${TASK_T_DUE} asc`;
         try {
           const resp = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query });
           if ((resp.records || []).length === 0 && /^[0-9]+$/.test(caseId)) {
-            const resp2 = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query: `${TASK_T_CASE_ID} = ${caseId} order by ${TASK_T_DUE} asc` });
+            const fallbackQuery = `${TASK_T_CASE_ID} = ${caseId}${caseTypeFilter} order by ${TASK_T_DUE} asc`;
+            const resp2 = await kintone.api(kUrl('/k/v1/records.json'), 'GET', { app: TASK_APP_ID, query: fallbackQuery });
             return resp2.records || [];
           }
           return resp.records || [];
