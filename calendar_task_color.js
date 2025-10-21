@@ -81,6 +81,7 @@
             if (color) {
               item.style.backgroundColor = color;
               item.style.padding = '2px 4px'; // 見栄え調整
+              item.style.margin = '2px'; // 見栄え調整
               item.style.borderRadius = '3px'; // 見栄え調整
             }
           }
