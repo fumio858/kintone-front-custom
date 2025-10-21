@@ -13,7 +13,8 @@
     '刑事交通以外': 55,
   };
 
-  const DISPLAY_FIELD_CODE = 'タイトル'; // 関連レコードから表示したいフィールド
+  const DISPLAY_FIELD_CODE = '案件事件名'; // 関連レコードから表示したいフィールド (今回はiframeなので直接は使わないが、取得はしておく)
+  const IFRAME_HEIGHT = '50vh'; // iframeの高さ
 
   // ==== 設定ここまで ====
 
@@ -33,79 +34,67 @@
 
     // スペースフィールドをクリア
     spaceElement.innerHTML = '';
-    spaceElement.style.padding = '10px';
-    spaceElement.style.border = '1px solid #e3e7e8';
-    spaceElement.style.borderRadius = '6px';
-    spaceElement.style.backgroundColor = '#f7f9fa';
+    spaceElement.style.padding = '0'; // iframeなのでパディングは不要
+    spaceElement.style.border = 'none'; // iframeなのでボーダーは不要
+    spaceElement.style.backgroundColor = 'transparent'; // iframeなので背景色も不要
 
     if (!currentCaseType) {
-      spaceElement.innerHTML = '<p style="color:#c00;">分野が設定されていません。関連レコードを表示できません。</p>';
+      spaceElement.innerHTML = '<p style="color:#c00; padding:10px;">分野が設定されていません。関連レコードを表示できません。</p>';
       return event;
     }
 
     if (!currentRecordCaseId) {
-      spaceElement.innerHTML = '<p style="color:#c00;">現在のレコードのcase_idが設定されていません。関連レコードを表示できません。</p>';
+      spaceElement.innerHTML = '<p style="color:#c00; padding:10px;">現在のレコードのcase_idが設定されていません。関連レコードを表示できません。</p>';
       return event;
     }
 
     const targetAppId = CASE_TYPE_TO_APP_ID_MAP[currentCaseType];
 
     if (!targetAppId) {
-      spaceElement.innerHTML = `<p>分野 '${currentCaseType}' に対応するアプリが見つかりません。</p>`;
+      spaceElement.innerHTML = `<p style="padding:10px;">分野 '${currentCaseType}' に対応するアプリが見つかりません。</p>`;
       return event;
     }
 
-    // 関連レコードの取得
+    // 関連レコードの取得 (iframeのURLを生成するためにレコードIDが必要)
     try {
-      spaceElement.innerHTML = '<p>関連レコードを読み込み中...</p>';
-      // クエリを修正: 関連アプリのレコードIDが現在のレコードのcase_idと一致するものを検索
-      const query = `$id = "${currentRecordCaseId}"`; // レコードIDは数値だが、kintone APIは文字列として受け入れる
+      spaceElement.innerHTML = '<p style="padding:10px;">関連案件の情報を読み込み中...</p>';
+      const query = `$id = "${currentRecordCaseId}"`; // 関連アプリのレコードIDが現在のレコードのcase_idと一致するものを検索
       
-      // Debug logs
-      console.log('現在のレコードID:', currentRecordId); // For context
+      // Debug logs (残しておくか削除するかはユーザーの判断)
+      console.log('現在のレコードID:', currentRecordId);
       console.log('現在の分野:', currentCaseType);
-      console.log('現在のレコードのcase_id:', currentRecordCaseId); // New log
+      console.log('現在のレコードのcase_id:', currentRecordCaseId);
       console.log('対象アプリID:', targetAppId);
-      console.log('検索クエリ:', query); // New log
+      console.log('検索クエリ:', query);
 
       const resp = await kintone.api(kUrl('/k/v1/records'), 'GET', {
         app: targetAppId,
         query: query,
-        fields: ['$id', DISPLAY_FIELD_CODE] // レコードIDと表示フィールドを取得
+        fields: ['$id'] // iframeなので$idのみでOK
       });
 
       const relatedRecords = resp.records || [];
 
       if (relatedRecords.length === 0) {
-        spaceElement.innerHTML = `<p>関連レコードは見つかりませんでした。</p>`;
+        spaceElement.innerHTML = `<p style="padding:10px;">関連案件は見つかりませんでした。</p>`;
       } else {
-        const ul = document.createElement('ul');
-        ul.style.listStyle = 'none';
-        ul.style.padding = '0';
-        ul.style.margin = '0';
+        const relatedRecordId = relatedRecords[0].$id.value; // 最初の関連レコードを使用
+        const iframeUrl = `${location.origin}/k/${targetAppId}/show#record=${relatedRecordId}`;
 
-        relatedRecords.forEach(relRecord => {
-          const li = document.createElement('li');
-          li.style.padding = '5px';
+        const iframe = document.createElement('iframe');
+        iframe.src = iframeUrl;
+        iframe.width = '100%';
+        iframe.height = IFRAME_HEIGHT;
+        iframe.style.border = 'none'; // iframeのボーダーをなくす
+        iframe.style.display = 'block'; // ブロック要素として表示
 
-          const recordId = relRecord.$id.value;
-          const displayValue = relRecord[DISPLAY_FIELD_CODE]?.value || '(タイトルなし)';
-          const link = document.createElement('a');
-          link.href = `${location.origin}/k/${targetAppId}/show#record=${recordId}`;
-          link.target = '_blank'; // 新しいタブで開く
-          link.textContent = displayValue;
-          link.style.textDecoration = 'none';
-          link.style.color = '#3598db';
-
-          li.appendChild(link);
-          ul.appendChild(li);
-        });
         spaceElement.innerHTML = ''; // ローディングメッセージをクリア
-        spaceElement.appendChild(ul);
+        spaceElement.appendChild(iframe);
+        console.log(`関連案件をiframeで表示しました: ${iframeUrl}`);
       }
     } catch (e) {
       console.error('関連レコード取得エラー:', e);
-      spaceElement.innerHTML = `<p style="color:#c00;">関連レコードの取得中にエラーが発生しました: ${e.message || JSON.stringify(e)}</p>`;
+      spaceElement.innerHTML = `<p style="color:#c00; padding:10px;">関連案件の取得中にエラーが発生しました: ${e.message || JSON.stringify(e)}</p>`;
     }
 
     return event;
