@@ -7,9 +7,9 @@
 
   // 分野に応じた色定義
   const CATEGORY_COLORS = {
-    '刑事事件': '#FFDCDC', // 薄い赤
-    '交通事故': '#DCEEFF', // 薄い青
-    '刑事交通以外': '#DCFFDC', // 薄い緑
+    '刑事事件': '#DCEEFF', // 薄い赤
+    '交通事故': '#FFDCDC', // 薄い青
+    '刑事交通以外': '#fdfbc7', // 薄い緑
     '': '#F0F0F0', // 分野が空の場合のデフォルト色
     'その他': '#F0F0F0' // その他、または未定義の場合
   };
@@ -81,6 +81,7 @@
             if (color) {
               item.style.backgroundColor = color;
               item.style.padding = '2px 4px'; // 見栄え調整
+              item.style.margin = '2px'; // 見栄え調整
               item.style.borderRadius = '3px'; // 見栄え調整
             }
           }
