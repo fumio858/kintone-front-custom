@@ -234,6 +234,8 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
       const addBtn = wrap.querySelector('#task-add');
 
+      console.log('Sending record:', JSON.stringify(record, null, 2));
+      
       addBtn.addEventListener('click', async () => {
         const title = (wrap.querySelector('#task-title').value || '').trim();
         const due = (wrap.querySelector('#task-due').value || '').trim();
