@@ -14,7 +14,7 @@
   };
 
   const DISPLAY_FIELD_CODE = '案件事件名'; // iframeなので直接は使わない
-  const IFRAME_HEIGHT = '50vh'; // iframeの高さ
+  const IFRAME_HEIGHT = '1000px'; // iframeの高さ
 
   // ==== 設定ここまで ====
 
