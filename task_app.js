@@ -70,7 +70,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
   }
 
   // ★ 任意のマウント先に描画する本体（呼ばれたら“必ず表示”）
-  async function initTaskPanel(mountEl, rec) {
+  async function initTaskPanel(mountEl, rec, recordId, appId) {
     try {
       mountEl = resolveMountEl(mountEl);
       if (!mountEl) return console.warn('[task] mountEl not found');
@@ -338,37 +338,23 @@ const APP_ID_TO_CASE_TYPE = { // NEW
     }
   }
 
-  // イベント経由
-  document.addEventListener('user-js-open-task', async (e) => {
-    try {
-      const mountEl = e?.detail?.mountEl || null;
-      const recObj = kintone.app.record.get();
-      const rec = recObj && recObj.record ? recObj.record : {};
-      await initTaskPanel(mountEl, rec);
-    } catch (err) {
-      console.error('[task] event handler error:', err);
-    }
-  });
-
   // Space 自動初期化（ランチャーが無くても出す／二重初期化ガード付き）
   kintone.events.on(['app.record.detail.show'], async (event) => {
     const space = kintone.app.record.getSpaceElement(TASK_SPACE_ID);
     if (!space) return event;
     if (!space.dataset.initedTaskPanel) {
       space.dataset.initedTaskPanel = '1';
-      try {
-        await window.userTaskPanelInit(space);
-      } catch (e) {
-        console.warn('[task] auto init failed:', e);
-      }
+      try { await window.userTaskPanelInit(space); } catch (e) { console.warn('[task] auto init failed:', e); }
     }
     return event;
   });
 
-  // 直呼びにも対応（ランチャーの直呼びパス）
+  // ランチャーから呼べるフック
   window.userTaskPanelInit = async function (mountEl) {
     const recObj = kintone.app.record.get();
     const rec = recObj && recObj.record ? recObj.record : {};
-    await initTaskPanel(mountEl, rec);
+    const appId = kintone.app.getId();
+    const recordId = recObj && recObj.record ? (recObj.recordId || kintone.app.record.getId()) : kintone.app.record.getId();
+    await initTaskPanel(mountEl, rec, recordId, appId);
   };
 })();
