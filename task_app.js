@@ -9,7 +9,7 @@ const TASK_T_STATUS = 'タスクステータス';
 const TASK_SPACE_ID = 'taskPanel';
 
 // ▼ タスクアプリ側の「分野」フィールドのフィールドコード
-const TASK_T_CASE_TYPE_FIELD = 'カテゴリー';
+const TASK_T_CATEGORY_FIELD = 'カテゴリー';
 
 // ▼ 分野ラベル定義（要望どおりの定数名で用意）
 const TASK_CASE_TYPE = { // NEW
@@ -258,7 +258,8 @@ const APP_ID_TO_CASE_TYPE = { // NEW
           [TASK_T_DUE]: { value: due || '' },
           [TASK_T_OWNER]: { value: [{ code: owner }] },
           [TASK_T_STATUS]: { value: '未着手' },
-          [TASK_T_CASE_TYPE_FIELD]: { value: caseTypeLabel || '' },
+          [TASK_T_CATEGORY_FIELD]: { value: caseTypeLabel ?
+            [caseTypeLabel] : [] },
         };
 
         // 二重クリック防止
