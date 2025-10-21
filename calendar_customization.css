@@ -3,6 +3,9 @@
   background-color: #f5f5f5!important;
 }
 
+.calendar-today-gaia, .calendar-today-gaia.calendar-othermonth-gaia {
+  background-color: #eaf5fe;
+}
 
 .calendar-row-gaia{
   height: 12vh;
