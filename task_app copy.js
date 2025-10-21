@@ -31,7 +31,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
   'use strict';
 
   const kUrl = (p) => kintone.api.url(p.endsWith('.json') ? p : `${p}.json`, true);
-  const esc = (s='') => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  const esc = (s = '') => String(s).replace(/\\/g, '\\').replace(/"/g, '\"');
 
   // NEW: 現在のアプリIDを安全に取得（kintone.app.getId()優先、だめならURL解析）
   function getCurrentAppId() {
@@ -173,7 +173,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       // 取得系
       async function fetchTasks() {
         if (!caseId) return [];
-        const cEsc = esc(caseId);
+        const cEsc = caseId.replace(///g, '\\').replace(/"/g, '\"');
 
         // ★現在のアプリの分野（case_type）で絞り込む条件を追加
         const caseTypeFilter = caseTypeLabel ? ` and ${TASK_T_CASE_TYPE_FIELD} = "${esc(caseTypeLabel)}"` : '';
