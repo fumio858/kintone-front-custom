@@ -53,17 +53,26 @@
   // --- 全ユーザー情報をキャッシュ ---
   async function loadAllUserPhotos() {
     if (Object.keys(photoCache).length) return;
+
     const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
     resp.users.forEach(u => {
-      const hasPhoto = u.photo && u.photo.url;
+      // 「本物の写真」かどうかを厳密判定
+      const hasRealPhoto =
+        u.photo &&
+        typeof u.photo.url === 'string' &&
+        u.photo.url !== '' &&
+        !u.photo.url.includes('user.png');
+
+      // 本物ならそのURL、なければグレー文字アイコン
       photoCache[u.email] = {
         email: u.email,
         id: u.id,
         code: u.code,
         name: u.name,
-        photoUrl: hasPhoto ? u.photo.url : createInitialIcon(u.name)
+        photoUrl: hasRealPhoto ? u.photo.url : createInitialIcon(u.name)
       };
     });
+
     console.log('✅ photoCache loaded:', photoCache);
   }
 
