@@ -37,7 +37,9 @@
     const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
     resp.users.forEach(u => {
       photoCache[u.email] = {
-        userCode: u.code,
+        email: u.email,
+        userCode: u.code, // ← ユーザーコードを保存
+        name: u.name,
         photoUrl: (u.photo && u.photo.url)
           ? u.photo.url
           : `https://${location.hostname}/api/user/photo.do/-/${u.code}?size=S`
@@ -50,17 +52,13 @@
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
     }
-
-    // userEmail → userCode に変換
-    const allUsers = Object.entries(photoCache);
-    const match = allUsers.find(([mail]) => mail === email);
-    if (match) {
-      const user = match[1];
-      if (user.userCode) {
-        return `https://${location.hostname}/api/user/photo.do/-/${user.userCode}?size=S`;
-      }
+  
+    // email からユーザー情報を検索
+    const userInfo = Object.values(photoCache).find(u => u.email === email);
+    if (userInfo && userInfo.userCode) {
+      return `https://${location.hostname}/api/user/photo.do/-/${userInfo.userCode}?size=S`;
     }
-
+  
     return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
   }
 
