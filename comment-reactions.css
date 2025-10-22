@@ -49,3 +49,9 @@
   font-size: 11px;
   margin-left: 3px;
 }
+
+
+a.commentlist-footer-like-count-gaia,
+a.commentlist-footer-like-gaia {
+  display: none !important;
+}
