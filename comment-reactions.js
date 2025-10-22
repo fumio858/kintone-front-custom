@@ -2,7 +2,7 @@
   'use strict';
 
   const EMOJIS = ['👍', '❤️', '😆', '😢'];
-  const FIELD_CODE = 'reaction_log'; // 文字列(複数行) フィールドを1つ用意
+  const FIELD_CODE = 'reaction_log'; // 文字列(複数行)
   const EMOJI_MAP = {
     ':smile:': '😄',
     ':cry:': '😢',
@@ -41,8 +41,8 @@
     comment.innerHTML = html;
   }
 
-  // --- リアクションバー描画 ---
-  function renderReactions(comment, commentId, log, user) {
+  // --- リアクションバー生成 ---
+  function renderReactions(commentElem, commentId, log, user) {
     const bar = document.createElement('div');
     bar.className = 'cw-reactions';
 
@@ -58,21 +58,25 @@
       bar.appendChild(btn);
     });
 
-    comment.appendChild(bar);
+    // コメント本文の下、フッターの前に挿入
+    const footer = commentElem.querySelector('.text11.itemlist-footer-gaia');
+    if (footer && !commentElem.querySelector('.cw-reactions')) {
+      footer.parentNode.insertBefore(bar, footer);
+    }
   }
 
-  // --- コメントDOMを監視し反映 ---
+  // --- メイン処理 ---
   async function initReactions(ev) {
     const recordId = ev.recordId;
     const user = kintone.getLoginUser().email;
     const log = await getLog(recordId);
 
-    const comments = document.querySelectorAll('.ocean-ui-comments-comment');
+    const comments = document.querySelectorAll('.itemlist-item-gaia');
     comments.forEach((c, i) => {
       const commentId = `comment_${i}`;
-      const text = c.querySelector('.ocean-ui-comments-comment-text');
-      if (text) replaceEmojiInCommentText(text);
-      if (!c.querySelector('.cw-reactions')) renderReactions(c, commentId, log, user);
+      const textElem = c.querySelector('.commentlist-body-gaia > div');
+      if (textElem) replaceEmojiInCommentText(textElem);
+      renderReactions(c, commentId, log, user);
     });
 
     // --- リアクションクリック処理 ---
@@ -88,7 +92,7 @@
         log[commentId][emoji].push(user);
       }
       await saveLog(recordId, log);
-      location.reload(); // 再描画
+      location.reload();
     });
   }
 
