@@ -53,19 +53,25 @@
 /* ユーザーアイコン */
 .cw-user-icon {
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  overflow: hidden;
   margin-right: 4px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+
+/* 画像を丸く中央寄せで切り抜き */
 .cw-user-icon img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  display: block;
 }
+
+/* 絵文字バッジ（はみ出してOK） */
 .cw-emoji-badge {
   position: absolute;
   bottom: -2px;
@@ -79,7 +85,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2; /* 絵文字を上に */
 }
+
+/* ツールチップ */
 .cw-tooltip {
   position: absolute;
   background: #333;
@@ -92,11 +101,16 @@
   transform: translateY(5px);
   transition: all 0.15s ease-out;
   pointer-events: none;
-  z-index: 1000;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, 5px);
+  z-index: 10; /* バッジより上に */
 }
+
+/* ホバー時ふわっと出現 */
 .cw-user-icon:hover .cw-tooltip {
   opacity: 1;
-  transform: translateY(-4px);
+  transform: translate(-50%, -6px);
 }
 
 
