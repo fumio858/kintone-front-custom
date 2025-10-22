@@ -53,6 +53,22 @@
     comment.innerHTML = html;
   }
 
+  // --- ユーザー一覧をキャッシュして写真URLを参照 ---
+  async function loadAllUserPhotos() {
+    const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
+    resp.users.forEach(u => {
+      photoCache[u.email] = u.photo.url || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+    });
+  }
+
+  // --- ユーザーアイコン取得 ---
+  async function getUserPhoto(email) {
+    if (!Object.keys(photoCache).length) {
+      await loadAllUserPhotos();
+    }
+    return photoCache[email] || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+  }
+
   // --- リアクションバー + ユーザー欄描画 ---
   async function renderReactions(commentElem, commentId, log, user) {
     const wrapper = document.createElement('div');
