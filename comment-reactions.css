@@ -74,11 +74,11 @@
 /* 絵文字バッジ（はみ出してOK） */
 .cw-emoji-badge {
   position: absolute;
-  bottom: -2px;
-  right: -3px;
-  background: #fff;
+  bottom: -3px;
+  right: -5px;
+  /* background: #fff; */
   border-radius: 50%;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   font-size: 12px;
   width: 16px;
   height: 16px;
