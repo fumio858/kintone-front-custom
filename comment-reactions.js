@@ -31,30 +31,9 @@
     });
   }
 
-  // --- ユーザーアイコン取得（キャッシュ付き） ---
-  async function getUserPhoto(email) {
-    if (photoCache[email]) return photoCache[email];
-    try {
-      const resp = await kintone.api(kintone.api.url('/v1/user', true), 'GET', { code: email });
-      const photoUrl = resp.user.photo.url || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
-      photoCache[email] = photoUrl;
-      return photoUrl;
-    } catch {
-      return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
-    }
-  }
-
-  // --- コメント内の :smile: → 😄 変換 ---
-  function replaceEmojiInCommentText(comment) {
-    let html = comment.innerHTML;
-    for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
-      html = html.replaceAll(code, emoji);
-    }
-    comment.innerHTML = html;
-  }
-
-  // --- 全ユーザー情報を一括ロード ---
+  // --- 全ユーザー情報をキャッシュ ---
   async function loadAllUserPhotos() {
+    if (Object.keys(photoCache).length) return; // 一度ロード済ならスキップ
     try {
       const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
       resp.users.forEach(u => {
@@ -65,7 +44,7 @@
     }
   }
 
-  // --- 個別ユーザー写真取得（キャッシュ利用） ---
+  // --- ユーザーアイコン取得（キャッシュ利用） ---
   async function getUserPhoto(email) {
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
@@ -73,6 +52,14 @@
     return photoCache[email] || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
   }
 
+  // --- コメント内の :smile: → 😄 変換 ---
+  function replaceEmojiInCommentText(comment) {
+    let html = comment.innerHTML;
+    for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
+      html = html.replaceAll(code, emoji);
+    }
+    comment.innerHTML = html;
+  }
 
   // --- リアクションバー + ユーザー欄描画 ---
   async function renderReactions(commentElem, commentId, log, user) {
@@ -124,6 +111,7 @@
     const recordId = ev.recordId;
     const user = kintone.getLoginUser().email;
     const log = await getLog(recordId);
+    await loadAllUserPhotos(); // ←ここで一括ロード済にしておく
 
     const comments = document.querySelectorAll('.itemlist-item-gaia');
     for (let i = 0; i < comments.length; i++) {
@@ -161,7 +149,8 @@
       }
 
       await saveLog(recordId, log);
-      // 画像欄も再描画
+
+      // 画像欄を即再描画
       const parentComment = e.target.closest('.itemlist-item-gaia');
       const wrapper = parentComment.querySelector('.cw-reaction-wrapper');
       if (wrapper) wrapper.remove();
