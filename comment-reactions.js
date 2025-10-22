@@ -33,24 +33,36 @@
 
   // --- 全ユーザー情報をキャッシュ ---
   async function loadAllUserPhotos() {
-    if (Object.keys(photoCache).length) return; // 一度ロード済ならスキップ
-    try {
-      const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
-      resp.users.forEach(u => {
-        photoCache[u.email] = u.photo.url || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
-      });
-    } catch (err) {
-      console.error('ユーザー一覧取得に失敗しました', err);
-    }
+    if (Object.keys(photoCache).length) return;
+    const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
+    resp.users.forEach(u => {
+      photoCache[u.email] = {
+        userCode: u.code,
+        photoUrl: u.photo.url
+      };
+    });
   }
+  
 
   // --- ユーザーアイコン取得（キャッシュ利用） ---
   async function getUserPhoto(email) {
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
     }
-    return photoCache[email] || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+  
+    // userEmail → userCode に変換
+    const allUsers = Object.entries(photoCache);
+    const match = allUsers.find(([mail]) => mail === email);
+    if (match) {
+      const user = match[1];
+      if (user.userCode) {
+        return `https://${location.hostname}/api/user/photo.do/-/${user.userCode}?size=S`;
+      }
+    }
+  
+    return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
   }
+  
 
   // --- コメント内の :smile: → 😄 変換 ---
   function replaceEmojiInCommentText(comment) {
