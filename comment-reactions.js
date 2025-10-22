@@ -9,6 +9,7 @@
     ':heart:': '❤️',
     ':ok:': '👌'
   };
+  const photoCache = {};
 
   async function getLog(recordId) {
     const resp = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
@@ -30,6 +31,20 @@
     });
   }
 
+  // --- ユーザーアイコン取得（キャッシュ付き） ---
+  async function getUserPhoto(email) {
+    if (photoCache[email]) return photoCache[email];
+    try {
+      const resp = await kintone.api(kintone.api.url('/v1/user', true), 'GET', { code: email });
+      const photoUrl = resp.user.photo.url || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+      photoCache[email] = photoUrl;
+      return photoUrl;
+    } catch {
+      return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+    }
+  }
+
+  // --- コメント内の :smile: → 😄 変換 ---
   function replaceEmojiInCommentText(comment) {
     let html = comment.innerHTML;
     for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
@@ -38,11 +53,31 @@
     comment.innerHTML = html;
   }
 
-  // コメント下のリアクションバー
-  function renderReactions(commentElem, commentId, log, user) {
+  // --- リアクションバー + ユーザー欄描画 ---
+  async function renderReactions(commentElem, commentId, log, user) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cw-reaction-wrapper';
+
+    // 左下：リアクションしたユーザーのサムネ
+    const userList = document.createElement('div');
+    userList.className = 'cw-reaction-users';
+
+    const uniqueUsers = new Set();
+    for (const emoji of Object.keys(log[commentId] || {})) {
+      (log[commentId][emoji] || []).forEach(u => uniqueUsers.add(u));
+    }
+
+    for (const u of uniqueUsers) {
+      const url = await getUserPhoto(u);
+      const img = document.createElement('img');
+      img.src = url;
+      img.title = u;
+      userList.appendChild(img);
+    }
+
+    // 右下：リアクションボタン群
     const bar = document.createElement('div');
     bar.className = 'cw-reactions';
-
     EMOJIS.forEach(e => {
       const users = (log[commentId]?.[e] || []);
       const count = users.length > 0 ? `<span>${users.length}</span>` : '';
@@ -55,37 +90,12 @@
       bar.appendChild(btn);
     });
 
+    wrapper.appendChild(userList);
+    wrapper.appendChild(bar);
+
     const footer = commentElem.querySelector('.text11.itemlist-footer-gaia');
-    if (footer && !footer.querySelector('.cw-reactions')) {
-      footer.appendChild(bar);
-    }
-  }
-
-  // 各コメント投稿者のアイコン右下にバッジ表示
-  function renderUserBadges(commentElem, commentId, log) {
-    const iconWrapper = commentElem.querySelector('.itemlist-userImage-gaia');
-    if (!iconWrapper) return;
-
-    // そのコメントに対して誰がどのリアクションを押したかを探索
-    const reactions = log[commentId] || {};
-    const flattened = [];
-    for (const [emoji, users] of Object.entries(reactions)) {
-      users.forEach(u => flattened.push({ user: u, emoji }));
-    }
-
-    // このコメントの投稿者メールを取得
-    const userNameElem = commentElem.querySelector('.itemlist-user-gaia button');
-    if (!userNameElem) return;
-    const nameText = userNameElem.textContent.trim();
-
-    // 自分の名前と一致する場合のみ表示（投稿者バッジ）
-    const myReactions = flattened.filter(r => r.user.includes(nameText));
-    if (myReactions.length > 0) {
-      const badge = document.createElement('div');
-      badge.className = 'cw-emoji-badge';
-      badge.textContent = myReactions[myReactions.length - 1].emoji;
-      iconWrapper.style.position = 'relative';
-      iconWrapper.appendChild(badge);
+    if (footer && !footer.querySelector('.cw-reaction-wrapper')) {
+      footer.appendChild(wrapper);
     }
   }
 
@@ -95,13 +105,13 @@
     const log = await getLog(recordId);
 
     const comments = document.querySelectorAll('.itemlist-item-gaia');
-    comments.forEach((c, i) => {
+    for (let i = 0; i < comments.length; i++) {
+      const c = comments[i];
       const commentId = `comment_${i}`;
       const textElem = c.querySelector('.commentlist-body-gaia > div');
       if (textElem) replaceEmojiInCommentText(textElem);
-      renderReactions(c, commentId, log, user);
-      renderUserBadges(c, commentId, log);
-    });
+      await renderReactions(c, commentId, log, user);
+    }
 
     document.body.addEventListener('click', async e => {
       if (!e.target.classList.contains('cw-react-btn')) return;
@@ -120,14 +130,21 @@
         e.target.classList.add('active');
       }
 
-      // --- カウント更新 ---
+      // カウント更新
       const countElem = e.target.querySelector('span');
       if (users.length > 0) {
         if (countElem) countElem.textContent = users.length;
         else e.target.insertAdjacentHTML('beforeend', `<span>${users.length}</span>`);
-      } else if (countElem) countElem.remove();
+      } else if (countElem) {
+        countElem.remove();
+      }
 
       await saveLog(recordId, log);
+      // 画像欄も再描画
+      const parentComment = e.target.closest('.itemlist-item-gaia');
+      const wrapper = parentComment.querySelector('.cw-reaction-wrapper');
+      if (wrapper) wrapper.remove();
+      await renderReactions(parentComment, commentId, log, user);
     });
   }
 
