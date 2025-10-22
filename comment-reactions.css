@@ -1,0 +1,27 @@
+.cw-reactions {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0 2px 48px; /* アイコンと整列 */
+}
+.cw-react-btn {
+  border: none;
+  background: #f4f4f4;
+  border-radius: 16px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.cw-react-btn:hover {
+  background: #e7e7e7;
+}
+.cw-react-btn.active {
+  background: #fff3b0;
+  font-weight: bold;
+}
+.cw-react-btn span {
+  font-size: 12px;
+  margin-left: 4px;
+}
