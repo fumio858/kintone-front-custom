@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const EMOJIS = ['👍', '❤️', '😆', '😢'];
+  const EMOJIS = ['😄', '😢', '❤️', '👌'];
   const FIELD_CODE = 'reaction_log';
   const EMOJI_MAP = {
     ':smile:': '😄',
