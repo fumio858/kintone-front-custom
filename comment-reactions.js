@@ -38,18 +38,19 @@
     resp.users.forEach(u => {
       photoCache[u.email] = {
         userCode: u.code,
-        photoUrl: u.photo.url
+        photoUrl: (u.photo && u.photo.url)
+          ? u.photo.url
+          : `https://${location.hostname}/api/user/photo.do/-/${u.code}?size=S`
       };
     });
   }
-  
 
   // --- ユーザーアイコン取得（キャッシュ利用） ---
   async function getUserPhoto(email) {
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
     }
-  
+
     // userEmail → userCode に変換
     const allUsers = Object.entries(photoCache);
     const match = allUsers.find(([mail]) => mail === email);
@@ -59,10 +60,9 @@
         return `https://${location.hostname}/api/user/photo.do/-/${user.userCode}?size=S`;
       }
     }
-  
+
     return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
   }
-  
 
   // --- コメント内の :smile: → 😄 変換 ---
   function replaceEmojiInCommentText(comment) {
