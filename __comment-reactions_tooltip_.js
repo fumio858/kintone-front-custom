@@ -47,19 +47,19 @@
     });
     console.log('✅ photoCache loaded:', photoCache);
   }
-
+  
   async function getUserPhoto(email) {
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
     }
-
+  
     const userInfo = photoCache[email];
     if (userInfo && userInfo.photoUrl) {
       return userInfo.photoUrl;
     }
-
+  
     return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
-  }
+  }  
 
   // --- コメント内の :smile: → 😄 変換 ---
   function replaceEmojiInCommentText(comment) {
@@ -88,26 +88,26 @@
       const url = await getUserPhoto(u);
       const imgWrap = document.createElement('div');
       imgWrap.className = 'cw-user-icon';
-    
       const img = document.createElement('img');
       img.src = url;
       imgWrap.appendChild(img);
     
-      // 🎯 押した絵文字を右下に表示
-      const emojiBadge = document.createElement('span');
-      emojiBadge.className = 'cw-emoji-badge';
+      // 💬 ユーザー名＋絵文字一覧のツールチップ
+      const tooltip = document.createElement('div');
+      tooltip.className = 'cw-tooltip';
     
+      // このユーザーが押した絵文字を列挙
+      const emojis = [];
       for (const [emoji, users] of Object.entries(log[commentId] || {})) {
-        if (users.includes(u)) {
-          emojiBadge.textContent = emoji;
-          break;
-        }
+        if (users.includes(u)) emojis.push(emoji);
       }
-      if (emojiBadge.textContent) imgWrap.appendChild(emojiBadge);
+      const userInfo = photoCache[u] ? photoCache[u].name : u;
+      tooltip.textContent = `${userInfo} ${emojis.join(' ')}`;
     
+      imgWrap.appendChild(tooltip);
       userList.appendChild(imgWrap);
-    }    
-
+    }
+    
 
     // 右下：リアクションボタン群
     const bar = document.createElement('div');
@@ -148,46 +148,40 @@
       await renderReactions(c, commentId, log, user);
     }
 
-    // --- クリック時処理（1ユーザー1絵文字ルール） ---
     document.body.addEventListener('click', async e => {
       if (!e.target.classList.contains('cw-react-btn')) return;
       const emoji = e.target.dataset.emoji;
       const commentId = e.target.dataset.commentId;
-
       log[commentId] ??= {};
+      log[commentId][emoji] ??= [];
 
-      // 既存のすべての絵文字から自分のリアクションを削除
-      for (const eKey of Object.keys(log[commentId])) {
-        log[commentId][eKey] = (log[commentId][eKey] || []).filter(u => u !== user);
+      const users = log[commentId][emoji];
+      const userIndex = users.indexOf(user);
+      if (userIndex >= 0) {
+        users.splice(userIndex, 1);
+        e.target.classList.remove('active');
+      } else {
+        users.push(user);
+        e.target.classList.add('active');
       }
 
-      // 新しい絵文字を登録（同じ絵文字再押しでキャンセル）
-      const users = (log[commentId][emoji] ||= []);
-      const already = users.includes(user);
-      if (!already) users.push(user);
-
-      // --- カウント更新 ---
-      EMOJIS.forEach(eKey => {
-        const btn = document.querySelector(`.cw-react-btn[data-comment-id="${commentId}"][data-emoji="${eKey}"]`);
-        if (!btn) return;
-        const ucount = (log[commentId][eKey] || []).length;
-        const countElem = btn.querySelector('span');
-        if (ucount > 0) {
-          if (countElem) countElem.textContent = ucount;
-          else btn.insertAdjacentHTML('beforeend', `<span>${ucount}</span>`);
-          btn.classList.toggle('active', (log[commentId][eKey] || []).includes(user));
-        } else if (countElem) countElem.remove();
-      });
+      // カウント更新
+      const countElem = e.target.querySelector('span');
+      if (users.length > 0) {
+        if (countElem) countElem.textContent = users.length;
+        else e.target.insertAdjacentHTML('beforeend', `<span>${users.length}</span>`);
+      } else if (countElem) {
+        countElem.remove();
+      }
 
       await saveLog(recordId, log);
 
-      // --- 再描画（絵文字バッジ付きサムネ） ---
+      // 画像欄を即再描画
       const parentComment = e.target.closest('.itemlist-item-gaia');
       const wrapper = parentComment.querySelector('.cw-reaction-wrapper');
       if (wrapper) wrapper.remove();
       await renderReactions(parentComment, commentId, log, user);
     });
-
   }
 
   kintone.events.on('app.record.detail.show', initReactions);
