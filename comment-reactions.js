@@ -56,20 +56,20 @@
 
     const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
     resp.users.forEach(u => {
-      // 「本物の写真」かどうかを厳密判定
-      const hasRealPhoto =
-        u.photo &&
-        typeof u.photo.url === 'string' &&
-        u.photo.url !== '' &&
-        !u.photo.url.includes('user.png');
+      // プロフィール画像URL（空文字やデフォルトアイコンを除外）
+      const url = u?.photo?.url || '';
+      const isRealPhoto =
+        url &&
+        !url.includes('/user.png') && // ← デフォルトの「人アイコン」を除外
+        !url.includes('no_photo.png'); // ← 念のためno_photoも除外
 
-      // 本物ならそのURL、なければグレー文字アイコン
+      // 本物の写真がある場合はそのURL、なければグレー文字アイコン
       photoCache[u.email] = {
         email: u.email,
         id: u.id,
         code: u.code,
         name: u.name,
-        photoUrl: hasRealPhoto ? u.photo.url : createInitialIcon(u.name)
+        photoUrl: isRealPhoto ? url : createInitialIcon(u.name)
       };
     });
 
