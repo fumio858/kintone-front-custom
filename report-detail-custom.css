@@ -148,3 +148,22 @@
 .ocean-ui-comments-likeuserspopup{
   left: 100px!important;
 }
+
+
+
+
+/* * * * * * * * * * * 非表示フィールドを登録 * * * * * * * * * * */
+/* 刑事事件 */
+.field-5118284,.field-13312476{
+  display: none;
+}
+
+/* 交通事故 */
+.field-13312475,.field-13312087{
+  display: none;
+}
+
+/* 刑事交通以外 */
+.field-13312087,.field-13312477{
+  display: none;
+}
