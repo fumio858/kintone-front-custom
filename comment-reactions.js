@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   const EMOJIS = ['😄', '😢', '❤️', '👌'];
@@ -53,21 +53,26 @@
     comment.innerHTML = html;
   }
 
-  // --- ユーザー一覧をキャッシュして写真URLを参照 ---
+  // --- 全ユーザー情報を一括ロード ---
   async function loadAllUserPhotos() {
-    const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
-    resp.users.forEach(u => {
-      photoCache[u.email] = u.photo.url || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
-    });
+    try {
+      const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
+      resp.users.forEach(u => {
+        photoCache[u.email] = u.photo.url || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+      });
+    } catch (err) {
+      console.error('ユーザー一覧取得に失敗しました', err);
+    }
   }
 
-  // --- ユーザーアイコン取得 ---
+  // --- 個別ユーザー写真取得（キャッシュ利用） ---
   async function getUserPhoto(email) {
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
     }
     return photoCache[email] || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
   }
+
 
   // --- リアクションバー + ユーザー欄描画 ---
   async function renderReactions(commentElem, commentId, log, user) {
