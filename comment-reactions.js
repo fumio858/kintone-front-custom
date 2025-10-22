@@ -76,16 +76,34 @@
       if (!e.target.classList.contains('cw-react-btn')) return;
       const emoji = e.target.dataset.emoji;
       const commentId = e.target.dataset.commentId;
+    
       log[commentId] ??= {};
       log[commentId][emoji] ??= [];
-      if (log[commentId][emoji].includes(user)) {
-        log[commentId][emoji] = log[commentId][emoji].filter(u => u !== user);
+    
+      const users = log[commentId][emoji];
+      const userIndex = users.indexOf(user);
+    
+      // --- 自分のリアクションをトグル ---
+      if (userIndex >= 0) {
+        users.splice(userIndex, 1);
+        e.target.classList.remove('active');
       } else {
-        log[commentId][emoji].push(user);
+        users.push(user);
+        e.target.classList.add('active');
       }
+    
+      // --- カウント更新（リロードせず動的反映） ---
+      const countElem = e.target.querySelector('span');
+      if (users.length > 0) {
+        if (countElem) countElem.textContent = users.length;
+        else e.target.insertAdjacentHTML('beforeend', `<span>${users.length}</span>`);
+      } else if (countElem) {
+        countElem.remove();
+      }
+    
+      // --- サーバー側にも保存 ---
       await saveLog(recordId, log);
-      location.reload();
-    });
+    });    
   }
 
   kintone.events.on('app.record.detail.show', initReactions);
