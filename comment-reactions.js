@@ -52,16 +52,10 @@
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
     }
-
     const userInfo = photoCache[email];
-    if (userInfo && userInfo.photoUrl) {
-      return userInfo.photoUrl;
-    }
-
-    return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+    return userInfo?.photoUrl || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
   }
 
-  // --- コメント内の :smile: → 😄 変換 ---
   function replaceEmojiInCommentText(comment) {
     let html = comment.innerHTML;
     for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
@@ -70,12 +64,12 @@
     comment.innerHTML = html;
   }
 
-  // --- リアクションバー + ユーザー欄描画 ---
+  // --- リアクションバー + サムネ描画 ---
   async function renderReactions(commentElem, commentId, log, user) {
     const wrapper = document.createElement('div');
     wrapper.className = 'cw-reaction-wrapper';
 
-    // 左下：リアクションしたユーザーのサムネ
+    // 👤 サムネ表示
     const userList = document.createElement('div');
     userList.className = 'cw-reaction-users';
 
@@ -88,15 +82,13 @@
       const url = await getUserPhoto(u);
       const imgWrap = document.createElement('div');
       imgWrap.className = 'cw-user-icon';
-    
       const img = document.createElement('img');
       img.src = url;
       imgWrap.appendChild(img);
-    
-      // 🎯 押した絵文字を右下に表示
+
+      // 🎯 押した絵文字（右下に表示）
       const emojiBadge = document.createElement('span');
       emojiBadge.className = 'cw-emoji-badge';
-    
       for (const [emoji, users] of Object.entries(log[commentId] || {})) {
         if (users.includes(u)) {
           emojiBadge.textContent = emoji;
@@ -104,12 +96,22 @@
         }
       }
       if (emojiBadge.textContent) imgWrap.appendChild(emojiBadge);
-    
+
+      // 💬 ツールチップ（名前＋絵文字）
+      const tooltip = document.createElement('div');
+      tooltip.className = 'cw-tooltip';
+      const emojis = [];
+      for (const [emoji, users] of Object.entries(log[commentId] || {})) {
+        if (users.includes(u)) emojis.push(emoji);
+      }
+      const userInfo = photoCache[u]?.name || u;
+      tooltip.textContent = `${userInfo} ${emojis.join(' ')}`;
+      imgWrap.appendChild(tooltip);
+
       userList.appendChild(imgWrap);
-    }    
+    }
 
-
-    // 右下：リアクションボタン群
+    // 😄 ボタン群
     const bar = document.createElement('div');
     bar.className = 'cw-reactions';
     EMOJIS.forEach(e => {
@@ -133,11 +135,12 @@
     }
   }
 
+  // --- 初期化 ---
   async function initReactions(ev) {
     const recordId = ev.recordId;
     const user = kintone.getLoginUser().email;
     const log = await getLog(recordId);
-    await loadAllUserPhotos(); // ←ここで一括ロード済にしておく
+    await loadAllUserPhotos();
 
     const comments = document.querySelectorAll('.itemlist-item-gaia');
     for (let i = 0; i < comments.length; i++) {
@@ -148,7 +151,7 @@
       await renderReactions(c, commentId, log, user);
     }
 
-    // --- クリック時処理（1ユーザー1絵文字ルール） ---
+    // 🎯 クリック時
     document.body.addEventListener('click', async e => {
       if (!e.target.classList.contains('cw-react-btn')) return;
       const emoji = e.target.dataset.emoji;
@@ -156,38 +159,24 @@
 
       log[commentId] ??= {};
 
-      // 既存のすべての絵文字から自分のリアクションを削除
+      // すべての絵文字から自分を削除（1ユーザー1絵文字ルール）
       for (const eKey of Object.keys(log[commentId])) {
         log[commentId][eKey] = (log[commentId][eKey] || []).filter(u => u !== user);
       }
 
-      // 新しい絵文字を登録（同じ絵文字再押しでキャンセル）
+      // 新しい絵文字を追加（再押しで解除）
       const users = (log[commentId][emoji] ||= []);
       const already = users.includes(user);
       if (!already) users.push(user);
 
-      // --- カウント更新 ---
-      EMOJIS.forEach(eKey => {
-        const btn = document.querySelector(`.cw-react-btn[data-comment-id="${commentId}"][data-emoji="${eKey}"]`);
-        if (!btn) return;
-        const ucount = (log[commentId][eKey] || []).length;
-        const countElem = btn.querySelector('span');
-        if (ucount > 0) {
-          if (countElem) countElem.textContent = ucount;
-          else btn.insertAdjacentHTML('beforeend', `<span>${ucount}</span>`);
-          btn.classList.toggle('active', (log[commentId][eKey] || []).includes(user));
-        } else if (countElem) countElem.remove();
-      });
-
       await saveLog(recordId, log);
 
-      // --- 再描画（絵文字バッジ付きサムネ） ---
+      // 再描画
       const parentComment = e.target.closest('.itemlist-item-gaia');
       const wrapper = parentComment.querySelector('.cw-reaction-wrapper');
       if (wrapper) wrapper.remove();
       await renderReactions(parentComment, commentId, log, user);
     });
-
   }
 
   kintone.events.on('app.record.detail.show', initReactions);
