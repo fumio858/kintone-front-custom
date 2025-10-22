@@ -53,17 +53,17 @@
   // --- 全ユーザー情報をキャッシュ ---
   async function loadAllUserPhotos() {
     if (Object.keys(photoCache).length) return;
-
+  
     const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
     resp.users.forEach(u => {
-      // プロフィール画像URL（空文字やデフォルトアイコンを除外）
       const url = u?.photo?.url || '';
+  
+      // ✅ hash= があるURLは本物の登録画像
       const isRealPhoto =
-        url &&
-        !url.includes('/user.png') && // ← デフォルトの「人アイコン」を除外
-        !url.includes('no_photo.png'); // ← 念のためno_photoも除外
-
-      // 本物の写真がある場合はそのURL、なければグレー文字アイコン
+        typeof url === 'string' &&
+        url !== '' &&
+        url.includes('hash=');
+  
       photoCache[u.email] = {
         email: u.email,
         id: u.id,
@@ -72,7 +72,7 @@
         photoUrl: isRealPhoto ? url : createInitialIcon(u.name)
       };
     });
-
+  
     console.log('✅ photoCache loaded:', photoCache);
   }
 
