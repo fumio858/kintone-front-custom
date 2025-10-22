@@ -38,13 +38,15 @@
     resp.users.forEach(u => {
       photoCache[u.email] = {
         email: u.email,
-        userCode: u.code, // ← ユーザーコードを保存
+        code: u.code, // ← 「userCode」ではなく「code」として統一
         name: u.name,
+        // photo.urlがある場合はそれを優先
         photoUrl: (u.photo && u.photo.url)
           ? u.photo.url
           : `https://${location.hostname}/api/user/photo.do/-/${u.code}?size=S`
       };
     });
+    console.log('✅ photoCache loaded:', photoCache);
   }
 
   // --- ユーザーアイコン取得（キャッシュ利用） ---
@@ -53,10 +55,10 @@
       await loadAllUserPhotos();
     }
   
-    // email からユーザー情報を検索
-    const userInfo = Object.values(photoCache).find(u => u.email === email);
-    if (userInfo && userInfo.userCode) {
-      return `https://${location.hostname}/api/user/photo.do/-/${userInfo.userCode}?size=S`;
+    const userInfo = photoCache[email];
+    if (userInfo && userInfo.code) {
+      // user.code（ユーザーコード）を使ってURL生成
+      return `https://${location.hostname}/api/user/photo.do/-/${userInfo.code}?size=S`;
     }
   
     return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
