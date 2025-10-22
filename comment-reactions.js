@@ -36,33 +36,30 @@
     if (Object.keys(photoCache).length) return;
     const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
     resp.users.forEach(u => {
+      const baseUrl = `https://${location.hostname}/api/user/photo.do/-/user.png?id=${u.id}&size=NORMAL`;
       photoCache[u.email] = {
         email: u.email,
-        code: u.code, // ← 「userCode」ではなく「code」として統一
+        id: u.id,
+        code: u.code,
         name: u.name,
-        // photo.urlがある場合はそれを優先
-        photoUrl: (u.photo && u.photo.url)
-          ? u.photo.url
-          : `https://${location.hostname}/api/user/photo.do/-/${u.code}?size=S`
+        photoUrl: (u.photo && u.photo.url) ? u.photo.url : baseUrl
       };
     });
     console.log('✅ photoCache loaded:', photoCache);
   }
-
-  // --- ユーザーアイコン取得（キャッシュ利用） ---
+  
   async function getUserPhoto(email) {
     if (!Object.keys(photoCache).length) {
       await loadAllUserPhotos();
     }
   
     const userInfo = photoCache[email];
-    if (userInfo && userInfo.code) {
-      // user.code（ユーザーコード）を使ってURL生成
-      return `https://${location.hostname}/api/user/photo.do/-/${userInfo.code}?size=S`;
+    if (userInfo && userInfo.photoUrl) {
+      return userInfo.photoUrl;
     }
   
     return 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
-  }
+  }  
 
   // --- コメント内の :smile: → 😄 変換 ---
   function replaceEmojiInCommentText(comment) {
