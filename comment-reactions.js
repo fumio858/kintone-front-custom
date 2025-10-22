@@ -38,9 +38,11 @@
     comment.innerHTML = html;
   }
 
+  // コメント下のリアクションバー
   function renderReactions(commentElem, commentId, log, user) {
     const bar = document.createElement('div');
     bar.className = 'cw-reactions';
+
     EMOJIS.forEach(e => {
       const users = (log[commentId]?.[e] || []);
       const count = users.length > 0 ? `<span>${users.length}</span>` : '';
@@ -59,6 +61,34 @@
     }
   }
 
+  // 各コメント投稿者のアイコン右下にバッジ表示
+  function renderUserBadges(commentElem, commentId, log) {
+    const iconWrapper = commentElem.querySelector('.itemlist-userImage-gaia');
+    if (!iconWrapper) return;
+
+    // そのコメントに対して誰がどのリアクションを押したかを探索
+    const reactions = log[commentId] || {};
+    const flattened = [];
+    for (const [emoji, users] of Object.entries(reactions)) {
+      users.forEach(u => flattened.push({ user: u, emoji }));
+    }
+
+    // このコメントの投稿者メールを取得
+    const userNameElem = commentElem.querySelector('.itemlist-user-gaia button');
+    if (!userNameElem) return;
+    const nameText = userNameElem.textContent.trim();
+
+    // 自分の名前と一致する場合のみ表示（投稿者バッジ）
+    const myReactions = flattened.filter(r => r.user.includes(nameText));
+    if (myReactions.length > 0) {
+      const badge = document.createElement('div');
+      badge.className = 'cw-emoji-badge';
+      badge.textContent = myReactions[myReactions.length - 1].emoji;
+      iconWrapper.style.position = 'relative';
+      iconWrapper.appendChild(badge);
+    }
+  }
+
   async function initReactions(ev) {
     const recordId = ev.recordId;
     const user = kintone.getLoginUser().email;
@@ -70,20 +100,18 @@
       const textElem = c.querySelector('.commentlist-body-gaia > div');
       if (textElem) replaceEmojiInCommentText(textElem);
       renderReactions(c, commentId, log, user);
+      renderUserBadges(c, commentId, log);
     });
 
     document.body.addEventListener('click', async e => {
       if (!e.target.classList.contains('cw-react-btn')) return;
       const emoji = e.target.dataset.emoji;
       const commentId = e.target.dataset.commentId;
-    
       log[commentId] ??= {};
       log[commentId][emoji] ??= [];
-    
+
       const users = log[commentId][emoji];
       const userIndex = users.indexOf(user);
-    
-      // --- 自分のリアクションをトグル ---
       if (userIndex >= 0) {
         users.splice(userIndex, 1);
         e.target.classList.remove('active');
@@ -91,19 +119,16 @@
         users.push(user);
         e.target.classList.add('active');
       }
-    
-      // --- カウント更新（リロードせず動的反映） ---
+
+      // --- カウント更新 ---
       const countElem = e.target.querySelector('span');
       if (users.length > 0) {
         if (countElem) countElem.textContent = users.length;
         else e.target.insertAdjacentHTML('beforeend', `<span>${users.length}</span>`);
-      } else if (countElem) {
-        countElem.remove();
-      }
-    
-      // --- サーバー側にも保存 ---
+      } else if (countElem) countElem.remove();
+
       await saveLog(recordId, log);
-    });    
+    });
   }
 
   kintone.events.on('app.record.detail.show', initReactions);
