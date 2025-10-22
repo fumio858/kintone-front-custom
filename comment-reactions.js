@@ -31,20 +31,10 @@
     });
   }
 
-  // 🎨 email から安定した色を生成（同じ人は同じ色）
-  function colorFromEmail(email) {
-    let hash = 0;
-    for (let i = 0; i < email.length; i++) {
-      hash = email.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const hue = Math.abs(hash) % 360;
-    return `hsl(${hue}, 70%, 60%)`;
-  }
-
-  // 🧩 Canvasで背景付き文字アイコンを作成
-  function createInitialIcon(name, email) {
-    const bgColor = colorFromEmail(email || 'unknown');
-    const initials = (name || '?').slice(-1);
+  // 🧩 グレー背景＋名前の最初の1文字アイコン生成
+  function createInitialIcon(name) {
+    const bgColor = '#ccc';
+    const initials = (name || '?').charAt(0);
     const canvas = document.createElement('canvas');
     const size = 64;
     canvas.width = size;
@@ -65,14 +55,13 @@
     if (Object.keys(photoCache).length) return;
     const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
     resp.users.forEach(u => {
-      const baseUrl = `https://${location.hostname}/api/user/photo.do/-/user.png?id=${u.id}&size=NORMAL`;
       const hasPhoto = u.photo && u.photo.url;
       photoCache[u.email] = {
         email: u.email,
         id: u.id,
         code: u.code,
         name: u.name,
-        photoUrl: hasPhoto ? u.photo.url : createInitialIcon(u.name, u.email)
+        photoUrl: hasPhoto ? u.photo.url : createInitialIcon(u.name)
       };
     });
     console.log('✅ photoCache loaded:', photoCache);
@@ -83,7 +72,7 @@
       await loadAllUserPhotos();
     }
     const userInfo = photoCache[email];
-    return userInfo?.photoUrl || createInitialIcon(userInfo?.name || '？', email);
+    return userInfo?.photoUrl || createInitialIcon(userInfo?.name || '？');
   }
 
   function replaceEmojiInCommentText(comment) {
@@ -114,6 +103,7 @@
       imgWrap.className = 'cw-user-icon';
       const img = document.createElement('img');
       img.src = url;
+      img.style.objectFit = 'cover';
       imgWrap.appendChild(img);
 
       // 🎯 押した絵文字（右下に表示）
