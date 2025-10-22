@@ -50,6 +50,25 @@
   margin-left: 3px;
 }
 
+.cw-tooltip {
+  position: absolute;
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.15s ease-out;
+  pointer-events: none;
+  z-index: 1000;
+}
+.cw-user-icon:hover .cw-tooltip {
+  opacity: 1;
+  transform: translateY(-4px);
+}
+
 
 /* a.commentlist-footer-like-count-gaia,
 a.commentlist-footer-like-gaia {

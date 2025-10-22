@@ -86,11 +86,28 @@
 
     for (const u of uniqueUsers) {
       const url = await getUserPhoto(u);
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'cw-user-icon';
       const img = document.createElement('img');
       img.src = url;
-      img.title = u;
-      userList.appendChild(img);
+      imgWrap.appendChild(img);
+    
+      // 💬 ユーザー名＋絵文字一覧のツールチップ
+      const tooltip = document.createElement('div');
+      tooltip.className = 'cw-tooltip';
+    
+      // このユーザーが押した絵文字を列挙
+      const emojis = [];
+      for (const [emoji, users] of Object.entries(log[commentId] || {})) {
+        if (users.includes(u)) emojis.push(emoji);
+      }
+      const userInfo = photoCache[u] ? photoCache[u].name : u;
+      tooltip.textContent = `${userInfo} ${emojis.join(' ')}`;
+    
+      imgWrap.appendChild(tooltip);
+      userList.appendChild(imgWrap);
     }
+    
 
     // 右下：リアクションボタン群
     const bar = document.createElement('div');
