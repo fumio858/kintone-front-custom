@@ -13,7 +13,7 @@
     '刑事交通以外': 55,
   };
 
-  const DISPLAY_FIELD_CODE = 'タイトル'; // 関連レコードから表示したいフィールド
+  const DISPLAY_FIELD_CODE = 'case_title // 関連レコードから表示したいフィールド
 
   // ==== 設定ここまで ====
 
