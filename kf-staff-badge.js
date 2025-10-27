@@ -6,7 +6,7 @@
   if (!location.pathname.startsWith('/k/') || !document.querySelector('[data-testid="keywordSearchResult"]')) return;
 
   // ▼ 取得候補フィールド（上から優先）
-  const CANDIDATE_FIELDS = ['担当事務員', '担当者', 'tanto', 'staff', 'handler'];
+  const CANDIDATE_FIELDS = ['事務員', '担当者', 'tanto', 'staff', 'handler'];
 
   // ▼ 表示用CSS
   const style = document.createElement('style');
