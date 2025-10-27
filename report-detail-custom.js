@@ -1,9 +1,9 @@
 (function () {
   'use strict';
 
-  const TITLE_FIELD = 'タイトル';
-  const NOTES_FIELD = '特記事項';
-  const OVERVIEW_FIELD = '概要';
+  const TITLE_FIELD = 'case_title';
+  const NOTES_FIELD = 'special_notes';
+  const OVERVIEW_FIELD = 'description';
 
   kintone.events.on('app.record.detail.show', function (event) {
     const record = event.record;
