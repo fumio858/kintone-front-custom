@@ -149,7 +149,8 @@
   left: 100px!important;
 }
 
-.gaia-app-statusbar-historypopup{
+.gaia-app-statusbar-historypopup,
+.ocean-ui-userinfo-popup{
   left: auto!important;
   right: 10px;
 }
