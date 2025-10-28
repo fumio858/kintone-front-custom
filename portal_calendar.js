@@ -7,7 +7,7 @@
     // iframe生成
     const iframe = document.createElement('iframe');
     iframe.src = calendarUrl;
-    iframe.width = '98%';
+    iframe.width = '100%';
     iframe.height = '800';
     iframe.style.border = '0';
     iframe.style.overflow = 'hidden';
