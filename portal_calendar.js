@@ -2,6 +2,15 @@
   'use strict';
 
   kintone.events.on('portal.show', (event) => {
+
+    (() => {
+      'use strict';
+      kintone.events.on('portal.show', (event) => {
+        console.log('✅ portal.show fired');
+        return event;
+      });
+    })();
+    
     const calendarUrl = 'https://atomfirm.cybozu.com/k/23/'; // ← カレンダー一覧URLに差し替え
 
     const iframe = document.createElement('iframe');
