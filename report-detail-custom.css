@@ -149,7 +149,10 @@
   left: 100px!important;
 }
 
-
+.gaia-app-statusbar-historypopup{
+  left: auto!important;
+  right: 10px;
+}
 
 
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
