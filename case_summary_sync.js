@@ -2,7 +2,7 @@
   'use strict';
 
   const TARGET_APPS = [22, 26, 55];
-  const AGGREGATE_APP_ID = 99; // ← 集計アプリのID
+  const AGGREGATE_APP_ID = 58; // ← 集計アプリのID
 
   const FIELD_APP_ID = 'app_id';
   const FIELD_RECORD_ID = 'record_id';
