@@ -1,36 +1,32 @@
 (() => {
   'use strict';
 
-  kintone.events.on('portal.show', (event) => {
+  kintone.events.on('portal.show', () => {
+    const calendarUrl = 'https://atomfirm.cybozu.com/k/23/'; // ← カレンダーのURLに変更
 
-    (() => {
-      'use strict';
-      kintone.events.on('portal.show', (event) => {
-        console.log('✅ portal.show fired');
-        return event;
-      });
-    })();
-    
-    const calendarUrl = 'https://atomfirm.cybozu.com/k/23/'; // ← カレンダー一覧URLに差し替え
-
+    // iframe生成
     const iframe = document.createElement('iframe');
     iframe.src = calendarUrl;
     iframe.width = '100%';
     iframe.height = '800';
     iframe.style.border = '0';
     iframe.style.overflow = 'hidden';
+    iframe.style.marginTop = '12px';
+    iframe.style.borderRadius = '8px';
+    iframe.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
 
-    // すでにポータル要素がある場合にクリアしてから挿入
+    // コンテナ生成（見た目調整用）
     const container = document.createElement('div');
-    container.style.position = 'relative';
-    container.style.width = '100%';
-    container.style.height = '800px';
+    container.classList.add('portal-calendar-widget');
     container.appendChild(iframe);
 
-    const portalEl = document.querySelector('.contents');
-    portalEl.innerHTML = ''; // 既存ポータル要素を消す
-    portalEl.appendChild(container);
-
-    return event;
+    // 挿入先を探す
+    const widget = document.querySelector('.ocean-portal-body-left .ocean-portal-widget');
+    if (widget) {
+      widget.insertAdjacentElement('afterend', container);
+      console.log('✅ カレンダーを追加しました');
+    } else {
+      console.warn('⚠️ .ocean-portal-widget が見つかりません');
+    }
   });
 })();
