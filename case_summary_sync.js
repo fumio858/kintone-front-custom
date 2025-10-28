@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   const TARGET_APPS = [22, 26, 55];
@@ -7,7 +7,7 @@
   const FIELD_APP_ID = 'app_id';
   const FIELD_RECORD_ID = 'record_id';
   const FIELD_CASE_GROUP = 'case_group';
-  const FIELD_STAFF = 'staff';
+  const FIELD_STAFF = 'staff'; // ← 集計アプリ側は「文字列(1行)」
 
   if (!TARGET_APPS.includes(kintone.app.getId())) return;
 
@@ -22,14 +22,17 @@
       const appId = kintone.app.getId();
       const recordId = event.recordId;
 
-      // ✅ 各値を適切な構造でセット
+      // ✅ スタッフ名（表示名）をカンマ区切りで取得
+      const staffNames = (record[FIELD_STAFF]?.value || [])
+        .map(u => u.name)
+        .join(', ');
+
+      // ✅ 送信データ（文字列型対応）
       const recordData = {
         [FIELD_APP_ID]: { value: String(appId) },
         [FIELD_RECORD_ID]: { value: String(recordId) },
         [FIELD_CASE_GROUP]: { value: record[FIELD_CASE_GROUP]?.value || '' },
-        [FIELD_STAFF]: {
-          value: (record[FIELD_STAFF]?.value || []).map(u => ({ code: u.code }))
-        },
+        [FIELD_STAFF]: { value: staffNames },
       };
 
       console.log('送信データ:', JSON.stringify(recordData, null, 2));
