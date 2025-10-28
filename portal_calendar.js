@@ -2,7 +2,7 @@
   'use strict';
 
   kintone.events.on('portal.show', () => {
-    const calendarUrl = 'https://atomfirm.cybozu.com/k/23/'; // ← カレンダーのURLに変更
+    const calendarUrl = 'https://atomfirm.cybozu.com/k/23/?view=13312044'; // ← カレンダーのURLに変更
 
     // iframe生成
     const iframe = document.createElement('iframe');
