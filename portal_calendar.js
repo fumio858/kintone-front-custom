@@ -13,7 +13,6 @@
     iframe.style.overflow = 'hidden';
     iframe.style.marginTop = '12px';
     iframe.style.borderRadius = '8px';
-    iframe.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
 
     // コンテナ生成（見た目調整用）
     const container = document.createElement('div');
