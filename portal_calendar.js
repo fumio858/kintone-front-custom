@@ -8,11 +8,11 @@
     const iframe = document.createElement('iframe');
     iframe.src = calendarUrl;
     iframe.width = '100%';
-    iframe.height = '600';
+    iframe.height = '800';
     iframe.style.border = '0';
     iframe.style.overflow = 'hidden';
-    // iframe.style.marginTop = '12px';
-    iframe.style.padding = '0 0.5rem';
+    iframe.style.marginTop = '12px';
+    iframe.style.padding = '.5rem';
     iframe.style.boxSizing = 'border-box';
 
     // コンテナ生成
@@ -20,34 +20,23 @@
     container.classList.add('portal-calendar-widget');
     container.appendChild(iframe);
 
-    // 「未処理」と「スペース」の間を探す
-    const rightColumn = document.querySelector('.ocean-portal-body-right');
-    if (!rightColumn) {
-      console.warn('⚠️ .ocean-portal-body-right が見つかりません');
-      return;
-    }
+    // 「スペース」ウィジェットを探してその上に挿入
+    const spaceWidget = document.querySelector(
+      '.ocean-portal-body-right .ocean-portal-widget .gaia-argoui-widget-title'
+    );
 
-    const widgets = rightColumn.querySelectorAll('.ocean-portal-widget');
-    let insertTarget = null;
-
-    widgets.forEach((w, i) => {
-      const titleEl = w.querySelector('.gaia-argoui-widget-title');
-      const title = titleEl ? titleEl.textContent.trim() : '';
-      if (title === '未処理') {
-        // 次のウィジェットが「スペース」ならその前に挿入
-        const nextWidget = widgets[i + 1];
-        const nextTitle = nextWidget?.querySelector('.gaia-argoui-widget-title')?.textContent.trim();
-        if (nextTitle === 'スペース') {
-          insertTarget = nextWidget;
-        }
+    let targetWidget = null;
+    document.querySelectorAll('.ocean-portal-body-right .gaia-argoui-widget-title').forEach(el => {
+      if (el.textContent.trim() === 'スペース') {
+        targetWidget = el.closest('.ocean-portal-widget');
       }
     });
 
-    if (insertTarget) {
-      insertTarget.insertAdjacentElement('beforebegin', container);
-      console.log('✅ カレンダーを「未処理」と「スペース」の間に追加しました');
+    if (targetWidget) {
+      targetWidget.insertAdjacentElement('beforebegin', container);
+      console.log('✅ カレンダーを「スペース」の上に追加しました');
     } else {
-      console.warn('⚠️ 「未処理」と「スペース」の位置が見つかりません');
+      console.warn('⚠️ 「スペース」ウィジェットが見つかりませんでした');
     }
   });
 })();
