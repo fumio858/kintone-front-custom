@@ -111,6 +111,7 @@
   display: flex; /* ラベルと値を横に並べる */
   align-items: baseline; /* テキストのベースラインを揃える */
   word-break: break-word;
+  margin-bottom: .5rem;
 }
 
 .custom-info-label {
