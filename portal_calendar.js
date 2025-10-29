@@ -11,8 +11,7 @@
     iframe.height = '800';
     iframe.style.border = '0';
     iframe.style.overflow = 'hidden';
-    iframe.style.marginTop = '12px';
-    iframe.style.padding = '.5rem';
+    iframe.style.padding = '0 0.5rem';
     iframe.style.boxSizing = 'border-box';
 
     // コンテナ生成
