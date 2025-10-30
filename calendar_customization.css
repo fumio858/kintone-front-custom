@@ -10,3 +10,8 @@
 .calendar-row-gaia{
   height: 12vh;
 }
+
+.task-completed {
+  opacity: 0.5;
+  text-decoration: line-through;
+}

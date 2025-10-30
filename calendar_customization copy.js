@@ -2,11 +2,8 @@
   'use strict';
 
   // ==== 設定ここから ====
-  const TARGET_APP_IDS = [23]; // タスクアプリのID（※スケジュールアプリID 45 も復活する可能性あり）
+  const TARGET_APP_IDS = [23, 45]; // タスクアプリとスケジュールアプリのID
   const CASE_TYPE_FIELD_CODE = 'case_type'; // 分野フィールドのフィールドコード
-  const TASK_STATUS_FIELD_CODE = 'task_status'; // タスクステータスフィールドのフィールドコード
-  const TASK_STATUS_COMPLETED = '完了';
-  const COMPLETED_CLASS = 'task-completed';
 
   // 分野に応じた色定義
   const CATEGORY_COLORS = {
@@ -76,22 +73,19 @@
         const resp = await kintone.api(kUrl('/k/v1/records'), 'GET', {
           app: appId,
           query: query,
-          fields: ['$id', CASE_TYPE_FIELD_CODE, TASK_STATUS_FIELD_CODE] // 必要なフィールドのみ取得
+          fields: ['$id', CASE_TYPE_FIELD_CODE] // 必要なフィールドのみ取得
         });
 
         (resp.records || []).forEach(record => {
           const key = `${appId}_${record.$id.value}`;
-          recordsDataMap.set(key, {
-            caseType: record[CASE_TYPE_FIELD_CODE]?.value || '',
-            taskStatus: record[TASK_STATUS_FIELD_CODE]?.value
-          });
+          recordsDataMap.set(key, record[CASE_TYPE_FIELD_CODE]?.value || '');
         });
       } catch (e) {
         console.error(`カレンダーアイテム取得エラー (App ID: ${appId}):`, e);
       }
     }
 
-    // 各カレンダーアイテムに色とクラスを適用
+    // 各カレンダーアイテムに色を適用
     calendarItems.forEach(item => {
       const anchor = item.querySelector('a');
       if (anchor) {
@@ -101,10 +95,7 @@
           const recordId = match[2];
           const key = `${appId}_${recordId}`;
 
-          const recordData = recordsDataMap.get(key);
-          if (!recordData) return;
-
-          const { caseType, taskStatus } = recordData;
+          const caseType = recordsDataMap.get(key);
           const color = CATEGORY_COLORS[caseType] || CATEGORY_COLORS['その他']; // デフォルト色も考慮
 
           if (color) {
@@ -112,11 +103,6 @@
             item.style.padding = '2px 4px'; // 見栄え調整
             item.style.margin = '2px'; // 見栄え調整
             item.style.borderRadius = '3px'; // 見栄え調整
-          }
-
-          // ステータスが「完了」ならクラスを付与
-          if (taskStatus === TASK_STATUS_COMPLETED) {
-            item.classList.add(COMPLETED_CLASS);
           }
         }
       }
