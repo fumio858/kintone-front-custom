@@ -16,3 +16,7 @@
   /* text-decoration: line-through; */
   background-color: #EEE !important;
 }
+
+.task-completed a{
+  color: #4b4b4b;
+}
