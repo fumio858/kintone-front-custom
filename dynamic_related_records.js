@@ -37,6 +37,7 @@
     spaceElement.style.border = '1px solid #e3e7e8';
     spaceElement.style.borderRadius = '6px';
     spaceElement.style.backgroundColor = '#f7f9fa';
+    spaceElement.style.marginTop = '1rem';
 
     if (!currentCaseType) {
       spaceElement.innerHTML = '<p style="color:#c00;">分野が設定されていません。関連レコードを表示できません。</p>';
