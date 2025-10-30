@@ -111,4 +111,71 @@
 
     return event;
   });
+
+  // =================================================================================
+  // レコード詳細ページにiframeを表示する処理
+  // =================================================================================
+  kintone.events.on('app.record.detail.show', function(event) {
+    // タスクアプリ（ID: 23）でのみ実行
+    const taskAppId = 23;
+    if (event.appId !== taskAppId) {
+      return event;
+    }
+
+    console.log('Task record detail view detected. Preparing to show iframe...');
+    const record = event.record;
+
+    // --- ここからiframeのURLを決定するロジック ---
+    const caseType = record[CASE_TYPE_FIELD_CODE]?.value;
+    const relatedRecordId = record[CURRENT_RECORD_CASE_ID_FIELD]?.value;
+    const relatedAppId = CASE_TYPE_TO_APP_ID_MAP[caseType];
+
+    let iframeUrl = '';
+    if (relatedAppId && relatedRecordId) {
+      iframeUrl = `${location.origin}/k/${relatedAppId}/show#record=${relatedRecordId}`;
+    } else {
+      console.log('Required fields for iframe URL are missing (case_type or case_id).');
+    }
+    // --- ここまで ---
+
+
+    if (!iframeUrl) {
+      console.log('iframe URL is not defined. Skipping iframe creation.');
+      return event;
+    }
+
+    // iframeを設置するコンテナを準備
+    const iframeContainerId = 'custom-iframe-container';
+    let iframeContainer = document.getElementById(iframeContainerId);
+    if (iframeContainer) {
+      iframeContainer.innerHTML = ''; // 既存のものをクリア
+    } else {
+      iframeContainer = document.createElement('div');
+      iframeContainer.id = iframeContainerId;
+      iframeContainer.style.marginTop = '20px';
+      iframeContainer.style.borderTop = '1px solid #e3e7e8';
+      iframeContainer.style.paddingTop = '20px';
+
+      // レコード情報エリアの下にコンテナを挿入
+      const recordGaia = document.getElementById('record-gaia');
+      if (recordGaia) {
+        recordGaia.insertAdjacentElement('afterend', iframeContainer);
+      } else {
+        console.warn('#record-gaia element not found. Cannot insert iframe container.');
+        return event;
+      }
+    }
+
+    // iframeを作成してコンテナに追加
+    const iframe = document.createElement('iframe');
+    iframe.src = iframeUrl;
+    iframe.width = '100%';
+    iframe.height = '800px'; // 高さは適宜調整
+    iframe.style.border = 'none';
+
+    iframeContainer.appendChild(iframe);
+    console.log(`iframe displayed with URL: ${iframeUrl}`);
+
+    return event;
+  });
 })();
