@@ -152,10 +152,6 @@
     } else {
       iframeContainer = document.createElement('div');
       iframeContainer.id = iframeContainerId;
-      iframeContainer.style.marginTop = '20px';
-      iframeContainer.style.borderTop = '1px solid #e3e7e8';
-      iframeContainer.style.padding = '2vw';
-      iframeContainer.style.backgroundColor = '#4B4B4C';
 
       // レコード情報エリアの下にコンテナを挿入
       const recordGaia = document.getElementById('record-gaia');
