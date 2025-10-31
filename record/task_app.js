@@ -5,7 +5,7 @@ const TASK_T_CASE_ID = 'case_id';
 const TASK_T_TITLE = '件名';
 const TASK_T_DUE = '期限';
 const TASK_T_OWNER = '担当者';
-const TASK_T_STATUS = 'タスクステータス';
+const TASK_T_STATUS = 'task_status';
 const TASK_SPACE_ID = 'taskPanel';
 
 // ▼ タスクアプリ側の「分野」フィールドのフィールドコード
