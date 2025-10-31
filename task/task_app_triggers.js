@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   // ==== 設定ここから ====
@@ -80,16 +80,16 @@
     const comment = `タスクが作成されました。
 
 ` +
-                    `件名: ${taskTitle}
+      `件名: ${taskTitle}
 
 ` +
-                    `▼タスク詳細
+      `▼タスク詳細
 ${taskUrl}`;
 
     await postCommentToSourceRecord(record, comment);
 
-    // iframeをリロード
-    // reloadRelatedRecordIframe();
+    // ページをリロードして更新競合を回避
+    location.reload();
 
     return event;
   });
@@ -110,16 +110,16 @@ ${taskUrl}`;
       const comment = `タスクのステータスが「${oldStatus || '（空）'}」から「${newStatus}」に変更されました。
 
 ` +
-                      `件名: ${taskTitle}
+        `件名: ${taskTitle}
 
 ` +
-                      `▼タスク詳細
+        `▼タスク詳細
 ${taskUrl}`;
 
       await postCommentToSourceRecord(record, comment);
 
-      // iframeをリロード
-      // reloadRelatedRecordIframe();
+      // ページをリロードして更新競合を回避
+      location.reload();
     }
 
     return event;
