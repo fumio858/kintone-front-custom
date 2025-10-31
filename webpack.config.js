@@ -1,6 +1,7 @@
 module.exports = {
   entry: {
-    record: './record/index.js',
+    'record-priority': './record-priority/index.js',
+    'record-deferred': './record-deferred/index.js',
     portal: './portal/index.js',
     task: './task/index.js'
   },
