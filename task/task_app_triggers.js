@@ -51,23 +51,23 @@
     }
   }
 
-  /**
-   * 関連レコード表示用のiframeをリロードする
-   */
-  function reloadRelatedRecordIframe() {
-    // dynamic_related_records.js が生成したiframeを探す
-    const iframeContainer = document.getElementById('custom-iframe-container');
-    if (iframeContainer) {
-      const iframe = iframeContainer.querySelector('iframe');
-      if (iframe) {
-        console.log('[task-trigger] Reloading related record iframe after 500ms.');
-        // 500ms待ってからリロードし、kintoneのコメント反映を待つ
-        setTimeout(() => {
-          iframe.src = iframe.src; // srcを再設定してリロード
-        }, 500);
-      }
-    }
-  }
+  // /**
+  //  * 関連レコード表示用のiframeをリロードする
+  //  */
+  // function reloadRelatedRecordIframe() {
+  //   // dynamic_related_records.js が生成したiframeを探す
+  //   const iframeContainer = document.getElementById('custom-iframe-container');
+  //   if (iframeContainer) {
+  //     const iframe = iframeContainer.querySelector('iframe');
+  //     if (iframe) {
+  //       console.log('[task-trigger] Reloading related record iframe after 500ms.');
+  //       // 500ms待ってからリロードし、kintoneのコメント反映を待つ
+  //       setTimeout(() => {
+  //         iframe.src = iframe.src; // srcを再設定してリロード
+  //       }, 500);
+  //     }
+  //   }
+  // }
 
   // --- イベントハンドラー ---
 
@@ -89,7 +89,7 @@ ${taskUrl}`;
     await postCommentToSourceRecord(record, comment);
 
     // iframeをリロード
-    reloadRelatedRecordIframe();
+    // reloadRelatedRecordIframe();
 
     return event;
   });
@@ -119,7 +119,7 @@ ${taskUrl}`;
       await postCommentToSourceRecord(record, comment);
 
       // iframeをリロード
-      reloadRelatedRecordIframe();
+      // reloadRelatedRecordIframe();
     }
 
     return event;
