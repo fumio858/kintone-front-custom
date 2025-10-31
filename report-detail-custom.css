@@ -20,7 +20,7 @@
   padding: 1rem;
   top: 0 !important;
   /* width: 65vw; */
-  width: calc( 100vw - 520px);
+  width: calc( 100vw - 528px);
   box-sizing: border-box;
   /* max-height: 80vh; */
 }
@@ -66,7 +66,7 @@
   height: auto;
   /* width: 35vw; */
   overflow: scroll;
-  max-height: calc( 100vh - 80px - 64px );
+  /* max-height: calc( 100vh - 80px - 64px ); */
   width: 528px;
 }
 
