@@ -1,7 +1,6 @@
 (function () {
   'use strict';
 
-  const BASE_SCHEDULE_ID = 'user-js-schedulePanel';
   const BASE_TASK_ID = 'user-js-taskPanel';
 
   // Spaceフィールドのフォールバック（他JS互換）
@@ -12,7 +11,6 @@
 
   // アイコン（そのまま使う／不要なら空文字でもOK）
   const ICONS = {
-    calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10zm-2 8H5v-6h14v6z"/></svg>`,
     task: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24"><path d="M9 16.17l-3.88-3.88-1.41 1.41L9 19 20.3 7.71l-1.41-1.41z"/></svg>`
   };
 
@@ -92,19 +90,14 @@
     `;
     document.head.appendChild(style);
 
-    const btnSched = createLink(ICONS.calendar, 'スケジュール登録');
     const btnTask = createLink(ICONS.task, 'タスク追加');
 
-    bar.appendChild(btnSched);
     bar.appendChild(btnTask);
 
     // フォームの“直前”に設置
     form.parentElement.insertBefore(bar, form);
 
     // クリックでコメントフォームの直下へ挿入（各1個だけ）
-    btnSched.addEventListener('click', () => {
-      ensureSinglePanel(form, BASE_SCHEDULE_ID, 'userSchedulePanelInit', 'user-js-open-schedule');
-    });
     btnTask.addEventListener('click', () => {
       ensureSinglePanel(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task');
     });
@@ -170,11 +163,6 @@
       if (taskMirror) {
         console.log('[Launcher] Removing existing task panel mirror.');
         taskMirror.remove();
-      }
-      const scheduleMirror = document.querySelector('[data-mirror-of="user-js-schedulePanel"]');
-      if (scheduleMirror) {
-        console.log('[Launcher] Removing existing schedule panel mirror.');
-        scheduleMirror.remove();
       }
 
       tryInject();
