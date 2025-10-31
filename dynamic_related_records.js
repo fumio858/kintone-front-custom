@@ -31,34 +31,47 @@
       return event;
     }
 
-    // スペースフィールドをクリア
-    spaceElement.innerHTML = '';
+    // --- UIのセットアップ ---
+    spaceElement.innerHTML = ''; // スペースをクリア
     spaceElement.style.padding = '10px';
     spaceElement.style.border = '1px solid #e3e7e8';
     spaceElement.style.borderRadius = '6px';
     spaceElement.style.backgroundColor = '#f7f9fa';
     spaceElement.style.marginTop = '1rem';
 
+    // タイトル要素を作成
+    const titleEl = document.createElement('h4');
+    titleEl.style.margin = '0 0 10px 0';
+    titleEl.style.borderBottom = '1px solid #e3e7e8';
+    titleEl.style.paddingBottom = '5px';
+    titleEl.textContent = '📄 関連レコード';
+    spaceElement.appendChild(titleEl);
+
+    // コンテンツ表示用のコンテナを作成
+    const contentEl = document.createElement('div');
+    spaceElement.appendChild(contentEl);
+    // --- UIのセットアップここまで ---
+
     if (!currentCaseType) {
-      spaceElement.innerHTML = '<p style="color:#c00;">分野が設定されていません。関連レコードを表示できません。</p>';
+      contentEl.innerHTML = '<p style="color:#c00;">分野が設定されていません。関連レコードを表示できません。</p>';
       return event;
     }
 
     if (!currentRecordCaseId) {
-      spaceElement.innerHTML = '<p style="color:#c00;">現在のレコードのcase_idが設定されていません。関連レコードを表示できません。</p>';
+      contentEl.innerHTML = '<p style="color:#c00;">現在のレコードのcase_idが設定されていません。関連レコードを表示できません。</p>';
       return event;
     }
 
     const targetAppId = CASE_TYPE_TO_APP_ID_MAP[currentCaseType];
 
     if (!targetAppId) {
-      spaceElement.innerHTML = `<p>分野 '${currentCaseType}' に対応するアプリが見つかりません。</p>`;
+      contentEl.innerHTML = `<p>分野 '${currentCaseType}' に対応するアプリが見つかりません。</p>`;
       return event;
     }
 
     // 関連レコードの取得
     try {
-      spaceElement.innerHTML = '<p>関連レコードを読み込み中...</p>';
+      contentEl.innerHTML = '<p>関連レコードを読み込み中...</p>';
       // クエリを修正: 関連アプリのレコードIDが現在のレコードのcase_idと一致するものを検索
       const query = `$id = "${currentRecordCaseId}"`; // レコードIDは数値だが、kintone APIは文字列として受け入れる
       
@@ -78,7 +91,7 @@
       const relatedRecords = resp.records || [];
 
       if (relatedRecords.length === 0) {
-        spaceElement.innerHTML = `<p>関連レコードは見つかりませんでした。</p>`;
+        contentEl.innerHTML = `<p>関連レコードは見つかりませんでした。</p>`;
       } else {
         const ul = document.createElement('ul');
         ul.style.listStyle = 'none';
@@ -101,12 +114,12 @@
           li.appendChild(link);
           ul.appendChild(li);
         });
-        spaceElement.innerHTML = ''; // ローディングメッセージをクリア
-        spaceElement.appendChild(ul);
+        contentEl.innerHTML = ''; // ローディングメッセージをクリア
+        contentEl.appendChild(ul);
       }
     } catch (e) {
       console.error('関連レコード取得エラー:', e);
-      spaceElement.innerHTML = `<p style="color:#c00;">関連レコードの取得中にエラーが発生しました: ${e.message || JSON.stringify(e)}</p>`;
+      contentEl.innerHTML = `<p style="color:#c00;">関連レコードの取得中にエラーが発生しました: ${e.message || JSON.stringify(e)}</p>`;
     }
 
     return event;
