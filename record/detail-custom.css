@@ -1,3 +1,18 @@
+/* --- FOUC対策 --- */
+/* JSがコンテナにクラスを付与したら、ツールバーの既存要素を一旦非表示に */
+.report-front-custom .gaia-argoui-app-toolbar > div:first-child > * {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.1s ease-in;
+}
+
+/* JSで追加されたカスタムヘッダーと、処理完了後に追加されるクラスがついたツールバーの子要素を表示 */
+.report-front-custom .gaia-argoui-app-toolbar > div:first-child > .custom-headerbox,
+.report-front-custom.custom-header-loaded .gaia-argoui-app-toolbar > div:first-child > * {
+  visibility: visible;
+  opacity: 1;
+}
+
 /* body{
   font-size: 40px;
 } */

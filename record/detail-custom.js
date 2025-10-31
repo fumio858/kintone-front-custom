@@ -9,15 +9,21 @@
     const record = event.record;
     const recordId = kintone.app.record.getId(); // 現在のレコードID
 
-    // ====== ここは前回どおり：メインコンテナへクラス ======
     const container = document.querySelector('.container-gaia');
-    if (container && !container.classList.contains('report-front-custom')) {
-      container.classList.add('report-front-custom');
+    if (container) {
+      // FOUC対策：一度ロード済みクラスを削除し、カスタムクラスを付与
+      container.classList.remove('custom-header-loaded');
+      if (!container.classList.contains('report-front-custom')) {
+        container.classList.add('report-front-custom');
+      }
     }
 
     const toolbar = document.querySelector('.gaia-argoui-app-toolbar');
     const firstDiv = toolbar?.querySelector('div:first-child');
-    if (!firstDiv) return event;
+    if (!firstDiv) {
+      if (container) container.classList.add('custom-header-loaded'); // 表示を確定
+      return event;
+    }
 
     // 親ボックス（なければ作る）
     let headerBox = firstDiv.querySelector('.custom-headerbox');
@@ -27,8 +33,9 @@
       firstDiv.insertBefore(headerBox, firstDiv.firstChild);
     }
 
-    // すでに同じレコードIDを描画済みなら何もしない（不要ならこのifごと削除OK）
+    // すでに同じレコードIDを描画済みなら何もしない
     if (headerBox.dataset.recordId === String(recordId)) {
+      if (container) container.classList.add('custom-header-loaded'); // 表示を確定
       return event;
     }
     headerBox.dataset.recordId = String(recordId);
@@ -71,6 +78,9 @@
       overviewItem.innerHTML = `<span class="custom-info-label">📄 概要：</span><span class="custom-info-value">${overviewVal.replace(/\n/g, '<br>')}</span>`;
       infoGrid.appendChild(overviewItem);
     }
+
+    // FOUC対策：処理完了を通知するクラスを付与
+    if (container) container.classList.add('custom-header-loaded');
 
     return event;
   });
