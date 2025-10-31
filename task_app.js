@@ -285,7 +285,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
             const commentText = `タスクを登録しました。\n\n` +
                                 `件名: ${title}\n` +
-                                `担当者: ${ownerName}\n` +
+                                `担当: ${ownerName}\n` +
                                 `期限: ${due || '未設定'}\n\n` +
                                 `▼タスク詳細\n${taskUrl}`;
 
