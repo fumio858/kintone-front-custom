@@ -275,31 +275,8 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         try {
           // ★ ここでPOSTして、成功したらアラート
           const resp = await kintone.api(kUrl('/k/v1/record'), 'POST', { app: TASK_APP_ID, record });
+          // resp には {id, revision} が返る
           alert(`タスクを作成しました（#${resp.id}）。`);
-
-          // --- ここからコメント投稿処理 ---
-          try {
-            const ownerElement = selOwner.options[selOwner.selectedIndex];
-            const ownerName = ownerElement ? ownerElement.textContent.replace('（自分）', '') : owner;
-            const taskUrl = `${location.origin}/k/${TASK_APP_ID}/show#record=${resp.id}`;
-
-            const commentText = `タスクを登録しました。\n\n` +
-                                `件名: ${title}\n` +
-                                `担当: ${ownerName}\n` +
-                                `期限: ${due || '未設定'}\n\n` +
-                                `▼タスク詳細\n${taskUrl}`;
-
-            await kintone.api(kUrl('/k/v1/record/comment'), 'POST', {
-              app: appId, // 現在のアプリID
-              record: recordId, // 現在のレコードID
-              comment: { text: commentText }
-            });
-            console.log('[task] コメントを投稿しました。');
-          } catch (commentError) {
-            console.warn('[task] コメントの投稿に失敗しました。', commentError);
-            // コメント投稿の失敗はユーザーに通知しない（タスク作成は成功しているため）
-          }
-          // --- コメント投稿処理ここまで ---
 
           // フォームリセット
           wrap.querySelector('#task-title').value = '';

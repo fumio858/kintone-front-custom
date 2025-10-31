@@ -1,9 +1,6 @@
-// record/index.js
+function importAll(r) {
+  r.keys().forEach(r);
+}
 
-import './case_summary_sync.js';
-import './comment-reactions.js';
-import './commentPanel-launcher.js';
-import './detail-custom.js';
-import './schedule_app.js';
-import './task_app.js';
-import './title_autoset.js';
+// このフォルダ内のすべての .js を再帰的に読み込む
+importAll(require.context('./', true, /\.js$/));

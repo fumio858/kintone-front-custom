@@ -3,3 +3,7 @@
   border-radius: 1rem;
   padding: 2rem 3rem;
 }
+
+#custom-iframe-container .gaia-argoui-app-toolbar-menu{
+  display: none;
+}

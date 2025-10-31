@@ -1,2 +1,6 @@
-import './calendar_customization.js';
-import './dynamic_related_records.js';
+function importAll(r) {
+  r.keys().forEach(r);
+}
+
+// このフォルダ内のすべての .js を再帰的に読み込む
+importAll(require.context('./', true, /\.js$/));

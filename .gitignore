@@ -1,0 +1,7 @@
+# Dependencies
+/node_modules
+
+# OS-generated files
+.DS_Store
+
+command_memo.txt
