@@ -192,14 +192,20 @@
       const commentId = e.target.dataset.commentId;
       log[commentId] ??= {};
 
-      // 1ユーザー1リアクション
-      for (const eKey of Object.keys(log[commentId])) {
-        log[commentId][eKey] = (log[commentId][eKey] || []).filter(u => u !== user);
-      }
-
+      // 現在の絵文字ユーザーリストを取得
       const users = (log[commentId][emoji] ||= []);
       const already = users.includes(user);
-      if (!already) users.push(user);
+
+      if (already) {
+        // ✅ 同じ絵文字をもう一度押したら解除
+        log[commentId][emoji] = users.filter(u => u !== user);
+      } else {
+        // 他の絵文字を外してから追加
+        for (const eKey of Object.keys(log[commentId])) {
+          log[commentId][eKey] = (log[commentId][eKey] || []).filter(u => u !== user);
+        }
+        users.push(user);
+      }
 
       await saveLog(recordId, log);
 
