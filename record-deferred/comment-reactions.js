@@ -146,8 +146,9 @@
     for (let i = 0; i < comments.length; i++) {
       const c = comments[i];
     
-      // ✅ コメント要素から一意のIDを取得
-      const commentId = c.dataset.id || `comment_${i}`;
+      // ✅ コメントの内部data-id属性から固有IDを取得
+      const innerComment = c.querySelector('[data-id]');
+      const commentId = innerComment ? innerComment.dataset.id : `comment_${i}`;
     
       const textElem = c.querySelector('.commentlist-body-gaia > div');
       if (textElem) replaceEmojiInCommentText(textElem);
