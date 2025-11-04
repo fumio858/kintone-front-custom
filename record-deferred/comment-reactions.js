@@ -145,7 +145,10 @@
     const comments = document.querySelectorAll('.itemlist-item-gaia');
     for (let i = 0; i < comments.length; i++) {
       const c = comments[i];
-      const commentId = `comment_${i}`;
+    
+      // ✅ コメント要素から一意のIDを取得
+      const commentId = c.dataset.id || `comment_${i}`;
+    
       const textElem = c.querySelector('.commentlist-body-gaia > div');
       if (textElem) replaceEmojiInCommentText(textElem);
       await renderReactions(c, commentId, log, user);
@@ -156,7 +159,7 @@
       if (!e.target.classList.contains('cw-react-btn')) return;
       const emoji = e.target.dataset.emoji;
       const commentId = e.target.dataset.commentId;
-
+    
       log[commentId] ??= {};
 
       // すべての絵文字から自分を削除（1ユーザー1絵文字ルール）
