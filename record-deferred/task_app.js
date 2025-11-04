@@ -2,9 +2,9 @@
 const TASK_APP_ID = 23;
 const TASK_F_CASE_ID = 'case_id';
 const TASK_T_CASE_ID = 'case_id';
-const TASK_T_TITLE = '件名';
-const TASK_T_DUE = '期限';
-const TASK_T_OWNER = '担当者';
+const TASK_T_TITLE = 'title';
+const TASK_T_DUE = 'due_date';
+const TASK_T_OWNER = 'assignee';
 const TASK_T_STATUS = 'task_status';
 const TASK_SPACE_ID = 'taskPanel';
 
