@@ -246,6 +246,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         const owner = wrap.querySelector('#task-owner').value || kintone.getLoginUser().code;
 
         if (!title) return alert('件名を入力してください');
+        if (!due) return alert('期限を入力してください');
         if (!caseId) return alert(`案件側フィールド「${TASK_F_CASE_ID}」が空です。値を入れてから追加してください。`);
 
         // 重複チェック（必要なら分野も入れる）
