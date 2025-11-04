@@ -171,6 +171,12 @@
   right: 10px;
 }
 
+.gaia-app-statusbar-statusmenu{
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  max-width: 420px;
+}
 
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
 /* 刑事事件 */
