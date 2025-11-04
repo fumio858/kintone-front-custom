@@ -150,20 +150,39 @@
     // ==============================
     // 👀 #sidebar-list-gaia 全体を監視
     // ==============================
+    // 👀 コメント領域の監視処理
     const sidebarList = document.querySelector('#sidebar-list-gaia');
     if (sidebarList) {
       const observer = new MutationObserver(async mutations => {
+        // 自分の描画で発火しないようにガード
+        observer.disconnect();
+        let shouldRerender = false;
+
         for (const m of mutations) {
-          if (m.addedNodes.length) {
-            console.log('🆕 コメント追加または再構築検知 → 再描画');
-            await renderAllReactions();
-            break;
+          for (const node of m.addedNodes) {
+            // コメント要素 (.itemlist-item-gaia) が追加された場合のみ反応
+            if (node.nodeType === 1 && node.classList.contains('itemlist-item-gaia')) {
+              shouldRerender = true;
+              break;
+            }
           }
+          if (shouldRerender) break;
         }
+
+        if (shouldRerender) {
+          console.log('🆕 コメントエリア変化検知 → 再描画');
+          await renderAllReactions();
+        }
+
+        // 再開（重要）
+        observer.observe(sidebarList, { childList: true, subtree: true });
       });
+
+      // 初回監視スタート
       observer.observe(sidebarList, { childList: true, subtree: true });
       console.log('👀 コメント領域監視開始');
     }
+
 
     // ==============================
     // 🎯 絵文字クリック処理
