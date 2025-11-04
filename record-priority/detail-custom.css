@@ -81,7 +81,7 @@
   height: auto;
   /* width: 35vw; */
   overflow: scroll;
-  max-height: calc( 100vh - 80px - 50px );
+  max-height: calc( 100vh - 80px - 60px );
   width: 528px;
 }
 
