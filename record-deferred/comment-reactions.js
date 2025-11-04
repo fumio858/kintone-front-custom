@@ -136,35 +136,57 @@
   }
 
   // --- 初期化 ---
+  // --- 初期化 ---
   async function initReactions(ev) {
     const recordId = ev.recordId;
     const user = kintone.getLoginUser().email;
     const log = await getLog(recordId);
     await loadAllUserPhotos();
 
-    const comments = document.querySelectorAll('.itemlist-item-gaia');
-    for (let i = 0; i < comments.length; i++) {
-      const c = comments[i];
-    
-      // ✅ コメントの日時リンクから comment=ID を抽出
-      const linkElem = c.querySelector('.itemlist-datetime-gaia a');
-      let commentId = `comment_${i}`;
-      if (linkElem) {
-        const match = linkElem.href.match(/comment=(\d+)/);
-        if (match) commentId = match[1]; // ← ここで「5」などのIDが取れる！
+    // コメント全体の再描画関数
+    async function renderAllReactions() {
+      const comments = document.querySelectorAll('.itemlist-item-gaia');
+      for (let i = 0; i < comments.length; i++) {
+        const c = comments[i];
+
+        // ✅ コメントIDをURLから取得
+        const linkElem = c.querySelector('.itemlist-datetime-gaia a');
+        let commentId = `comment_${i}`;
+        if (linkElem) {
+          const match = linkElem.href.match(/comment=(\d+)/);
+          if (match) commentId = match[1];
+        }
+
+        const textElem = c.querySelector('.commentlist-body-gaia > div');
+        if (textElem) replaceEmojiInCommentText(textElem);
+        await renderReactions(c, commentId, log, user);
       }
-    
-      const textElem = c.querySelector('.commentlist-body-gaia > div');
-      if (textElem) replaceEmojiInCommentText(textElem);
-      await renderReactions(c, commentId, log, user);
     }
 
-    // 🎯 クリック時
+    // 最初に一度描画
+    await renderAllReactions();
+
+    // 🎯 MutationObserverでコメント追加を監視
+    const commentList = document.querySelector('.itemlist-gaia');
+    if (commentList) {
+      const observer = new MutationObserver(async mutations => {
+        for (const mutation of mutations) {
+          if (mutation.addedNodes.length > 0) {
+            console.log('🆕 コメント追加検知 → リアクション更新');
+            await renderAllReactions();
+            break;
+          }
+        }
+      });
+      observer.observe(commentList, { childList: true, subtree: false });
+    }
+
+    // 🎯 絵文字クリック時のイベント（変わらず）
     document.body.addEventListener('click', async e => {
       if (!e.target.classList.contains('cw-react-btn')) return;
       const emoji = e.target.dataset.emoji;
       const commentId = e.target.dataset.commentId;
-    
+
       log[commentId] ??= {};
 
       // すべての絵文字から自分を削除（1ユーザー1絵文字ルール）
