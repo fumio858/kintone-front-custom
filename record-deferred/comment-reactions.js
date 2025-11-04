@@ -146,9 +146,13 @@
     for (let i = 0; i < comments.length; i++) {
       const c = comments[i];
     
-      // ✅ コメントの内部data-id属性から固有IDを取得
-      const innerComment = c.querySelector('[data-id]');
-      const commentId = innerComment ? innerComment.dataset.id : `comment_${i}`;
+      // ✅ コメントの日時リンクから comment=ID を抽出
+      const linkElem = c.querySelector('.itemlist-datetime-gaia a');
+      let commentId = `comment_${i}`;
+      if (linkElem) {
+        const match = linkElem.href.match(/comment=(\d+)/);
+        if (match) commentId = match[1]; // ← ここで「5」などのIDが取れる！
+      }
     
       const textElem = c.querySelector('.commentlist-body-gaia > div');
       if (textElem) replaceEmojiInCommentText(textElem);
