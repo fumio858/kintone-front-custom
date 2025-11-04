@@ -183,8 +183,8 @@
     iframe.height = '800px'; // 高さは適宜調整
     iframe.style.border = 'none';
 
-    iframeContainer.appendChild(iframe);
-    console.log(`iframe displayed with URL: ${iframeUrl}`);
+    // iframeContainer.appendChild(iframe);
+    // console.log(`iframe displayed with URL: ${iframeUrl}`);
 
     return event;
   });
