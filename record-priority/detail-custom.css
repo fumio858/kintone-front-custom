@@ -173,7 +173,7 @@
 
 .gaia-app-statusbar-statusmenu{
   display: flex;
-  gap: .5rem;
+  gap: .2rem;
   flex-wrap: wrap;
   max-width: 420px;
 }
