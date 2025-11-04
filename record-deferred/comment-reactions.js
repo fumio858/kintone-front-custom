@@ -4,18 +4,13 @@
   // ==============================
   // 😄 設定定義
   // ==============================
-  const EMOJIS = ['😄', '😢', '❤️', '👌']; // 使用する絵文字
-  const FIELD_CODE = 'reaction_log'; // 保存先フィールドコード
-  const EMOJI_MAP = { // 旧形式（:smile: など）対応用
-    ':smile:': '😄',
-    ':cry:': '😢',
-    ':heart:': '❤️',
-    ':ok:': '👌'
-  };
-  const photoCache = {}; // ユーザー画像キャッシュ
+  const EMOJIS = ['😄', '😢', '❤️', '👌'];
+  const FIELD_CODE = 'reaction_log';
+  const EMOJI_MAP = { ':smile:': '😄', ':cry:': '😢', ':heart:': '❤️', ':ok:': '👌' };
+  const photoCache = {};
 
   // ==============================
-  // 🔁 リアクションログの取得・保存
+  // 🔁 リアクションログ取得・保存
   // ==============================
   async function getLog(recordId) {
     const resp = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
@@ -38,7 +33,7 @@
   }
 
   // ==============================
-  // 👤 ユーザー画像のキャッシュ処理
+  // 👤 ユーザー画像キャッシュ
   // ==============================
   async function loadAllUserPhotos() {
     if (Object.keys(photoCache).length) return;
@@ -46,9 +41,6 @@
     resp.users.forEach(u => {
       const baseUrl = `https://${location.hostname}/api/user/photo.do/-/user.png?id=${u.id}&size=NORMAL`;
       photoCache[u.email] = {
-        email: u.email,
-        id: u.id,
-        code: u.code,
         name: u.name,
         photoUrl: (u.photo && u.photo.url) ? u.photo.url : baseUrl
       };
@@ -57,8 +49,7 @@
 
   async function getUserPhoto(email) {
     if (!Object.keys(photoCache).length) await loadAllUserPhotos();
-    const userInfo = photoCache[email];
-    return userInfo?.photoUrl || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
+    return photoCache[email]?.photoUrl || 'https://static.cybozu.com/kintone/v2.0/images/people/no_photo.png';
   }
 
   // ==============================
@@ -96,36 +87,25 @@
       img.src = url;
       imgWrap.appendChild(img);
 
-      // 🎯 右下の絵文字バッジ
-      const emojiBadge = document.createElement('span');
-      emojiBadge.className = 'cw-emoji-badge';
+      const badge = document.createElement('span');
+      badge.className = 'cw-emoji-badge';
       for (const [emoji, users] of Object.entries(log[commentId] || {})) {
-        if (users.includes(u)) {
-          emojiBadge.textContent = emoji;
-          break;
-        }
+        if (users.includes(u)) badge.textContent = emoji;
       }
-      if (emojiBadge.textContent) imgWrap.appendChild(emojiBadge);
+      if (badge.textContent) imgWrap.appendChild(badge);
 
-      // 💬 ツールチップ（名前＋絵文字）
       const tooltip = document.createElement('div');
       tooltip.className = 'cw-tooltip';
-      const emojis = [];
-      for (const [emoji, users] of Object.entries(log[commentId] || {})) {
-        if (users.includes(u)) emojis.push(emoji);
-      }
-      tooltip.textContent = `${photoCache[u]?.name || u} ${emojis.join(' ')}`;
+      tooltip.textContent = `${photoCache[u]?.name || u}`;
       imgWrap.appendChild(tooltip);
-
       userList.appendChild(imgWrap);
     }
 
-    // 😄 リアクションボタン群
     const bar = document.createElement('div');
     bar.className = 'cw-reactions';
     EMOJIS.forEach(e => {
       const users = (log[commentId]?.[e] || []);
-      const count = users.length > 0 ? `<span>${users.length}</span>` : '';
+      const count = users.length ? `<span>${users.length}</span>` : '';
       const active = users.includes(user) ? 'active' : '';
       const btn = document.createElement('button');
       btn.className = `cw-react-btn ${active}`;
@@ -138,15 +118,12 @@
     wrapper.appendChild(userList);
     wrapper.appendChild(bar);
 
-    // 📎 コメントのフッターに追加
     const footer = commentElem.querySelector('.text11.itemlist-footer-gaia');
-    if (footer && !footer.querySelector('.cw-reaction-wrapper')) {
-      footer.appendChild(wrapper);
-    }
+    if (footer && !footer.querySelector('.cw-reaction-wrapper')) footer.appendChild(wrapper);
   }
 
   // ==============================
-  // 🚀 初期化処理
+  // 🚀 初期化
   // ==============================
   async function initReactions(ev) {
     const recordId = ev.recordId;
@@ -154,17 +131,13 @@
     const log = await getLog(recordId);
     await loadAllUserPhotos();
 
-    // 全コメントに対して描画
+    // 全コメント描画
     async function renderAllReactions() {
       const comments = document.querySelectorAll('.itemlist-item-gaia');
-      for (let i = 0; i < comments.length; i++) {
-        const c = comments[i];
-        const linkElem = c.querySelector('.itemlist-datetime-gaia a');
-        let commentId = `comment_${i}`;
-        if (linkElem) {
-          const match = linkElem.href.match(/comment=(\d+)/);
-          if (match) commentId = match[1];
-        }
+      for (const c of comments) {
+        const link = c.querySelector('.itemlist-datetime-gaia a');
+        const commentId = link?.href.match(/comment=(\d+)/)?.[1];
+        if (!commentId) continue;
         const textElem = c.querySelector('.commentlist-body-gaia > div');
         if (textElem) replaceEmojiInCommentText(textElem);
         await renderReactions(c, commentId, log, user);
@@ -175,25 +148,22 @@
     await renderAllReactions();
 
     // ==============================
-    // 👀 コメント追加を監視（確実に動作）
+    // 👀 #sidebar-list-gaia 全体を監視
     // ==============================
-    const interval = setInterval(() => {
-      const commentList = document.querySelector('.itemlist-gaia');
-      if (commentList) {
-        clearInterval(interval);
-        console.log('✅ コメントリスト検出 → MutationObserver開始');
-        const observer = new MutationObserver(async mutations => {
-          for (const m of mutations) {
-            if (m.addedNodes.length > 0) {
-              console.log('🆕 コメント追加検知 → リアクション再描画');
-              await renderAllReactions();
-              break;
-            }
+    const sidebarList = document.querySelector('#sidebar-list-gaia');
+    if (sidebarList) {
+      const observer = new MutationObserver(async mutations => {
+        for (const m of mutations) {
+          if (m.addedNodes.length) {
+            console.log('🆕 コメント追加または再構築検知 → 再描画');
+            await renderAllReactions();
+            break;
           }
-        });
-        observer.observe(commentList, { childList: true });
-      }
-    }, 1000);
+        }
+      });
+      observer.observe(sidebarList, { childList: true, subtree: true });
+      console.log('👀 コメント領域監視開始');
+    }
 
     // ==============================
     // 🎯 絵文字クリック処理
@@ -202,9 +172,9 @@
       if (!e.target.classList.contains('cw-react-btn')) return;
       const emoji = e.target.dataset.emoji;
       const commentId = e.target.dataset.commentId;
-
       log[commentId] ??= {};
-      // 1ユーザー1種類のリアクションに制限
+
+      // 1ユーザー1リアクション
       for (const eKey of Object.keys(log[commentId])) {
         log[commentId][eKey] = (log[commentId][eKey] || []).filter(u => u !== user);
       }
@@ -215,7 +185,6 @@
 
       await saveLog(recordId, log);
 
-      // 再描画（部分的）
       const parent = e.target.closest('.itemlist-item-gaia');
       const wrapper = parent.querySelector('.cw-reaction-wrapper');
       if (wrapper) wrapper.remove();
