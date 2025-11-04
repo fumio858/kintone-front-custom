@@ -184,31 +184,48 @@
     }
 
     // ==============================
-    // 🎯 絵文字クリック処理
+    // 🎯 絵文字クリック処理（再押しで解除）
     // ==============================
     document.body.addEventListener('click', async e => {
       if (!e.target.classList.contains('cw-react-btn')) return;
+
       const emoji = e.target.dataset.emoji;
       const commentId = e.target.dataset.commentId;
-      log[commentId] ??= {};
+      log[commentId] = log[commentId] || {};
 
-      // 現在の絵文字ユーザーリストを取得
-      const users = (log[commentId][emoji] ||= []);
-      const already = users.includes(user);
+      // 今このコメントで自分が付けている絵文字を探す
+      const currentEntry = Object.entries(log[commentId]).find(([emojiKey, users]) => {
+        return Array.isArray(users) && users.includes(user);
+      });
+      const currentEmoji = currentEntry ? currentEntry[0] : null;
 
-      if (already) {
-        // ✅ 同じ絵文字をもう一度押したら解除
-        log[commentId][emoji] = users.filter(u => u !== user);
-      } else {
-        // 他の絵文字を外してから追加
-        for (const eKey of Object.keys(log[commentId])) {
-          log[commentId][eKey] = (log[commentId][eKey] || []).filter(u => u !== user);
+      if (currentEmoji === emoji) {
+        // ✅ 同じ絵文字をもう一度押した → 解除だけ
+        log[commentId][emoji] = (log[commentId][emoji] || []).filter(u => u !== user);
+        if (log[commentId][emoji].length === 0) {
+          delete log[commentId][emoji];
         }
-        users.push(user);
+      } else {
+        // ✏️ 別の絵文字に変更 or 新規付与
+
+        // まず既存の絵文字から自分を外す
+        if (currentEmoji) {
+          log[commentId][currentEmoji] =
+            (log[commentId][currentEmoji] || []).filter(u => u !== user);
+          if (!log[commentId][currentEmoji].length) {
+            delete log[commentId][currentEmoji];
+          }
+        }
+
+        // 押した絵文字に自分を追加
+        const list = log[commentId][emoji] || [];
+        if (!list.includes(user)) list.push(user);
+        log[commentId][emoji] = list;
       }
 
       await saveLog(recordId, log);
 
+      // そのコメントだけリアクション再描画
       const parent = e.target.closest('.itemlist-item-gaia');
       const wrapper = parent.querySelector('.cw-reaction-wrapper');
       if (wrapper) wrapper.remove();
