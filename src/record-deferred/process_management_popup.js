@@ -31,7 +31,7 @@
     const observeCommentButton = () => {
       const targetNode = document.body;
       const observer = new MutationObserver((mutationsList, obs) => {
-        const postButton = document.querySelector('.gaia-argoui-comment-post-button');
+        const postButton = document.querySelector('.ocean-ui-comments-commentform-submit');
         if (postButton) {
           obs.disconnect(); // 監視を終了
           setupClickListener(postButton);
@@ -48,7 +48,7 @@
         }
 
         // コメントが空の場合は何もしない
-        const commentInput = document.querySelector('.gaia-argoui-comment-textarea');
+        const commentInput = document.querySelector('.ocean-ui-comments-commentform-textarea');
         if (!commentInput || !commentInput.value.trim()) {
           return;
         }
