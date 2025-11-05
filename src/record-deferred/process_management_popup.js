@@ -1,7 +1,7 @@
-(function() {
+(function () {
   'use strict';
 
-  kintone.events.on('app.record.detail.show', function(event) {
+  kintone.events.on('app.record.detail.show', function (event) {
     const record = event.record;
     let isPopupProcessing = false; // 無限ループ防止フラグ
 
@@ -68,11 +68,11 @@
           }
         });
 
-        actionButtonsHtml += `<button class="swal2-styled" id="swal-comment-only" style="margin: 0 5px; background-color: #777;">コメントのみ送信</button>`;
+        actionButtonsHtml += `<button class="swal2-styled" id="swal-comment-only" style="margin: 0 5px; background-color: #3598db; color: #FFF;">コメントのみ送信</button>`;
 
         Swal.fire({
           title: 'ステータスを変更しますか？',
-          html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #ffc10745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: .0.5rem; font-size: 1.3rem; border-style: groove; border-color: #FFF; border-width: thick;">${statusInfo}</div>` + actionButtonsHtml,
+          html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #ffc10745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: 0.05rem; font-size: 1.3rem; border-color: #FFF; border-width: thick;">${statusInfo}</div>` + actionButtonsHtml,
           showCancelButton: true,
           cancelButtonText: 'キャンセル',
           showConfirmButton: false,
