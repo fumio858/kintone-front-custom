@@ -90,7 +90,7 @@
           </div>`,
           showCancelButton: false,
           showConfirmButton: false,
-          width: '60%',
+          width: '50%',
           didOpen: () => {
             console.log('Swal.fire: ポップアップ表示完了');
             // ステータス変更ボタンのイベントリスナー
