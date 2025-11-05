@@ -178,6 +178,12 @@
   max-width: 420px;
 }
 
+.gaia-app-statusbar-actionlist{
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 528px;
+}
+
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
 /* 刑事事件 */
 /* .field-5118284,.field-13312476{
