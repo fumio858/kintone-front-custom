@@ -1,0 +1,195 @@
+/* --- FOUC対策 --- */
+/* JSがコンテナにクラスを付与したら、ツールバーの既存要素を一旦非表示に */
+.report-front-custom .gaia-argoui-app-toolbar > div:first-child > * {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.1s ease-in;
+}
+
+/* JSで追加されたカスタムヘッダーと、処理完了後に追加されるクラスがついたツールバーの子要素を表示 */
+.report-front-custom .gaia-argoui-app-toolbar > div:first-child > .custom-headerbox,
+.report-front-custom.custom-header-loaded .gaia-argoui-app-toolbar > div:first-child > * {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* body{
+  font-size: 40px;
+} */
+
+.body-record{
+  background-color: #FFF;
+}
+
+/* サイドバーコメント欄を下に移動 */
+.report-front-custom {
+  background-color: #f5f5f5;
+}
+
+.gaia-argoui-app-toolbar{
+  border-bottom: solid 4px #f5f5f5;
+}
+
+.report-front-custom .gaia-argoui-app-show-sidebar {
+  position: relative !important;
+  padding: 1rem;
+  top: 0 !important;
+  /* width: 65vw; */
+  width: calc( 100vw - 528px);
+  box-sizing: border-box;
+  /* max-height: 80vh; */
+}
+
+.report-front-custom .gaia-argoui-app-show-sidebar-dragged {
+  width: calc(100% - 2rem - 1rem);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.report-front-custom .layout-gaia {
+  padding-right: 0 !important;
+  box-sizing: border-box;
+  padding: 1rem;
+}
+
+.report-front-custom .gaia-argoui-app-show-toolbar {
+  border-bottom: none;
+}
+
+/* タブ移動 */
+.report-front-custom .gaia-argoui-app-show-sidebartabs {
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: 0;
+}
+
+/* .report-front-custom .gaia-argoui-app-show-sidebartabs .goog-tab-bar-start{
+  display: flex;
+} */
+
+/* サイドバードラッガー削除 */
+.report-front-custom .gaia-argoui-app-show-sidebar-dragger {
+  display: none !important;
+}
+
+/* レコード登録画面サイズ調整 */
+.report-front-custom #record-gaia {
+  position: absolute;
+  right: 0;
+  /* z-index: 1; */
+  height: auto;
+  /* width: 35vw; */
+  overflow: scroll;
+  max-height: calc( 100vh - 80px - 60px );
+  width: 528px;
+}
+
+/* 通知ページ */
+/* .notification-iframe-gaia{
+  height: auto!important;
+} */
+
+
+
+/* タイトル・下段まとめる箱 */
+.custom-headerbox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;           /* タイトル/付箋/アコーディオンの間隔 */
+  margin-left: 8px;   /* 既存ボタンと間を取る */
+  max-width: 60vw;    /* はみ出し過ぎ防止（調整OK） */
+}
+
+/* タイトル（前回と同等。必要に応じて調整） */
+.custom-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 特記事項・概要 */
+.custom-info-grid {
+  display: flex;
+  flex-direction: column; /* 縦並びにする */
+  gap: 6px; /* 各項目の間隔 */
+  /* margin: 0 .5rem; */
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.custom-info-item {
+  display: flex; /* ラベルと値を横に並べる */
+  align-items: baseline; /* テキストのベースラインを揃える */
+  word-break: break-word;
+  margin-bottom: .5rem;
+}
+
+.custom-info-label {
+  flex-shrink: 0; /* ラベルが縮まないようにする */
+  width: 4.8em; /* ラベルの幅を固定（必要に応じて調整） */
+  font-weight: 600;
+  color: #555;
+}
+
+.custom-info-value {
+  color: #333;
+}
+
+
+/* レコード作成時 */
+.body-record-edit .editablelayout-gaia{
+  margin: auto;
+  zoom: 1.2;
+}
+
+/* 特記の値に二重下線を追加 */
+.custom-notes-value {
+  /* text-decoration: underline;
+  text-decoration-style: double;
+  text-decoration-color: #d6d6d6; */
+  color: #eb3a3a;
+  font-weight: bold;
+}
+
+/* 他調整 */
+.report-front-custom .control-group-field-gaia{
+  min-width: auto!important;
+}
+
+.ocean-ui-comments-likeuserspopup{
+  left: 100px!important;
+}
+
+.gaia-app-statusbar-historypopup,
+.ocean-ui-userinfo-popup{
+  left: auto!important;
+  right: 10px;
+}
+
+.gaia-app-statusbar-statusmenu{
+  display: flex;
+  gap: .2rem;
+  flex-wrap: wrap;
+  max-width: 420px;
+}
+
+/* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
+/* 刑事事件 */
+/* .field-5118284,.field-13312476{
+  display: none;
+} */
+
+/* 交通事故 */
+/* .field-13312475,.field-13312087{
+  display: none;
+} */
+
+/* 刑事交通以外 */
+/* .field-13312087,.field-13312477{
+  display: none;
+} */

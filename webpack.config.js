@@ -1,9 +1,9 @@
 module.exports = {
   entry: {
-    'record-priority': './record-priority/index.js',
-    'record-deferred': './record-deferred/index.js',
-    portal: './portal/index.js',
-    task: './task/index.js'
+    'record-priority': './src/record-priority/index.js',
+    'record-deferred': './src/record-deferred/index.js',
+    portal: './src/portal/index.js',
+    task: './src/task/index.js'
   },
   output: {
     path: __dirname + '/dist',

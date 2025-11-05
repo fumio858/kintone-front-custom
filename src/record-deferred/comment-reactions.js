@@ -4,14 +4,7 @@
   // ==============================
   // 😄 設定定義
   // ==============================
-    const API_TOKENS = {
-    // --- 設定ここから ---
-    // 例: '123': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    '22': '28pxmI160Jy3zAhobZt8vIV6l119QHdD1pl2NmzD',
-    '26': 'bKF9kxa8LZamHvhBCYmRRB1c59QyK4p0vHrP9mhu',
-    '55': 'EKR4UFyudgDXbrM9hVvpksbzrGt37QHuY0zCBv8u'
-    // --- 設定ここまで ---
-  };
+
   const EMOJIS = ['😄', '😢', '❤️', '👌'];
   const FIELD_CODE = 'reaction_log';
   const EMOJI_MAP = { ':smile:': '😄', ':cry:': '😢', ':heart:': '❤️', ':ok:': '👌' };
@@ -21,56 +14,24 @@
   // 🔁 リアクションログ取得・保存
   // ==============================
   async function getLog(recordId) {
-    const appId = kintone.app.getId();
-    const token = API_TOKENS[appId];
-    if (!token) {
-      console.error(`APIトークンが未設定です (App ID: ${appId})`);
-      return {};
-    }
-
-    const url = `${kintone.api.url('/k/v1/record', true)}?app=${appId}&id=${recordId}`;
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: { 'X-Cybozu-API-Token': token }
+    const resp = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
+      app: kintone.app.getId(),
+      id: recordId
     });
-    if (!resp.ok) {
-      console.error('getLog failed:', await resp.json());
-      return {};
-    }
-    const respData = await resp.json();
     try {
-      return JSON.parse(respData.record[FIELD_CODE].value || '{}');
+      return JSON.parse(resp.record[FIELD_CODE].value || '{}');
     } catch {
       return {};
     }
   }
 
-  async function saveLog(recordId, log) {
-    const appId = kintone.app.getId();
-    const token = API_TOKENS[appId];
-    if (!token) {
-      console.error(`APIトークンが未設定です (App ID: ${appId})`);
-      return;
-    }
 
-    const url = kintone.api.url('/k/v1/record', true);
-    const body = {
-      app: appId,
+  async function saveLog(recordId, log) {
+    await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+      app: kintone.app.getId(),
       id: recordId,
-      record: { [FIELD_CODE]: { value: JSON.stringify(log) } },
-      revision: -1
-    };
-    const resp = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'X-Cybozu-API-Token': token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
+      record: { [FIELD_CODE]: { value: JSON.stringify(log) } }
     });
-    if (!resp.ok) {
-      console.error('saveLog failed:', await resp.json());
-    }
   }
 
   // ==============================

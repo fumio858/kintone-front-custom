@@ -5,3 +5,8 @@
 .DS_Store
 
 command_memo.txt
+*.ppk
+
+# Build artifacts
+plugin.zip
+
