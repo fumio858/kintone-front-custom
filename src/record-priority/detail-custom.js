@@ -91,11 +91,7 @@
       if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
         toolbarMenu.appendChild(statusBar);
         // Flexboxでレイアウトを調整
-        statusBar.style.display = 'flex';
-        statusBar.style.alignItems = 'center';
-        statusBar.style.marginLeft = 'auto';
         statusBar.style.paddingLeft = '16px';
-        statusBar.style.borderLeft = '1px solid #e3e7e8';
       }
     };
 

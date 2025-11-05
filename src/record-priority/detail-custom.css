@@ -181,6 +181,7 @@
 .gaia-app-statusbar-actionlist{
   display: flex;
   flex-wrap: wrap;
+  justify-content: end;
   max-width: 528px;
 }
 
