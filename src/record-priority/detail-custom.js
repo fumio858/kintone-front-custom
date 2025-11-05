@@ -82,24 +82,27 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理ボタンの移動処理 ---
+    // --- プロセス管理ボタンの移動と維持 ---
     const moveStatusBar = () => {
       const statusBar = document.querySelector('.gaia-app-statusbar');
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
 
-      if (statusBar && toolbarMenu) {
-        // toolbarMenuの末尾にstatusBarを移動
+      // statusBarがtoolbarMenuの子要素でなければ移動
+      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
         toolbarMenu.appendChild(statusBar);
+        // Flexboxでレイアウトを調整
+        statusBar.style.display = 'flex';
+        statusBar.style.alignItems = 'center';
+        statusBar.style.marginLeft = 'auto';
+        statusBar.style.paddingLeft = '16px';
+        statusBar.style.borderLeft = '1px solid #e3e7e8';
       }
     };
 
-    // MutationObserverで要素の出現を待つ
-    const observer = new MutationObserver((mutations, obs) => {
-      const statusBar = document.querySelector('.gaia-app-statusbar');
-      if (statusBar) {
-        moveStatusBar();
-        obs.disconnect(); // 目的の要素を見つけたら監視を終了
-      }
+    // MutationObserverでDOMの変更を常に監視
+    const observer = new MutationObserver((mutations) => {
+      // DOM変更があるたびに移動処理を試みる
+      moveStatusBar();
     });
 
     // 監視を開始
@@ -107,6 +110,9 @@
       childList: true,
       subtree: true
     });
+
+    // 初回表示時にも一度実行
+    moveStatusBar();
 
     return event;
   });
