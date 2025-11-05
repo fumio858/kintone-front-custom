@@ -72,7 +72,7 @@
 
         Swal.fire({
           title: 'ステータスを変更しますか？',
-          html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em;">${statusInfo}</div>` + actionButtonsHtml,
+          html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #ffc10745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: .0.5rem; font-size: 1.3rem; border-style: groove; border-color: #FFF; border-width: thick;">${statusInfo}</div>` + actionButtonsHtml,
           showCancelButton: true,
           cancelButtonText: 'キャンセル',
           showConfirmButton: false,
