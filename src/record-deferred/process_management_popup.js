@@ -57,7 +57,9 @@
 
         await loadSweetAlert();
 
-        const statusInfo = document.querySelector('.gaia-app-statusbar-statusmenu')?.innerText.replace(/\n/g, '<br>') || '';
+        let statusInfo = document.querySelector('.gaia-app-statusbar-statusmenu')?.innerText.replace(/\n/g, '<br>') || '';
+        statusInfo = statusInfo.replace(/ステータスの履歴/g, '');
+
         const actionElements = document.querySelectorAll('.gaia-app-statusbar-action');
 
         let actionButtonsHtml = '';
@@ -76,6 +78,7 @@
           showCancelButton: true,
           cancelButtonText: 'キャンセル',
           showConfirmButton: false,
+          width: '60%',
           didOpen: () => {
             // ステータス変更ボタンのイベントリスナー
             actionElements.forEach((el, index) => {
