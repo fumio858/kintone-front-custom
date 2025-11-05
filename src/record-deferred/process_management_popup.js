@@ -47,24 +47,16 @@
           return; // ポップアップ処理中は元のクリックイベントを許可
         }
 
-        // コメントが空の場合は何もしない
         const commentInput = document.querySelector('.ocean-ui-comments-commentform-textarea');
-        if (!commentInput || !commentInput.value.trim()) {
+        if (!commentInput || !commentInput.value.trim() || !isCurrentUserAssignee()) {
           return;
         }
 
-        // 担当者でなければ何もしない
-        if (!isCurrentUserAssignee()) {
-          return;
-        }
-
-        // デフォルトの送信動作をキャンセル
         e.preventDefault();
         e.stopPropagation();
 
         await loadSweetAlert();
 
-        // 画面からステータスとアクション情報を取得
         const statusInfo = document.querySelector('.gaia-app-statusbar-statusmenu')?.innerText.replace(/\n/g, '<br>') || '';
         const actionElements = document.querySelectorAll('.gaia-app-statusbar-action');
 
@@ -76,31 +68,51 @@
           }
         });
 
+        actionButtonsHtml += `<button class="swal2-styled" id="swal-comment-only" style="margin: 0 5px; background-color: #777;">コメントのみ送信</button>`;
+
         Swal.fire({
           title: 'ステータスを変更しますか？',
           html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em;">${statusInfo}</div>` + actionButtonsHtml,
           showCancelButton: true,
-          cancelButtonText: '変更しない',
-          showConfirmButton: false, // デフォルトのOKボタンは非表示
+          cancelButtonText: 'キャンセル',
+          showConfirmButton: false,
           didOpen: () => {
-            // 動的に生成したボタンにクリックイベントを設定
+            // ステータス変更ボタンのイベントリスナー
             actionElements.forEach((el, index) => {
               const swalBtn = document.getElementById(`swal-action-${index}`);
               if (swalBtn) {
                 swalBtn.addEventListener('click', () => {
-                  // 対応するkintoneのアクションボタンをクリック
+                  // 1. ステータス変更
                   el.click();
+
+                  // 2. 画面更新を監視してコメント送信
+                  const statusObserver = new MutationObserver(() => {
+                    statusObserver.disconnect();
+                    isPopupProcessing = true;
+                    button.click(); // コメント送信
+                    setTimeout(() => { isPopupProcessing = false; }, 100);
+                  });
+                  const statusTarget = document.querySelector('.gaia-app-statusbar-statusmenu');
+                  if (statusTarget) {
+                    statusObserver.observe(statusTarget, { childList: true, subtree: true });
+                  }
+
                   Swal.close();
                 });
               }
             });
+
+            // コメントのみ送信ボタンのイベントリスナー
+            const commentOnlyBtn = document.getElementById('swal-comment-only');
+            if (commentOnlyBtn) {
+              commentOnlyBtn.addEventListener('click', () => {
+                isPopupProcessing = true;
+                button.click(); // コメント送信
+                setTimeout(() => { isPopupProcessing = false; }, 100);
+                Swal.close();
+              });
+            }
           }
-        }).then(() => {
-          // ポップアップが閉じた後（アクション実行 or キャンセル後）にコメントを送信
-          isPopupProcessing = true;
-          button.click();
-          // 少し待ってからフラグを戻す
-          setTimeout(() => { isPopupProcessing = false; }, 100);
         });
       });
     };
