@@ -28,8 +28,7 @@
     await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
       app: kintone.app.getId(),
       id: recordId,
-      record: { [FIELD_CODE]: { value: JSON.stringify(log) } },
-      revision: -1
+      record: { [FIELD_CODE]: { value: JSON.stringify(log) } }
     });
   }
 
