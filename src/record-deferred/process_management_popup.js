@@ -74,7 +74,7 @@
           title: 'ステータスを変更しますか？',
           html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #c7c7c745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: 0.05rem; font-size: 1.3rem; border-color: #FFF; border-width: thick;">${statusInfo}</div>` + actionButtonsHtml,
           footer: `<div style="display: flex; justify-content: center; align-items: center; padding-top: 1rem;">
-            <button class="swal2-styled" id="swal-comment-only" style="background-color: #3598db; color: #FFF;">コメントのみ送信</button>
+            <button class="swal2-styled" id="swal-comment-only" style="background-color: #3598db; color: #FFF;">書き込む</button>
             <a href="#" id="swal-cancel-link" style="color: #777; text-decoration: none; margin-left: auto;right: 1rem; position: absolute; bottom: 1rem; font-size: .8rem;">キャンセル</a>
           </div>`,
           showCancelButton: false,
