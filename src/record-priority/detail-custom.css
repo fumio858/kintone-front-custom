@@ -186,6 +186,11 @@
   text-align: left;
 }
 
+.gaia-app-statusbar-assigneepopup{
+  left: auto!important;
+  right: 0;
+}
+
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
 /* 刑事事件 */
 /* .field-5118284,.field-13312476{
