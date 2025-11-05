@@ -66,7 +66,7 @@
         actionElements.forEach((el, index) => {
           const actionLabel = el.querySelector('.gaia-app-statusbar-action-label')?.innerText;
           if (actionLabel) {
-            actionButtonsHtml += `<button class="swal2-styled" id="swal-action-${index}" style="margin: .5rem;border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db;">${actionLabel}</button>`;
+            actionButtonsHtml += `<button class="swal2-styled" id="swal-action-${index}" style="margin: .5rem;border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db; border-solid: 1px;">${actionLabel}</button>`;
           }
         });
 
@@ -74,7 +74,7 @@
 
         Swal.fire({
           title: 'ステータスを変更しますか？',
-          html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #c7c7c745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: 0.05rem; font-size: 1.3rem; border-color: #FFF; border-width: thick;    border-style: double;">${statusInfo}</div>` + actionButtonsHtml,
+          html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #c7c7c745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: 0.05rem; font-size: 1.3rem; border-color: #FFF; border-width: thick; border-style: double;">${statusInfo}</div>` + actionButtonsHtml,
           showCancelButton: true,
           cancelButtonText: 'キャンセル',
           showConfirmButton: false,
