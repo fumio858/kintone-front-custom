@@ -70,15 +70,16 @@
           }
         });
 
-        actionButtonsHtml += `<button class="swal2-styled" id="swal-comment-only" style="margin:.5rem; background-color: #3598db; color: #FFF;">書き込む</button>`;
-
         Swal.fire({
           title: 'ステータスを変更しますか？',
           html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #c7c7c745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: 0.05rem; font-size: 1.3rem; border-color: #FFF; border-width: thick;">${statusInfo}</div>` + actionButtonsHtml,
-          showCancelButton: true,
-          cancelButtonText: 'キャンセル',
+          footer: `<div style="display: flex; justify-content: center; align-items: center; padding-top: 1rem;">
+            <button class="swal2-styled" id="swal-comment-only" style="background-color: #3598db; color: #FFF;">コメントのみ送信</button>
+            <a href="#" id="swal-cancel-link" style="color: #777; text-decoration: none; margin-left: auto;">キャンセル</a>
+          </div>`,
+          showCancelButton: false,
           showConfirmButton: false,
-          width: '50%',
+          width: '60%',
           didOpen: () => {
             // ステータス変更ボタンのイベントリスナー
             actionElements.forEach((el, index) => {
@@ -105,13 +106,22 @@
               }
             });
 
-            // コメントのみ送信ボタンのイベントリスナー
+            // コメントのみ送信ボタンのイベントリスナー (フッター内のボタン)
             const commentOnlyBtn = document.getElementById('swal-comment-only');
             if (commentOnlyBtn) {
               commentOnlyBtn.addEventListener('click', () => {
                 isPopupProcessing = true;
                 button.click(); // コメント送信
                 setTimeout(() => { isPopupProcessing = false; }, 100);
+                Swal.close();
+              });
+            }
+
+            // 新しいキャンセルリンクのイベントリスナー
+            const cancelLink = document.getElementById('swal-cancel-link');
+            if (cancelLink) {
+              cancelLink.addEventListener('click', (e) => {
+                e.preventDefault(); // リンクのデフォルト動作をキャンセル
                 Swal.close();
               });
             }
