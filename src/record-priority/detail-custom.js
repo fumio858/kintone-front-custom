@@ -82,6 +82,32 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
+    // --- プロセス管理ボタンの移動処理 ---
+    const moveStatusBar = () => {
+      const statusBar = document.querySelector('.gaia-app-statusbar');
+      const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
+
+      if (statusBar && toolbarMenu) {
+        // toolbarMenuの末尾にstatusBarを移動
+        toolbarMenu.appendChild(statusBar);
+      }
+    };
+
+    // MutationObserverで要素の出現を待つ
+    const observer = new MutationObserver((mutations, obs) => {
+      const statusBar = document.querySelector('.gaia-app-statusbar');
+      if (statusBar) {
+        moveStatusBar();
+        obs.disconnect(); // 目的の要素を見つけたら監視を終了
+      }
+    });
+
+    // 監視を開始
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
     return event;
   });
 })();
