@@ -66,7 +66,7 @@
         actionElements.forEach((el, index) => {
           const actionLabel = el.querySelector('.gaia-app-statusbar-action-label')?.innerText;
           if (actionLabel) {
-            actionButtonsHtml += `<button class="swal2-styled" id="swal-action-${index}" style="margin: .5rem;">${actionLabel}</button>`;
+            actionButtonsHtml += `<button class="swal2-styled" id="swal-action-${index}" style="margin: .5rem;border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db;">${actionLabel}</button>`;
           }
         });
 
@@ -78,7 +78,7 @@
           showCancelButton: true,
           cancelButtonText: 'キャンセル',
           showConfirmButton: false,
-          width: '60%',
+          width: '50%',
           didOpen: () => {
             // ステータス変更ボタンのイベントリスナー
             actionElements.forEach((el, index) => {
