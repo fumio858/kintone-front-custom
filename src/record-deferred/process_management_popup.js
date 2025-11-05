@@ -70,7 +70,7 @@
           }
         });
 
-        actionButtonsHtml += `<button class="swal2-styled" id="swal-comment-only" style="margin:.5rem; background-color: #3598db; color: #FFF;">コメントのみ送信</button>`;
+        actionButtonsHtml += `<button class="swal2-styled" id="swal-comment-only" style="margin:.5rem; background-color: #3598db; color: #FFF;">書き込む</button>`;
 
         Swal.fire({
           title: 'ステータスを変更しますか？',
