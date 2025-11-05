@@ -183,6 +183,7 @@
   flex-wrap: wrap;
   justify-content: end;
   max-width: 528px;
+  text-align: left;
 }
 
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
