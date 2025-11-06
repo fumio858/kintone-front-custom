@@ -21,12 +21,19 @@
             const notifierHeader = node.matches('.notifier-header-cybozu') ? node : node.querySelector('.notifier-header-cybozu');
 
             if (notifierHeader) {
-              const errorList = notifierHeader.querySelector('.record-edit-notify-error-message-body');
-              if (errorList && errorList.firstElementChild) {
-                const firstErrorLabelText = errorList.firstElementChild.textContent.trim();
-                scrollToField(firstErrorLabelText);
-                // observer.disconnect(); // 2回目以降も動作させるため、disconnectを削除
+              // エラー通知を検出したら、最初のエラーフィールドにスクロール
+              const firstErrorField = document.querySelector('.input-error-cybozu');
+              if (firstErrorField) {
+                const fieldElement = firstErrorField.closest('.control-value-gaia') || firstErrorField.closest('.control-gaia');
+                if (fieldElement) {
+                  fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                  console.warn('[scroll_to_error] エラーフィールドの親要素が見つかりませんでした。', firstErrorField);
+                }
+              } else {
+                console.warn('[scroll_to_error] エラー通知は表示されたが、.input-error-cybozu が見つかりませんでした。');
               }
+              // observer.disconnect(); // 2回目以降も動作させるため、disconnectを削除
             }
           });
         }
@@ -39,23 +46,6 @@
     return event;
   });
 
-  /**
-   * 指定されたラベルテキストを持つKintoneフィールド要素を見つけてスクロールする
-   * @param {string} labelText - エラーメッセージから取得したフィールドのラベルテキスト
-   */
-  function scrollToField(labelText) {
-    const fieldLabels = document.querySelectorAll('.control-label-gaia');
-    for (const labelDiv of fieldLabels) {
-      const actualLabelSpan = labelDiv.querySelector('.control-label-text-gaia');
-      if (actualLabelSpan && actualLabelSpan.textContent.trim() === labelText) {
-        let fieldElement = labelDiv.closest('.control-value-gaia') || labelDiv.closest('.control-gaia');
-        if (fieldElement) {
-          fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
-        }
-      }
-    }
-    console.warn(`[scroll_to_error] フィールド「${labelText}」が見つかりませんでした。`);
-  }
+  // scrollToField 関数は不要になったため削除
 
 })();
