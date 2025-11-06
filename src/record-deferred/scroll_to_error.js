@@ -12,14 +12,23 @@
       mutations.forEach(function(mutation) {
         if (mutation.addedNodes.length > 0) {
           mutation.addedNodes.forEach(function(node) {
-            if (node.nodeType === 1 && node.matches('.notifier-header-cybozu')) {
-              console.log('[scroll_to_error] エラー通知を検出しました。'); // ★追加
-              const errorList = node.querySelector('.record-edit-notify-error-message-body');
+            // 追加されたノードが要素でない場合はスキップ
+            if (node.nodeType !== 1) return;
+
+            // デバッグ用に、追加されたノードのクラス名を出力
+            console.log('[scroll_to_error] Added node className:', node.className);
+
+            // 追加されたノード自体がエラー通知ヘッダーか、その子孫にエラー通知ヘッダーが含まれるかを確認
+            const notifierHeader = node.matches('.notifier-header-cybozu') ? node : node.querySelector('.notifier-header-cybozu');
+
+            if (notifierHeader) {
+              console.log('[scroll_to_error] エラー通知を検出しました。', notifierHeader); // ★追加
+              const errorList = notifierHeader.querySelector('.record-edit-notify-error-message-body');
               if (errorList && errorList.firstElementChild) {
                 const firstErrorLabelText = errorList.firstElementChild.textContent.trim();
-                console.log(`[scroll_to_error] 最初のエラー項目: ${firstErrorLabelText}`); // ★追加
+                console.log(`[scroll_to_error] 最初のエラー項目: ${firstErrorLabelText}`);
                 scrollToField(firstErrorLabelText);
-                observer.disconnect();
+                observer.disconnect(); // 一度スクロールしたら監視を停止
               }
             }
           });
