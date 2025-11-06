@@ -131,6 +131,14 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       const listEl = wrap.querySelector('#task-list');
       const selOwner = wrap.querySelector('#task-owner');
 
+      // task-due の初期値を今日の日付に設定
+      const taskDueInput = wrap.querySelector('#task-due');
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const dd = String(today.getDate()).padStart(2, '0');
+      taskDueInput.value = `${yyyy}-${mm}-${dd}`;
+
       // ▼ この画面のアプリIDから分野ラベルを決定
       const currentAppId = getCurrentAppId(); // NEW
       const caseTypeLabel = APP_ID_TO_CASE_TYPE[currentAppId] || ''; // NEW
