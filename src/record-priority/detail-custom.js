@@ -87,27 +87,32 @@
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
       if (!toolbarMenu) return;
 
-      // ステータス表示とアクションボタンの元の親コンテナを探す
+      // ステータスとアクションを格納する専用コンテナを準備（なければ作成）
+      let customWrapper = toolbarMenu.querySelector('.custom-status-actions-wrapper');
+      if (!customWrapper) {
+        customWrapper = document.createElement('div');
+        customWrapper.className = 'custom-status-actions-wrapper';
+        customWrapper.style.display = 'flex';
+        customWrapper.style.alignItems = 'center';
+        customWrapper.style.gap = '16px';
+        customWrapper.style.paddingLeft = '16px';
+        toolbarMenu.appendChild(customWrapper);
+      }
+
       const originalContainer = document.querySelector('.control-gaia');
       if (!originalContainer) return;
 
       const statusMenu = originalContainer.querySelector('.gaia-app-statusbar-statusmenu');
-      const actions = originalContainer.querySelector('.gaia-app-statusbar'); // アクションボタンが含まれる要素
+      const actions = originalContainer.querySelector('.gaia-app-statusbar-actions');
 
-      // 1. ステータス表示（作業者など）をツールバーに移動
-      if (statusMenu && statusMenu.parentNode !== toolbarMenu) {
-        toolbarMenu.appendChild(statusMenu);
-        // スタイルを調整
-        statusMenu.style.paddingLeft = '16px';
-        statusMenu.style.borderRight = '1px solid #e3e3e3';
-        statusMenu.style.marginRight = '16px';
+      // 1. ステータス表示を専用コンテナに移動
+      if (statusMenu && statusMenu.parentNode !== customWrapper) {
+        customWrapper.appendChild(statusMenu);
       }
 
-      // 2. アクションボタンをツールバーに移動
-      if (actions && actions.parentNode !== toolbarMenu) {
-        toolbarMenu.appendChild(actions);
-        // アクションボタン自体のpaddingを調整
-        actions.style.paddingLeft = '0px';
+      // 2. アクションボタンを専用コンテナに移動
+      if (actions && actions.parentNode !== customWrapper) {
+        customWrapper.appendChild(actions);
       }
     };
 
