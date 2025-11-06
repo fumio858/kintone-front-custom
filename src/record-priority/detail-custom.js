@@ -82,38 +82,34 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理要素の移動と維持 ---
-    const moveStatusBar = () => {
-      // .gaia-app-statusbar を含む .control-gaia 要素全体を選択
-      const statusBarWrapper = document.querySelector('.control-gaia:has(.gaia-app-statusbar)');
-      const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
+    // --- プロセス管理のレイアウト調整 ---
+    const adjustProcessLayout = () => {
+      const statusBar = document.querySelector('.gaia-app-statusbar');
+      if (!statusBar) return;
 
-      // statusBarWrapper が toolbarMenu の子要素でなければ移動
-      if (statusBarWrapper && toolbarMenu && statusBarWrapper.parentNode !== toolbarMenu) {
-        toolbarMenu.appendChild(statusBarWrapper);
-        // 必要に応じて、statusBarWrapper自体のpaddingを調整
-        statusBarWrapper.style.paddingLeft = '16px';
+      // 既に調整済みかチェック（フラグを立てる）
+      if (statusBar.dataset.layoutAdjusted === 'true') return;
 
-        // 内側のステータスバー要素を見つけてFlexboxを適用
-        const statusBar = statusBarWrapper.querySelector('.gaia-app-statusbar');
-        if (statusBar) {
-          statusBar.style.display = 'flex';
-          statusBar.style.alignItems = 'center';
-          statusBar.style.width = '100%'; // 親要素の幅いっぱいに広げる
+      const statusMenu = statusBar.querySelector('.gaia-app-statusbar-statusmenu');
+      const actionsMenu = statusBar.querySelector('.gaia-app-statusbar-actions');
 
-          // ボタン群とステータス表示の間のスペースを調整
-          const actions = statusBar.querySelector('.gaia-app-statusbar-actions');
-          if (actions) {
-            actions.style.marginRight = '16px'; // 右側に余白を追加
-          }
-        }
+      if (statusMenu && actionsMenu) {
+        // Flexboxを縦並びに設定し、右寄せを維持
+        statusBar.style.display = 'flex';
+        statusBar.style.flexDirection = 'column';
+        statusBar.style.alignItems = 'flex-end';
+
+        // statusMenu を actionsMenu の前に移動して、上下の順序を入れ替え
+        statusBar.insertBefore(statusMenu, actionsMenu);
+
+        // 調整が完了したことをマークして、複数回実行されるのを防ぐ
+        statusBar.dataset.layoutAdjusted = 'true';
       }
     };
 
-    // MutationObserverでDOMの変更を常に監視
-    const observer = new MutationObserver((mutations) => {
-      // DOM変更があるたびに移動処理を試みる
-      moveStatusBar();
+    // MutationObserverでDOMの変更を監視
+    const observer = new MutationObserver(() => {
+      adjustProcessLayout();
     });
 
     // 監視を開始
@@ -123,7 +119,7 @@
     });
 
     // 初回表示時にも一度実行
-    moveStatusBar();
+    adjustProcessLayout();
 
     return event;
   });
