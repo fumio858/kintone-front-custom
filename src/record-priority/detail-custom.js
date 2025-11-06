@@ -82,40 +82,29 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- ステータスとアクションボタンの移動と維持 ---
-    const moveStatusAndActions = () => {
-      // 1. 親となるカスタムヘッダーを探す
-      const headerBox = document.querySelector('.custom-headerbox');
-      if (!headerBox) return;
-
-      // 2. 移動要素を格納するラッパーを探す（なければ作る）
-      let wrapper = headerBox.querySelector('.custom-status-actions-wrapper');
-      if (!wrapper) {
-        wrapper = document.createElement('div');
-        wrapper.className = 'custom-status-actions-wrapper';
-        headerBox.appendChild(wrapper);
-      }
-
-      // 3. 移動させたい元の要素を探す
-      //    必ず元の場所(.control-gaia)から探すことで、Kintoneによる再描画に対応
+    // --- ステータス表示をアクションボタンの隣に移動させる ---
+    const groupStatusWithActions = () => {
       const originalContainer = document.querySelector('.control-gaia');
       if (!originalContainer) return;
 
+      const statusBar = originalContainer.querySelector('.gaia-app-statusbar');
       const statusMenu = originalContainer.querySelector('.gaia-app-statusbar-statusmenu');
-      const actions = originalContainer.querySelector('.gaia-app-statusbar-actions');
-
-      // 4. 要素をラッパーに移動 (まだ移動されていなければ)
-      if (statusMenu && statusMenu.parentNode !== wrapper) {
-        wrapper.appendChild(statusMenu);
-      }
-      if (actions && actions.parentNode !== wrapper) {
-        wrapper.appendChild(actions);
+      
+      // statusBarとstatusMenuが存在し、かつstatusMenuがまだ移動されていない場合
+      if (statusBar && statusMenu && statusMenu.parentNode !== statusBar) {
+        // statusMenuをstatusBarの先頭に挿入
+        statusBar.insertBefore(statusMenu, statusBar.firstChild);
+        
+        // 必要であればスタイルを調整
+        statusBar.style.display = 'flex';
+        statusBar.style.alignItems = 'center';
+        statusBar.style.gap = '16px';
       }
     };
 
     // MutationObserverでDOMの変更を常に監視
     const observer = new MutationObserver(() => {
-      moveStatusAndActions();
+      groupStatusWithActions();
     });
 
     // 監視を開始
@@ -125,7 +114,7 @@
     });
 
     // 初回実行
-    moveStatusAndActions();
+    groupStatusWithActions();
 
     return event;
   });
