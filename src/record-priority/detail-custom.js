@@ -91,9 +91,22 @@
       // statusBarWrapper が toolbarMenu の子要素でなければ移動
       if (statusBarWrapper && toolbarMenu && statusBarWrapper.parentNode !== toolbarMenu) {
         toolbarMenu.appendChild(statusBarWrapper);
-        // Flexboxでレイアウトを調整
         // 必要に応じて、statusBarWrapper自体のpaddingを調整
         statusBarWrapper.style.paddingLeft = '16px';
+
+        // 内側のステータスバー要素を見つけてFlexboxを適用
+        const statusBar = statusBarWrapper.querySelector('.gaia-app-statusbar');
+        if (statusBar) {
+          statusBar.style.display = 'flex';
+          statusBar.style.alignItems = 'center';
+          statusBar.style.width = '100%'; // 親要素の幅いっぱいに広げる
+
+          // ボタン群とステータス表示の間のスペースを調整
+          const actions = statusBar.querySelector('.gaia-app-statusbar-actions');
+          if (actions) {
+            actions.style.marginRight = '16px'; // 右側に余白を追加
+          }
+        }
       }
     };
 
