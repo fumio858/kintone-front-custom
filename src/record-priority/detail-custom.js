@@ -82,33 +82,50 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理ボタンの移動と維持 ---
-    const moveStatusBar = () => {
-      const statusBar = document.querySelector('.gaia-app-statusbar');
-      const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
+    // --- ステータスとアクションボタンの移動と維持 ---
+    const moveStatusAndActions = () => {
+      // 1. 親となるカスタムヘッダーを探す
+      const headerBox = document.querySelector('.custom-headerbox');
+      if (!headerBox) return;
 
-      // statusBarがtoolbarMenuの子要素でなければ移動
-      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
-        toolbarMenu.appendChild(statusBar);
-        // Flexboxでレイアウトを調整
-        statusBar.style.paddingLeft = '16px';
+      // 2. 移動要素を格納するラッパーを探す（なければ作る）
+      let wrapper = headerBox.querySelector('.custom-status-actions-wrapper');
+      if (!wrapper) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'custom-status-actions-wrapper';
+        headerBox.appendChild(wrapper);
+      }
+
+      // 3. 移動させたい元の要素を探す
+      //    必ず元の場所(.control-gaia)から探すことで、Kintoneによる再描画に対応
+      const originalContainer = document.querySelector('.control-gaia');
+      if (!originalContainer) return;
+
+      const statusMenu = originalContainer.querySelector('.gaia-app-statusbar-statusmenu');
+      const actions = originalContainer.querySelector('.gaia-app-statusbar-actions');
+
+      // 4. 要素をラッパーに移動 (まだ移動されていなければ)
+      if (statusMenu && statusMenu.parentNode !== wrapper) {
+        wrapper.appendChild(statusMenu);
+      }
+      if (actions && actions.parentNode !== wrapper) {
+        wrapper.appendChild(actions);
       }
     };
 
     // MutationObserverでDOMの変更を常に監視
-    const observer = new MutationObserver((mutations) => {
-      // DOM変更があるたびに移動処理を試みる
-      moveStatusBar();
+    const observer = new MutationObserver(() => {
+      moveStatusAndActions();
     });
 
     // 監視を開始
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
 
-    // 初回表示時にも一度実行
-    moveStatusBar();
+    // 初回実行
+    moveStatusAndActions();
 
     return event;
   });
