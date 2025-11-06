@@ -43,13 +43,14 @@
   });
 
   function scrollToField(labelText) {
-    console.log(`[scroll_to_error] 「${labelText}」をスクロールターゲットとして探します。`); // ★追加
+    console.log(`[scroll_to_error] 「${labelText}」をスクロールターゲットとして探します。`);
     const fieldLabels = document.querySelectorAll('.control-label-gaia');
     for (const labelDiv of fieldLabels) {
-      if (labelDiv.textContent.trim() === labelText) {
+      const actualLabelSpan = labelDiv.querySelector('.control-label-text-gaia');
+      if (actualLabelSpan && actualLabelSpan.textContent.trim() === labelText) {
         let fieldElement = labelDiv.closest('.control-value-gaia') || labelDiv.closest('.control-gaia');
         if (fieldElement) {
-          console.log('[scroll_to_error] スクロール対象の要素を見つけました。スクロールします。', fieldElement); // ★追加
+          console.log('[scroll_to_error] スクロール対象の要素を見つけました。スクロールします。', fieldElement);
           fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
         }
