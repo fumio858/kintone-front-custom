@@ -82,42 +82,37 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理ボタンの移動と維持 ---
-    const moveStatusBar = () => {
-      const statusBar = document.querySelector('.gaia-app-statusbar');
+    // --- プロセス管理とステータス表示の移動と維持 ---
+    const moveElements = () => {
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
+      if (!toolbarMenu) return;
 
-      // statusBarがtoolbarMenuの子要素でなければ移動
-      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
+      // 1. アクションボタンを移動 (グローバルセレクタを維持)
+      const statusBar = document.querySelector('.gaia-app-statusbar');
+      if (statusBar && statusBar.parentNode !== toolbarMenu) {
         toolbarMenu.appendChild(statusBar);
         statusBar.style.paddingLeft = '16px';
       }
-    };
 
-    // --- ステータス表示の移動と維持 ---
-    const moveStatusMenu = () => {
-        const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
-        if (!toolbarMenu) return;
-
-        const statusMenu = document.querySelector('.control-gaia .gaia-app-statusbar-statusmenu');
-        if (statusMenu && statusMenu.parentNode !== toolbarMenu) {
-            const movedStatusBar = toolbarMenu.querySelector('.gaia-app-statusbar');
-            if (movedStatusBar) {
-                toolbarMenu.insertBefore(statusMenu, movedStatusBar);
-                // スタイルを調整
-                statusMenu.style.paddingLeft = '16px';
-                statusMenu.style.borderRight = '1px solid #e3e3e3';
-                statusMenu.style.marginRight = '10px';
-                statusMenu.style.paddingRight = '10px';
-            }
+      // 2. ステータス表示を移動
+      const statusMenu = document.querySelector('.control-gaia .gaia-app-statusbar-statusmenu');
+      if (statusMenu && statusMenu.parentNode !== toolbarMenu) {
+        // 移動先のアクションボタン(statusBar)は、ツールバー内にあるはず
+        const movedStatusBar = toolbarMenu.querySelector('.gaia-app-statusbar');
+        if (movedStatusBar) {
+            toolbarMenu.insertBefore(statusMenu, movedStatusBar);
+            // スタイルを調整
+            statusMenu.style.paddingLeft = '16px';
+            statusMenu.style.borderRight = '1px solid #e3e3e3';
+            statusMenu.style.marginRight = '10px';
+            statusMenu.style.paddingRight = '10px';
         }
+      }
     };
 
     // MutationObserverでDOMの変更を常に監視
     const observer = new MutationObserver(() => {
-      // 両方の移動処理を毎回試みる
-      moveStatusBar();
-      moveStatusMenu();
+      moveElements();
     });
 
     // 監視を開始
@@ -127,8 +122,7 @@
     });
 
     // 初回表示時にも一度実行
-    moveStatusBar();
-    moveStatusMenu();
+    moveElements();
 
     return event;
   });
