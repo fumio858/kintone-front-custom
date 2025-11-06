@@ -207,8 +207,12 @@
 
 .gaia-app-status-assignee-user, .gaia-app-statusbar-state-label{
   margin-right: 1rem;
-  padding: .2em 0;
-  border-bottom: dotted 1px;
+  padding: .2em .4em;
+  /* border: dotted 1px; */
+  background-color: #e74c3c;
+  color: #fff;
+  font-weight: 300;
+  border-radius: 4px;
 }
 
 
