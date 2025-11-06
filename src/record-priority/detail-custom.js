@@ -84,34 +84,30 @@
 
     // --- プロセス管理の移動とステータス表示の順序調整 ---
     const moveStatusBar = () => {
-      console.log('[Debug] moveStatusBar triggered.');
-      const statusBar = document.querySelector('.gaia-app-statusbar');
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
+      if (!toolbarMenu) return;
 
-      console.log('[Debug] statusBar:', statusBar);
-      console.log('[Debug] toolbarMenu:', toolbarMenu);
+      // ステータス表示とアクションボタンの元の親コンテナを探す
+      const originalContainer = document.querySelector('.control-gaia');
+      if (!originalContainer) return;
 
-      // statusBarがtoolbarMenuの子要素でなければ移動
-      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
-        console.log('[Debug] Moving statusBar to toolbarMenu.');
-        toolbarMenu.appendChild(statusBar);
-        // Flexboxでレイアウトを調整
-        statusBar.style.paddingLeft = '16px';
+      const statusMenu = originalContainer.querySelector('.gaia-app-statusbar-statusmenu');
+      const actions = originalContainer.querySelector('.gaia-app-statusbar'); // アクションボタンが含まれる要素
+
+      // 1. ステータス表示（作業者など）をツールバーに移動
+      if (statusMenu && statusMenu.parentNode !== toolbarMenu) {
+        toolbarMenu.appendChild(statusMenu);
+        // スタイルを調整
+        statusMenu.style.paddingLeft = '16px';
+        statusMenu.style.borderRight = '1px solid #e3e3e3';
+        statusMenu.style.marginRight = '16px';
       }
 
-      // ステータス表示（作業者など）をアクションボタンの上に移動
-      if (statusBar) {
-        const statusMenu = statusBar.querySelector('.gaia-app-statusbar-statusmenu');
-        const actions = statusBar.querySelector('.gaia-app-statusbar-actions');
-
-        console.log('[Debug] statusMenu:', statusMenu);
-        console.log('[Debug] actions:', actions);
-
-        // statusMenuとactionsが存在する場合、actionsの前にstatusMenuを配置
-        if (statusMenu && actions) {
-          console.log('[Debug] Reordering elements: moving statusMenu before actions.');
-          statusBar.insertBefore(statusMenu, actions);
-        }
+      // 2. アクションボタンをツールバーに移動
+      if (actions && actions.parentNode !== toolbarMenu) {
+        toolbarMenu.appendChild(actions);
+        // アクションボタン自体のpaddingを調整
+        actions.style.paddingLeft = '0px';
       }
     };
 
