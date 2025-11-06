@@ -188,6 +188,10 @@
 
 .gaia-app-statusbar-assigneepopup{
   left: auto!important;
+  right: 2rem;
+}
+
+.gaia-app-statusbar-action .gaia-app-statusbar-assigneepopup{
   right: 0;
 }
 
