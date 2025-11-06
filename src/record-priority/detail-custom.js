@@ -82,37 +82,16 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理の移動とステータス表示の順序調整 ---
+    // --- プロセス管理ボタンの移動と維持 ---
     const moveStatusBar = () => {
+      const statusBar = document.querySelector('.gaia-app-statusbar');
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
-      if (!toolbarMenu) return;
 
-      // ステータスとアクションを格納する専用コンテナを準備（なければ作成）
-      let customWrapper = toolbarMenu.querySelector('.custom-status-actions-wrapper');
-      if (!customWrapper) {
-        customWrapper = document.createElement('div');
-        customWrapper.className = 'custom-status-actions-wrapper';
-        customWrapper.style.display = 'flex';
-        customWrapper.style.alignItems = 'center';
-        customWrapper.style.gap = '16px';
-        customWrapper.style.paddingLeft = '16px';
-        toolbarMenu.appendChild(customWrapper);
-      }
-
-      const originalContainer = document.querySelector('.control-gaia');
-      if (!originalContainer) return;
-
-      const statusMenu = originalContainer.querySelector('.gaia-app-statusbar-statusmenu');
-      const actions = originalContainer.querySelector('.gaia-app-statusbar-actions');
-
-      // 1. ステータス表示を専用コンテナに移動
-      if (statusMenu && statusMenu.parentNode !== customWrapper) {
-        customWrapper.appendChild(statusMenu);
-      }
-
-      // 2. アクションボタンを専用コンテナに移動
-      if (actions && actions.parentNode !== customWrapper) {
-        customWrapper.appendChild(actions);
+      // statusBarがtoolbarMenuの子要素でなければ移動
+      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
+        toolbarMenu.appendChild(statusBar);
+        // Flexboxでレイアウトを調整
+        statusBar.style.paddingLeft = '16px';
       }
     };
 
