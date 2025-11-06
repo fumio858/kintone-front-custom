@@ -95,7 +95,6 @@
 } */
 
 
-
 /* タイトル・下段まとめる箱 */
 .custom-headerbox {
   display: flex;
@@ -173,13 +172,6 @@
 .ocean-ui-userinfo-popup{
   left: auto!important;
   right: 10px;
-}
-
-.gaia-app-statusbar-statusmenu{
-  display: flex;
-  gap: .2rem;
-  flex-wrap: wrap;
-  max-width: 420px;
 }
 
 .gaia-app-statusbar-actionlist{
