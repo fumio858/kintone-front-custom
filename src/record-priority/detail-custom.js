@@ -82,7 +82,7 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理ボタンの移動と維持 ---
+    // --- プロセス管理の移動とステータス表示の順序調整 ---
     const moveStatusBar = () => {
       const statusBar = document.querySelector('.gaia-app-statusbar');
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
@@ -92,6 +92,17 @@
         toolbarMenu.appendChild(statusBar);
         // Flexboxでレイアウトを調整
         statusBar.style.paddingLeft = '16px';
+      }
+
+      // ステータス表示（作業者など）をアクションボタンの上に移動
+      if (statusBar) {
+        const statusMenu = statusBar.querySelector('.gaia-app-statusbar-statusmenu');
+        const actions = statusBar.querySelector('.gaia-app-statusbar-actions');
+
+        // statusMenuとactionsが存在する場合、actionsの前にstatusMenuを配置
+        if (statusMenu && actions) {
+          statusBar.insertBefore(statusMenu, actions);
+        }
       }
     };
 

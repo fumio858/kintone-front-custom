@@ -40,12 +40,12 @@
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-content{
-  padding: 1rem;
+  padding: 2rem;
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged {
   width: calc(100% - 2rem - 1rem);
-  padding: 1rem;
+  padding: 0;
   box-sizing: border-box;
 }
 
