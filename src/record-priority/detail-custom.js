@@ -82,16 +82,18 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理ボタンの移動と維持 ---
+    // --- プロセス管理要素の移動と維持 ---
     const moveStatusBar = () => {
-      const statusBar = document.querySelector('.gaia-app-statusbar');
+      // .gaia-app-statusbar を含む .control-gaia 要素全体を選択
+      const statusBarWrapper = document.querySelector('.control-gaia:has(.gaia-app-statusbar)');
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
 
-      // statusBarがtoolbarMenuの子要素でなければ移動
-      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
-        toolbarMenu.appendChild(statusBar);
+      // statusBarWrapper が toolbarMenu の子要素でなければ移動
+      if (statusBarWrapper && toolbarMenu && statusBarWrapper.parentNode !== toolbarMenu) {
+        toolbarMenu.appendChild(statusBarWrapper);
         // Flexboxでレイアウトを調整
-        statusBar.style.paddingLeft = '16px';
+        // 必要に応じて、statusBarWrapper自体のpaddingを調整
+        statusBarWrapper.style.paddingLeft = '16px';
       }
     };
 
