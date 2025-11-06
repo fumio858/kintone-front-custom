@@ -1,19 +1,25 @@
 (function() {
   'use strict';
 
-  // エラー通知が表示されたら、最初のエラー項目までスクロールする
+  console.log('[scroll_to_error] スクリプトが読み込まれました。'); // ★追加
+
   kintone.events.on(['app.record.create.show', 'app.record.edit.show'], function(event) {
+    console.log('[scroll_to_error] レコード作成・編集画面のイベントを検知しました。'); // ★追加
+
     const observer = new MutationObserver(function(mutations) {
+      console.log('[scroll_to_error] DOMの変更を検知しました。'); // ★追加
+
       mutations.forEach(function(mutation) {
         if (mutation.addedNodes.length > 0) {
           mutation.addedNodes.forEach(function(node) {
-            // エラー通知のヘッダーを検出
             if (node.nodeType === 1 && node.matches('.notifier-header-cybozu')) {
+              console.log('[scroll_to_error] エラー通知を検出しました。'); // ★追加
               const errorList = node.querySelector('.record-edit-notify-error-message-body');
               if (errorList && errorList.firstElementChild) {
                 const firstErrorLabelText = errorList.firstElementChild.textContent.trim();
+                console.log(`[scroll_to_error] 最初のエラー項目: ${firstErrorLabelText}`); // ★追加
                 scrollToField(firstErrorLabelText);
-                observer.disconnect(); // 一度スクロールしたら監視を停止
+                observer.disconnect();
               }
             }
           });
@@ -21,25 +27,20 @@
       });
     });
 
-    // body要素の子要素の追加を監視
     observer.observe(document.body, { childList: true, subtree: true });
+    console.log('[scroll_to_error] DOMの監視を開始しました。'); // ★追加
 
     return event;
   });
 
-  /**
-   * 指定されたラベルテキストを持つKintoneフィールド要素を見つけてスクロールする
-   * @param {string} labelText - エラーメッセージから取得したフィールドのラベルテキスト
-   */
   function scrollToField(labelText) {
+    console.log(`[scroll_to_error] 「${labelText}」をスクロールターゲットとして探します。`); // ★追加
     const fieldLabels = document.querySelectorAll('.control-label-gaia');
     for (const labelDiv of fieldLabels) {
-      // ラベルテキストが一致するか確認
       if (labelDiv.textContent.trim() === labelText) {
-        // ラベルの親要素（フィールド全体を囲む要素）を見つける
-        // KintoneのDOM構造は複雑なため、親を辿って適切な要素を探す
         let fieldElement = labelDiv.closest('.control-value-gaia') || labelDiv.closest('.control-gaia');
         if (fieldElement) {
+          console.log('[scroll_to_error] スクロール対象の要素を見つけました。スクロールします。', fieldElement); // ★追加
           fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
         }
