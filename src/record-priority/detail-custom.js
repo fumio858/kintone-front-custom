@@ -82,33 +82,49 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理ボタンの移動と維持 ---
-    const moveStatusBar = () => {
-      const statusBar = document.querySelector('.gaia-app-statusbar');
+    // --- プロセス管理とステータス表示の移動と維持 ---
+    const moveElements = () => {
       const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
+      if (!toolbarMenu) return;
 
-      // statusBarがtoolbarMenuの子要素でなければ移動
-      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
+      // 1. アクションボタンを移動
+      // 元の場所(.control-gaia)から探すことで、Kintoneの再描画に対応
+      const statusBar = document.querySelector('.control-gaia .gaia-app-statusbar');
+      if (statusBar && statusBar.parentNode !== toolbarMenu) {
         toolbarMenu.appendChild(statusBar);
-        // Flexboxでレイアウトを調整
         statusBar.style.paddingLeft = '16px';
+      }
+
+      // 2. ステータス表示を移動
+      const statusMenu = document.querySelector('.control-gaia .gaia-app-statusbar-statusmenu');
+      if (statusMenu && statusMenu.parentNode !== toolbarMenu) {
+        // アクションボタン(statusBar)の前に挿入して順序を制御
+        const movedStatusBar = toolbarMenu.querySelector('.gaia-app-statusbar');
+        if (movedStatusBar) {
+            toolbarMenu.insertBefore(statusMenu, movedStatusBar);
+        } else {
+            toolbarMenu.appendChild(statusMenu);
+        }
+        statusMenu.style.paddingLeft = '16px';
+        statusMenu.style.borderRight = '1px solid #e3e3e3';
+        statusMenu.style.marginRight = '10px';
+        statusMenu.style.paddingRight = '10px';
       }
     };
 
     // MutationObserverでDOMの変更を常に監視
-    const observer = new MutationObserver((mutations) => {
-      // DOM変更があるたびに移動処理を試みる
-      moveStatusBar();
+    const observer = new MutationObserver(() => {
+      moveElements();
     });
 
     // 監視を開始
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
 
-    // 初回表示時にも一度実行
-    moveStatusBar();
+    // 初回実行
+    moveElements();
 
     return event;
   });
