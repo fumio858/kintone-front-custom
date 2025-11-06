@@ -33,7 +33,7 @@
 .report-front-custom .gaia-argoui-app-show-sidebar {
   position: relative !important;
   top: 0 !important;
-  /* width: 65vw; */
+  /* width: 65vw; */  
   width: calc( 100vw - 528px);
   box-sizing: border-box;
   /* max-height: 80vh; */
@@ -198,6 +198,27 @@
 .gaia-app-statusbar-action .gaia-app-statusbar-assigneepopup{
   right: 0;
 }
+
+.gaia-app-statusbar-statusmenu{
+  display: flex;
+  /* gap: .2rem;
+  flex-wrap: wrap; */
+  /* max-width: 420px; */
+  border: none !important;
+  font-size: .6rem;
+  padding-right: 0 !important;
+  margin-right: 0 !important;
+  justify-content: end;
+  align-items: baseline;
+  margin: .5rem !important;
+}
+
+.gaia-app-status-assignee-user, .gaia-app-statusbar-state-label{
+  margin-right: 1rem;
+  padding: .2em 0;
+  border-bottom: dotted 1px;
+}
+
 
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
 /* 刑事事件 */
