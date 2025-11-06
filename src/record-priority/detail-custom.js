@@ -82,34 +82,23 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- プロセス管理のレイアウト調整 ---
-    const adjustProcessLayout = () => {
+    // --- プロセス管理ボタンの移動と維持 ---
+    const moveStatusBar = () => {
       const statusBar = document.querySelector('.gaia-app-statusbar');
-      if (!statusBar) return;
+      const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
 
-      // 既に調整済みかチェック（フラグを立てる）
-      if (statusBar.dataset.layoutAdjusted === 'true') return;
-
-      const statusMenu = statusBar.querySelector('.gaia-app-statusbar-statusmenu');
-      const actionsMenu = statusBar.querySelector('.gaia-app-statusbar-actions');
-
-      if (statusMenu && actionsMenu) {
-        // Flexboxを縦並びに設定し、右寄せを維持
-        statusBar.style.display = 'flex';
-        statusBar.style.flexDirection = 'column';
-        statusBar.style.alignItems = 'flex-end';
-
-        // statusMenu を actionsMenu の前に移動して、上下の順序を入れ替え
-        statusBar.insertBefore(statusMenu, actionsMenu);
-
-        // 調整が完了したことをマークして、複数回実行されるのを防ぐ
-        statusBar.dataset.layoutAdjusted = 'true';
+      // statusBarがtoolbarMenuの子要素でなければ移動
+      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
+        toolbarMenu.appendChild(statusBar);
+        // Flexboxでレイアウトを調整
+        statusBar.style.paddingLeft = '16px';
       }
     };
 
-    // MutationObserverでDOMの変更を監視
-    const observer = new MutationObserver(() => {
-      adjustProcessLayout();
+    // MutationObserverでDOMの変更を常に監視
+    const observer = new MutationObserver((mutations) => {
+      // DOM変更があるたびに移動処理を試みる
+      moveStatusBar();
     });
 
     // 監視を開始
@@ -119,7 +108,7 @@
     });
 
     // 初回表示時にも一度実行
-    adjustProcessLayout();
+    moveStatusBar();
 
     return event;
   });
