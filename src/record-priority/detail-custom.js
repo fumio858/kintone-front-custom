@@ -82,39 +82,33 @@
     // FOUC対策：処理完了を通知するクラスを付与
     if (container) container.classList.add('custom-header-loaded');
 
-    // --- ステータス表示をアクションボタンの隣に移動させる ---
-    const groupStatusWithActions = () => {
-      const originalContainer = document.querySelector('.control-gaia');
-      if (!originalContainer) return;
+    // --- プロセス管理ボタンの移動と維持 ---
+    const moveStatusBar = () => {
+      const statusBar = document.querySelector('.gaia-app-statusbar');
+      const toolbarMenu = document.querySelector('.gaia-argoui-app-toolbar-menu');
 
-      const statusBar = originalContainer.querySelector('.gaia-app-statusbar');
-      const statusMenu = originalContainer.querySelector('.gaia-app-statusbar-statusmenu');
-      
-      // statusBarとstatusMenuが存在し、かつstatusMenuがまだ移動されていない場合
-      if (statusBar && statusMenu && statusMenu.parentNode !== statusBar) {
-        // statusMenuをstatusBarの先頭に挿入
-        statusBar.insertBefore(statusMenu, statusBar.firstChild);
-        
-        // 必要であればスタイルを調整
-        statusBar.style.display = 'flex';
-        statusBar.style.alignItems = 'center';
-        statusBar.style.gap = '16px';
+      // statusBarがtoolbarMenuの子要素でなければ移動
+      if (statusBar && toolbarMenu && statusBar.parentNode !== toolbarMenu) {
+        toolbarMenu.appendChild(statusBar);
+        // Flexboxでレイアウトを調整
+        statusBar.style.paddingLeft = '16px';
       }
     };
 
     // MutationObserverでDOMの変更を常に監視
-    const observer = new MutationObserver(() => {
-      groupStatusWithActions();
+    const observer = new MutationObserver((mutations) => {
+      // DOM変更があるたびに移動処理を試みる
+      moveStatusBar();
     });
 
     // 監視を開始
     observer.observe(document.body, {
       childList: true,
-      subtree: true,
+      subtree: true
     });
 
-    // 初回実行
-    groupStatusWithActions();
+    // 初回表示時にも一度実行
+    moveStatusBar();
 
     return event;
   });
