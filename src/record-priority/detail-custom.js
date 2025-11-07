@@ -119,6 +119,7 @@
             el.style.backgroundColor = '#FFF';
             el.style.borderRadius = '22px';
             el.style.border = 'none';
+            labelElement.innerText = '要対応者のみ変更';  
           } else if (title === '案件終了') {
             el.style.backgroundColor = '#ffeeec';
             el.style.color = '#c0392b';
