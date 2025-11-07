@@ -116,13 +116,18 @@
         if (labelElement) {
           const title = labelElement.getAttribute('title');
           if (title === '現在の作業者を変更') {
-            el.style.backgroundColor = '#FFF';
-            el.style.borderRadius = '22px';
-            el.style.border = 'none';
+            // 無限ループを避けるため、スタイルが未適用の場合のみ設定
+            if (el.style.borderRadius !== '46px') {
+              el.style.borderRadius = '46px';
+            }
           } else if (title === '案件終了') {
-            el.style.backgroundColor = '#ffeeec';
-            el.style.color = '#c0392b';
-            el.style.borderColor = '#c0392b';
+            // 無限ループを避けるため、スタイルが未適用の場合のみ設定
+            // backgroundColorはrgb形式で返ってくるため、'rgb(231, 76, 60)'で比較
+            if (el.style.backgroundColor !== 'rgb(231, 76, 60)') {
+              el.style.backgroundColor = '#e74c3c';
+              el.style.color = '#fff';
+              el.style.borderColor = '#c0392b';
+            }
           }
         }
       });
