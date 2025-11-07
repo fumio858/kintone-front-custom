@@ -81,7 +81,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       const wrap = document.createElement('div');
       wrap.classList.add('k-task-panel');
       wrap.style.padding = '12px';
-      wrap.style.background = '#c4e1f5';
+      wrap.style.background = '#eaf3f9';
       wrap.style.display = '';
 
       wrap.innerHTML = `
