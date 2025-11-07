@@ -77,9 +77,21 @@
 
         let actionButtonsHtml = '';
         actionElements.forEach((el, index) => {
-          const actionLabel = el.querySelector('.gaia-app-statusbar-action-label')?.innerText;
+          const actionLabelElement = el.querySelector('.gaia-app-statusbar-action-label');
+          const actionLabel = actionLabelElement?.innerText;
+          const actionTitle = actionLabelElement?.title;
+
           if (actionLabel) {
-            actionButtonsHtml += `<button class="swal2-styled" id="swal-action-${index}" style="margin: .5rem; border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db;">${actionLabel}</button>`;
+            let style = "margin: .5rem; border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db;";
+
+            if (actionTitle === '現在の作業者を変更') {
+              style += ' border-radius: 46px;';
+            } else if (actionTitle === '案件終了') {
+              // 「案件終了」は最終アクションなので、赤系のスタイルで注意を促します
+              style = 'margin: .5rem; border: 1px solid #c0392b; background-color: #e74c3c; color: #fff;';
+            }
+
+            actionButtonsHtml += `<button class="swal2-styled" id="swal-action-${index}" style="${style}">${actionLabel}</button>`;
           }
         });
 
