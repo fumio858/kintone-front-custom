@@ -70,6 +70,8 @@
 
         let statusInfo = document.querySelector('.gaia-app-statusbar-statusmenu')?.innerText.replace(/\n/g, '<br>') || '';
         statusInfo = statusInfo.replace(/ステータスの履歴/g, '');
+        statusInfo = statusInfo.replace(/ステータス:/g, '現在のステータス:');
+        statusInfo = statusInfo.replace(/現在の作業者:/g, '現在の要対応者:');
 
         const actionElements = document.querySelectorAll('.gaia-app-statusbar-action');
 
@@ -82,7 +84,7 @@
         });
 
         Swal.fire({
-          title: 'ステータスを変更しますか？',
+          title: 'ステータスの変更は不要ですか？',
           html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #c7c7c745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: 0.05rem; font-size: 1.3rem; border-color: #FFF; border-width: thick;">${statusInfo}</div>` + actionButtonsHtml,
           footer: `<div style="display: flex; justify-content: center; align-items: center; padding-top: 1rem;">
             <button class="swal2-styled" id="swal-comment-only" style="background-color: #3598db; color: #FFF;">コメントのみ送信</button>
