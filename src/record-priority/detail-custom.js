@@ -116,7 +116,7 @@
         if (labelElement) {
           const title = labelElement.getAttribute('title');
           if (title === '現在の作業者を変更') {
-            el.style.backgroundColor = '#ecf6fb';
+            el.style.backgroundColor = '#FFF';
             el.style.borderRadius = '22px';
             el.style.border = 'none';
           } else if (title === '案件終了') {
