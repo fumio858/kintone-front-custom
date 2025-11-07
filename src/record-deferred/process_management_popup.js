@@ -70,8 +70,8 @@
 
         let statusInfo = document.querySelector('.gaia-app-statusbar-statusmenu')?.innerText.replace(/\n/g, '<br>') || '';
         statusInfo = statusInfo.replace(/ステータスの履歴/g, '');
-        statusInfo = statusInfo.replace(/ステータス:/g, '現在のステータス:');
-        statusInfo = statusInfo.replace(/現在の作業者:/g, '現在の要対応者:');
+        statusInfo = statusInfo.replace(/ステータス:/g, '現在のステータス：');
+        statusInfo = statusInfo.replace(/現在の作業者:/g, '現在の要対応者：');
 
         const actionElements = document.querySelectorAll('.gaia-app-statusbar-action');
 
