@@ -13,24 +13,21 @@
   // ==============================
   // 🔁 リアクションログ取得・保存
   // ==============================
-  async function getLog(recordId) {
+  async function getRecord(recordId) {
     const resp = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
       app: kintone.app.getId(),
       id: recordId
     });
-    try {
-      return JSON.parse(resp.record[FIELD_CODE].value || '{}');
-    } catch {
-      return {};
-    }
+    return resp.record;
   }
 
 
-  async function saveLog(recordId, log) {
+  async function saveLog(recordId, log, revision) {
     await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
       app: kintone.app.getId(),
       id: recordId,
-      record: { [FIELD_CODE]: { value: JSON.stringify(log) } }
+      record: { [FIELD_CODE]: { value: JSON.stringify(log) } },
+      revision: revision
     });
   }
 
@@ -125,16 +122,81 @@
   }
 
   // ==============================
-  // 🚀 初期化
+  // 🚀 初期化 & イベント処理
   // ==============================
+  function attachReactionClickHandler() {
+    // ハンドラが重複しないようにガード
+    if (document.body.dataset.reactionHandlerAttached) return;
+    document.body.dataset.reactionHandlerAttached = 'true';
+
+    document.body.addEventListener('click', async e => {
+      if (!e.target.classList.contains('cw-react-btn')) return;
+
+      const recordId = kintone.app.record.getId();
+      const user = kintone.getLoginUser().email;
+      const emoji = e.target.dataset.emoji;
+      const commentId = e.target.dataset.commentId;
+
+      const MAX_RETRIES = 5;
+      for (let i = 0; i < MAX_RETRIES; i++) {
+        try {
+          const currentRecord = await getRecord(recordId);
+          const log = JSON.parse(currentRecord[FIELD_CODE].value || '{}');
+          const revision = currentRecord.$revision.value;
+
+          const newLog = JSON.parse(JSON.stringify(log));
+          newLog[commentId] = newLog[commentId] || {};
+
+          const currentEntry = Object.entries(newLog[commentId]).find(([, users]) => Array.isArray(users) && users.includes(user));
+          const currentEmoji = currentEntry ? currentEntry[0] : null;
+
+          if (currentEmoji === emoji) {
+            newLog[commentId][emoji] = (newLog[commentId][emoji] || []).filter(u => u !== user);
+            if (newLog[commentId][emoji].length === 0) delete newLog[commentId][emoji];
+          } else {
+            if (currentEmoji) {
+              newLog[commentId][currentEmoji] = (newLog[commentId][currentEmoji] || []).filter(u => u !== user);
+              if (!newLog[commentId][currentEmoji].length) delete newLog[commentId][currentEmoji];
+            }
+            const list = newLog[commentId][emoji] || [];
+            if (!list.includes(user)) list.push(user);
+            newLog[commentId][emoji] = list;
+          }
+
+          await saveLog(recordId, newLog, revision);
+
+          const parent = e.target.closest('.itemlist-item-gaia');
+          if (parent) {
+            const wrapper = parent.querySelector('.cw-reaction-wrapper');
+            if (wrapper) wrapper.remove();
+            await renderReactions(parent, commentId, newLog, user);
+          }
+          return;
+
+        } catch (error) {
+          if (error.code === 'CB_VA01' && i < MAX_RETRIES - 1) {
+            console.warn(`Reaction conflict detected. Retrying... (${i + 1}/${MAX_RETRIES})`);
+            await new Promise(resolve => setTimeout(resolve, 100 + (Math.random() * 200)));
+          } else {
+            console.error('Failed to save reaction:', error);
+            alert('リアクションの保存に失敗しました。画面をリロードしてもう一度お試しください。');
+            return;
+          }
+        }
+      }
+    });
+  }
+
   async function initReactions(ev) {
     const recordId = ev.recordId;
     const user = kintone.getLoginUser().email;
-    const log = await getLog(recordId);
+    
+    // 初回描画用のデータを取得
+    const initialRecord = await getRecord(recordId);
+    const initialLog = JSON.parse(initialRecord[FIELD_CODE].value || '{}');
     await loadAllUserPhotos();
 
-    // 全コメント描画
-    async function renderAllReactions() {
+    async function renderAllReactions(log) {
       const comments = document.querySelectorAll('.itemlist-item-gaia');
       for (const c of comments) {
         const link = c.querySelector('.itemlist-datetime-gaia a');
@@ -146,23 +208,15 @@
       }
     }
 
-    // 初回描画
-    await renderAllReactions();
+    await renderAllReactions(initialLog);
 
-    // ==============================
-    // 👀 #sidebar-list-gaia 全体を監視
-    // ==============================
-    // 👀 コメント領域の監視処理
     const sidebarList = document.querySelector('#sidebar-list-gaia');
     if (sidebarList) {
-      const observer = new MutationObserver(async mutations => {
-        // 自分の描画で発火しないようにガード
+      const observer = new MutationObserver(async (mutations) => {
         observer.disconnect();
         let shouldRerender = false;
-
         for (const m of mutations) {
           for (const node of m.addedNodes) {
-            // コメント要素 (.itemlist-item-gaia) が追加された場合のみ反応
             if (node.nodeType === 1 && node.classList.contains('itemlist-item-gaia')) {
               shouldRerender = true;
               break;
@@ -173,66 +227,19 @@
 
         if (shouldRerender) {
           console.log('🆕 コメントエリア変化検知 → 再描画');
-          await renderAllReactions();
+          const currentRecord = await getRecord(recordId);
+          const currentLog = JSON.parse(currentRecord[FIELD_CODE].value || '{}');
+          await renderAllReactions(currentLog);
         }
 
-        // 再開（重要）
         observer.observe(sidebarList, { childList: true, subtree: true });
       });
-
-      // 初回監視スタート
       observer.observe(sidebarList, { childList: true, subtree: true });
       console.log('👀 コメント領域監視開始');
     }
 
-    // ==============================
-    // 🎯 絵文字クリック処理（再押しで解除）
-    // ==============================
-    document.body.addEventListener('click', async e => {
-      if (!e.target.classList.contains('cw-react-btn')) return;
-
-      const emoji = e.target.dataset.emoji;
-      const commentId = e.target.dataset.commentId;
-      log[commentId] = log[commentId] || {};
-
-      // 今このコメントで自分が付けている絵文字を探す
-      const currentEntry = Object.entries(log[commentId]).find(([emojiKey, users]) => {
-        return Array.isArray(users) && users.includes(user);
-      });
-      const currentEmoji = currentEntry ? currentEntry[0] : null;
-
-      if (currentEmoji === emoji) {
-        // ✅ 同じ絵文字をもう一度押した → 解除だけ
-        log[commentId][emoji] = (log[commentId][emoji] || []).filter(u => u !== user);
-        if (log[commentId][emoji].length === 0) {
-          delete log[commentId][emoji];
-        }
-      } else {
-        // ✏️ 別の絵文字に変更 or 新規付与
-
-        // まず既存の絵文字から自分を外す
-        if (currentEmoji) {
-          log[commentId][currentEmoji] =
-            (log[commentId][currentEmoji] || []).filter(u => u !== user);
-          if (!log[commentId][currentEmoji].length) {
-            delete log[commentId][currentEmoji];
-          }
-        }
-
-        // 押した絵文字に自分を追加
-        const list = log[commentId][emoji] || [];
-        if (!list.includes(user)) list.push(user);
-        log[commentId][emoji] = list;
-      }
-
-      await saveLog(recordId, log);
-
-      // そのコメントだけリアクション再描画
-      const parent = e.target.closest('.itemlist-item-gaia');
-      const wrapper = parent.querySelector('.cw-reaction-wrapper');
-      if (wrapper) wrapper.remove();
-      await renderReactions(parent, commentId, log, user);
-    });
+    // クリック処理は一度だけ登録
+    attachReactionClickHandler();
   }
 
   // ==============================
