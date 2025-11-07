@@ -99,7 +99,7 @@
           title: 'ステータスの変更は不要ですか？',
           html: `<div style="text-align: left; padding: 0 1em; margin-bottom: 1em; text-align: center; background-color: #c7c7c745; color: #000000; padding: 1rem; line-height: 2; letter-spacing: 0.05rem; font-size: 1.3rem; border-color: #FFF; border-width: thick;">${statusInfo}</div>` + actionButtonsHtml,
           footer: `<div style="display: flex; justify-content: center; align-items: center; padding-top: 1rem;">
-            <button class="swal2-styled" id="swal-comment-only" style="background-color: #3598db; color: #FFF;">コメントのみ送信</button>
+            <button class="swal2-styled" id="swal-comment-only" style="background-color: #3598db; color: #FFF;">ステータス変更は不要であることを確認しました</button>
             <a href="#" id="swal-cancel-link" style="color: #777; text-decoration: none; margin-left: auto; position: absolute; right: 2rem; bottom: 1.2rem; font-size: .8rem;">キャンセル</a>
           </div>`,
           showCancelButton: false,
@@ -143,7 +143,7 @@
             const commentOnlyBtn = document.getElementById('swal-comment-only');
             if (commentOnlyBtn) {
               commentOnlyBtn.addEventListener('click', () => {
-                console.log('Swal.fire: 「コメントのみ送信」ボタンクリック');
+                console.log('Swal.fire: 「ステータス変更は不要であることを確認しました」ボタンクリック');
                 isPopupProcessing = true;
                 button.click(); // コメント送信
                 setTimeout(() => {
