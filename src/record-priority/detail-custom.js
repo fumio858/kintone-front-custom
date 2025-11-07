@@ -119,7 +119,7 @@
             el.style.borderRadius = '8px';
             el.style.border = 'none';
           } else if (title === '案件終了') {
-            el.style.backgroundColor = '#ffe0dd';
+            el.style.backgroundColor = '#ffeeec';
             el.style.color = '#c0392b';
             el.style.borderColor = '#c0392b';
           }

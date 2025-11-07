@@ -86,10 +86,10 @@
 
             if (actionTitle === '現在の作業者を変更') {
               actionLabel = '要対応者のみ変更'; // Change text
-              style = "margin: .5rem; border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db; border-radius: 8px;"; // Change background to white and add border-radius
+              style = "margin: .5rem; border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db; border-radius: 8px; border: none;"; // Change background to white and add border-radius
             } else if (actionTitle === '案件終了') {
               // 「案件終了」は最終アクションなので、赤系のスタイルで注意を促します
-              style = 'margin: .5rem; border: 1px solid #c0392b; background-color: #ffe0dd; color: #c0392b;';
+              style = 'margin: .5rem; border: 1px solid #c0392b; background-color: #ffeeec; color: #c0392b;';
             }
 
             actionButtonsHtml += `<button class="swal2-styled" id="swal-action-${index}" style="${style}">${actionLabel}</button>`;
