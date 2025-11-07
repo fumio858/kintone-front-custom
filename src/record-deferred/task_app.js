@@ -81,7 +81,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
       const wrap = document.createElement('div');
       wrap.classList.add('k-task-panel');
       wrap.style.padding = '12px';
-      wrap.style.background = '#bbddf4';
+      wrap.style.background = '#c4e1f5';
       wrap.style.display = '';
 
       wrap.innerHTML = `
@@ -217,7 +217,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
           alignItems: 'center',
           padding: '6px 8px',
           background: 'transparent',
-          borderBottom: 'dotted 1px #bcced5',
+          borderBottom: 'dotted 1px #8fbed0',
         });
         div.innerHTML = `
           <div>
