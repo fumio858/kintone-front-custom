@@ -117,8 +117,9 @@
           const title = labelElement.getAttribute('title');
           if (title === '現在の作業者を変更') {
             // 無限ループを避けるため、スタイルが未適用の場合のみ設定
-            if (el.style.borderRadius !== '46px') {
-              el.style.borderRadius = '46px';
+            if (el.style.border !== 'none') {
+              el.style.border = 'none';
+              el.style.backgroundColor = '#fff';
             }
           } else if (title === '案件終了') {
             // 無限ループを避けるため、スタイルが未適用の場合のみ設定
