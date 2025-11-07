@@ -178,53 +178,6 @@
     // 実行開始
     observeCommentButton();
 
-    // 担当者向けに「書き込む」ボタンのスタイルを変更する関数
-    const stylePostButtonForAssignee = () => {
-      const postButton = document.querySelector('.ocean-ui-comments-commentform-submit');
-      if (!postButton) return;
-
-      const isAssignee = isCurrentUserAssignee();
-
-      if (isAssignee) {
-        // 担当者の場合、ボタンのスタイルとテキストを変更
-        if (!postButton.dataset.originalText) {
-          postButton.dataset.originalText = postButton.innerText; // 元のテキストを保存
-        }
-        postButton.innerText = 'ステータス確認へ';
-        postButton.style.backgroundColor = '#3498db'; // kintone blue
-        postButton.style.color = '#fff';
-        postButton.style.borderColor = '#3498db';
-        postButton.style.fontWeight = 'bold';
-      } else {
-        // 担当者でない場合、または元に戻す場合
-        if (postButton.dataset.originalText) {
-          postButton.innerText = postButton.dataset.originalText; // 元のテキストに戻す
-          delete postButton.dataset.originalText;
-        }
-        // スタイルをリセット（kintoneのデフォルトスタイルに戻す）
-        postButton.style.backgroundColor = '';
-        postButton.style.color = '';
-        postButton.style.borderColor = '';
-        postButton.style.fontWeight = '';
-      }
-    };
-
-    // 「書き込む」ボタンのスタイルを継続的に監視・調整するObserver
-    const postButtonObserver = new MutationObserver(() => {
-      stylePostButtonForAssignee();
-    });
-
-    // 監視を開始
-    postButtonObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true, // 属性変更も監視対象に含める
-      attributeFilter: ['class', 'style'] // classやstyle属性の変更を特に監視
-    });
-
-    // 初回実行
-    stylePostButtonForAssignee();
-
     return event;
   });
 })();
