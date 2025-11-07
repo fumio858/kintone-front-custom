@@ -71,7 +71,7 @@
         let statusInfo = document.querySelector('.gaia-app-statusbar-statusmenu')?.innerText.replace(/\n/g, '<br>') || '';
         statusInfo = statusInfo.replace(/ステータスの履歴/g, '');
         statusInfo = statusInfo.replace(/ステータス:/g, '現在のステータス：');
-        statusInfo = statusInfo.replace(/現在の作業者:/g, '現在の要対応者：');
+        statusInfo = statusInfo.replace(/現在の作業者:/g, '現在の作業者');
 
         const actionElements = document.querySelectorAll('.gaia-app-statusbar-action');
 
@@ -85,7 +85,7 @@
             let style = "margin: .5rem; border: 1px solid #e3e7e8; background-color: #f7f9fa; box-shadow: 1px 1px 1px #fff inset; color: #3498db;";
 
             if (actionTitle === '現在の作業者を変更') {
-              actionLabel = '要対応者のみ変更'; // Change text
+              actionLabel = '現在の作業者を変更'; // Change text
               style = "margin: .5rem; border: 1px solid #e3e7e8; background-color: #FFF; box-shadow: 1px 1px 1px #fff inset; color: #3498db; border-radius: 22px; border: none;"; // Change background to white and add border-radius
             } else if (actionTitle === '案件終了') {
               // 「案件終了」は最終アクションなので、赤系のスタイルで注意を促します
