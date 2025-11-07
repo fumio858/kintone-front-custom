@@ -124,9 +124,9 @@
           } else if (title === '案件終了') {
             // 無限ループを避けるため、スタイルが未適用の場合のみ設定
             // backgroundColorはrgb形式で返ってくるため、'rgb(231, 76, 60)'で比較
-            if (el.style.backgroundColor !== 'rgb(231, 76, 60)') {
-              el.style.backgroundColor = '#e74c3c';
-              el.style.color = '#fff';
+            if (el.style.backgroundColor !== 'rgb(192, 57, 43)') {
+              el.style.backgroundColor = '#ffeeec';
+              el.style.color = '#c0392b';
               el.style.borderColor = '#c0392b';
             }
           }
