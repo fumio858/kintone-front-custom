@@ -108,6 +108,22 @@
             statusMenu.style.paddingRight = '10px';
         }
       }
+
+      // 3. アクションボタンのスタイルを調整
+      const actionElements = document.querySelectorAll('.gaia-app-statusbar-action');
+      actionElements.forEach(el => {
+        const labelElement = el.querySelector('.gaia-app-statusbar-action-label');
+        if (labelElement) {
+          const title = labelElement.getAttribute('title');
+          if (title === '現在の作業者を変更') {
+            el.style.borderRadius = '46px';
+          } else if (title === '案件終了') {
+            el.style.backgroundColor = '#e74c3c';
+            el.style.color = '#fff';
+            el.style.borderColor = '#c0392b';
+          }
+        }
+      });
     };
 
     // MutationObserverでDOMの変更を常に監視
