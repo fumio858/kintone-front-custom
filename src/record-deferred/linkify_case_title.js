@@ -11,19 +11,16 @@
       return event;
     }
 
-    // ここでフィールドコードを確認（存在しない場合 undefined）
     console.log('🔍 最初のレコードの内容:', records[0]);
 
-    // 一覧上の「事件番号」セルを取得
     const cells = kintone.app.getFieldElements('case_title');
     console.log('📦 取得したセル要素:', cells);
 
     if (!cells || cells.length === 0) {
-      console.warn('⚠️ 事件番号フィールドのセルが見つかりません。フィールドコード "case_title" が正しいか確認してください。');
+      console.warn('⚠️ 事件番号フィールドのセルが見つかりません。');
       return event;
     }
 
-    // 各レコードを処理
     records.forEach((record, idx) => {
       console.log(`🔸 ${idx + 1}件目の処理開始`);
       const caseTitle = record.case_title?.value;
@@ -31,32 +28,27 @@
 
       console.log('🧾 事件番号:', caseTitle, '🔗 URL:', url);
 
-      if (!caseTitle) {
-        console.warn(`⚠️ ${idx + 1}件目: 事件番号が空です`);
-        return;
-      }
-      if (!url) {
-        console.warn(`⚠️ ${idx + 1}件目: URLが空です`);
-        return;
-      }
+      if (!caseTitle || !url) return;
 
       const cell = cells[idx];
-      if (!cell) {
-        console.warn(`⚠️ ${idx + 1}件目: セルが取得できません`);
-        return;
-      }
+      if (!cell) return;
 
-      // リンクを作成して埋め込み
+      // ✅ 内部のdiv.value-gaiaを取得して書き換え
+      const valueDiv = cell.querySelector('.value-gaia');
+      if (!valueDiv) return;
+
       const a = document.createElement('a');
       a.href = url;
       a.textContent = caseTitle;
       a.target = '_blank';
-      a.style.color = '#0056B3';
+      a.style.color = '#3598db';
       a.style.textDecoration = 'underline';
+      a.style.position = 'relative';
+      a.style.zIndex = '2';
 
-      // 元の文字をクリアしてリンク挿入
-      cell.textContent = '';
-      cell.appendChild(a);
+      // ここだけ変更：textContentで消すのではなく、divの中身を置換
+      valueDiv.innerHTML = '';
+      valueDiv.appendChild(a);
 
       console.log(`✅ ${idx + 1}件目: リンク化成功 → ${url}`);
     });
