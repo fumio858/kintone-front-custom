@@ -15,37 +15,22 @@
 
         // 属性を付けて2重処理防止
         row.setAttribute('data-click-enhanced', 'true');
+        row.style.cursor = 'pointer'; // カーソルを行全体に適用
 
-        // CSSで透明レイヤーを上にかぶせる
-        row.style.position = 'relative';
-        const overlay = document.createElement('div');
-        overlay.className = 'row-click-overlay';
-        overlay.style.position = 'absolute';
-        overlay.style.top = 0;
-        overlay.style.left = 0;
-        overlay.style.right = 0;
-        overlay.style.bottom = 0;
-        overlay.style.cursor = 'pointer';
-        overlay.style.zIndex = 1;
-        overlay.style.background = 'transparent';
+        row.addEventListener('click', e => {
+          // クリックされた要素がインタラクティブな要素（またはその子孫）の場合、何もしない
+          // これにより、リンクやボタンのデフォルトの動作が維持される
+          if (e.target.closest('a, button, input, [role="button"]')) {
+            return;
+          }
 
-        // 行クリックで移動
-        overlay.addEventListener('click', e => {
-          // Ctrl or Cmdクリックなら別タブ
+          // 上記以外（セルの余白など）がクリックされた場合にページ遷移
           if (e.metaKey || e.ctrlKey) {
             window.open(href, '_blank');
           } else {
             window.location.href = href;
           }
         });
-
-        // 既存リンク・ボタンのクリックを優先させる
-        row.querySelectorAll('a, button, input').forEach(el => {
-          el.style.position = 'relative';
-          el.style.zIndex = 2;
-        });
-
-        row.appendChild(overlay);
       });
     }, 500); // 500ms待つ。環境によっては調整が必要
   });
