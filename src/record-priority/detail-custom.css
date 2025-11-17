@@ -164,17 +164,17 @@
   min-width: auto!important;
 }
 
-.ocean-ui-comments-likeuserspopup{
+.report-front-custom .ocean-ui-comments-likeuserspopup{
   left: 100px!important;
 }
 
-.gaia-app-statusbar-historypopup,
-.ocean-ui-userinfo-popup{
+.report-front-custom .gaia-app-statusbar-historypopup,
+.report-front-custom .ocean-ui-userinfo-popup{
   left: auto!important;
   right: 10px;
 }
 
-.gaia-app-statusbar-actionlist{
+.report-front-custom .gaia-app-statusbar-actionlist{
   display: flex;
   flex-wrap: wrap;
   justify-content: end;
@@ -182,16 +182,16 @@
   text-align: left;
 }
 
-.gaia-app-statusbar-assigneepopup{
+.report-front-custom .gaia-app-statusbar-assigneepopup{
   left: auto!important;
   right: 2rem;
 }
 
-.gaia-app-statusbar-action .gaia-app-statusbar-assigneepopup{
+.report-front-custom .gaia-app-statusbar-action .gaia-app-statusbar-assigneepopup{
   right: 0;
 }
 
-.gaia-app-statusbar-statusmenu{
+.report-front-custom .gaia-app-statusbar-statusmenu{
   display: flex;
   /* gap: .2rem;
   flex-wrap: wrap; */
@@ -205,7 +205,7 @@
   margin: .5rem !important;
 }
 
-.gaia-app-status-assignee-user, .gaia-app-statusbar-state-label{
+.report-front-custom .gaia-app-status-assignee-user, .gaia-app-statusbar-state-label{
   margin-right: 1rem;
   padding: .2em;
   border-bottom: dotted 1px;
@@ -219,7 +219,7 @@
 
 
 /* * * * * * * * * * *　一覧 * * * * * * * * * * */
-/* .recordlist-gaia .recordlist-show-gaia {
+.recordlist-gaia .recordlist-show-gaia {
   width: 100%;
   position: absolute;
   z-index: 1;
@@ -231,7 +231,7 @@
   position: relative;
   z-index: 2;
 }
- */
+
 
 
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
