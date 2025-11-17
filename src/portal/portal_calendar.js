@@ -19,23 +19,15 @@
     container.classList.add('portal-calendar-widget');
     container.appendChild(iframe);
 
-    // 「スペース」ウィジェットを探してその上に挿入
-    const spaceWidget = document.querySelector(
-      '.ocean-portal-body-right .ocean-portal-widget .gaia-argoui-widget-title'
-    );
+    // 右カラムコンテナ（ocean-portal-body-right）を取得
+    const rightContainer = document.querySelector('.ocean-portal-body-right');
 
-    let targetWidget = null;
-    document.querySelectorAll('.ocean-portal-body-right .gaia-argoui-widget-title').forEach(el => {
-      if (el.textContent.trim() === '未処理') {
-        targetWidget = el.closest('.ocean-portal-widget');
-      }
-    });
-
-    if (targetWidget) {
-      targetWidget.insertAdjacentElement('beforebegin', container);
-      console.log('✅ カレンダーを「スペース」の上に追加しました');
+    if (rightContainer) {
+      // 最後のウィジェットの後に挿入
+      rightContainer.appendChild(container);
+      console.log('✅ カレンダーを右カラムの末尾に追加しました');
     } else {
-      console.warn('⚠️ 「スペース」ウィジェットが見つかりませんでした');
+      console.warn('⚠️ .ocean-portal-body-right が見つかりませんでした');
     }
   });
 })();
