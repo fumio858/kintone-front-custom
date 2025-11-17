@@ -26,7 +26,7 @@
 
     let targetWidget = null;
     document.querySelectorAll('.ocean-portal-body-right .gaia-argoui-widget-title').forEach(el => {
-      if (el.textContent.trim() === 'スペース') {
+      if (el.textContent.trim() === '未処理') {
         targetWidget = el.closest('.ocean-portal-widget');
       }
     });
