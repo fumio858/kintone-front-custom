@@ -8,7 +8,7 @@
     const iframe = document.createElement('iframe');
     iframe.src = calendarUrl;
     iframe.width = '100%';
-    iframe.height = '580';
+    iframe.height = '800';
     iframe.style.border = '0';
     iframe.style.overflow = 'hidden';
     iframe.style.padding = '0 0.5rem';
