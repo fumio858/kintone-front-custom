@@ -32,7 +32,6 @@
       a.style.color = '#3598db';
       a.style.zIndex = '2';
       a.style.position = 'relative';
-      a.style.textDecoration = 'underline';
 
       innerDiv.appendChild(a);
     });
