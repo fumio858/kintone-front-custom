@@ -27,9 +27,8 @@
   z-index: 2;
 }
 
-/* ポータルも調整 */
-
-.cns-root .vzdxs__xLarge{
+/* ポータルも調整 iframeで当たらず */
+/* .cns-root .vzdxs__xLarge{
   width: 100%;
   position: absolute;
   z-index: 1;
@@ -55,9 +54,8 @@
   opacity: .2;
 }
 
-
 .cns-root ._buttonInner_1dl5c_18,
 .cns-root ._ellipsis_1huxk_1 a{
   position: relative;
   z-index: 2;
-}
+} */
