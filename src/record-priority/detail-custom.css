@@ -228,6 +228,7 @@
 
 .recordlist-cell-gaia span a,
 .recordlist-cell-gaia button{
+  position: relative;
   z-index: 2;
 }
 
