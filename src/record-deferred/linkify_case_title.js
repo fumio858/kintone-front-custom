@@ -14,7 +14,7 @@
       const url = record.sflink.value; // ←「リンク」フィールドのフィールドコードに合わせて変更！
 
       // 顧客名セルを取得
-      const cell = kintone.app.getFieldElements('case_number');
+      const cell = kintone.app.getFieldElements('case_title');
       if (!cell) return;
 
       // 各セルに対応してリンクを埋め込み
