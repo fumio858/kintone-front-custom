@@ -218,13 +218,20 @@
 
 
 
-/* * * * * * * * * * *　一覧 * * * * * * * * * * */
+/* * * * * * * * * * *　一覧カスタマイズ * * * * * * * * * * */
 .recordlist-gaia .recordlist-show-gaia {
   width: 100%;
   position: absolute;
   z-index: 1;
   opacity: 0;
+  transition: .2s;
 }
+
+.recordlist-gaia .recordlist-show-gaia:hover,
+.recordlist-gaia .recordlist-show-gaia:focus {
+  background-color: #ffffff13;
+}
+
 
 .recordlist-cell-gaia span a,
 .recordlist-cell-gaia button{
