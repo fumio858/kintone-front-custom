@@ -219,13 +219,16 @@
 
 
 /* * * * * * * * * * *　一覧 * * * * * * * * * * */
-.recordlist-show-gaia {
+.recordlist-gaia .recordlist-show-gaia {
   width: 100%;
   position: absolute;
   z-index: 1;
 }
 
-
+.recordlist-cell-gaia span a,
+.recordlist-cell-gaia button{
+  z-index: 2;
+}
 
 
 
