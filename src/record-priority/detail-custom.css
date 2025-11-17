@@ -219,19 +219,18 @@
 
 
 /* * * * * * * * * * *　一覧カスタマイズ * * * * * * * * * * */
+/* 行ごとリンクに変更 */
 .recordlist-gaia .recordlist-show-gaia {
   width: 100%;
-  height: 100%;
   position: absolute;
   z-index: 1;
-  opacity: 0;
   transition: .3s;
   cursor: pointer;
 }
 
 .recordlist-gaia .recordlist-show-gaia .recordlist-detail-gaia,
 .recordlist-gaia .recordlist-show-gaia .recordlist-commentNum-gaia{
-  display: none;
+  opacity: 0;
 }
 
 .recordlist-gaia .recordlist-show-gaia:hover,
