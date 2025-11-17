@@ -169,13 +169,13 @@
   left: 100px!important;
 }
 
-.report-front-custom .gaia-app-statusbar-historypopup,
-.report-front-custom .ocean-ui-userinfo-popup{
+.gaia-app-statusbar-historypopup,
+.ocean-ui-userinfo-popup{
   left: auto!important;
   right: 10px;
 }
 
-.report-front-custom .gaia-app-statusbar-actionlist{
+.gaia-app-statusbar-actionlist{
   display: flex;
   flex-wrap: wrap;
   justify-content: end;
@@ -183,16 +183,16 @@
   text-align: left;
 }
 
-.body-record .gaia-app-statusbar-assigneepopup{
+.gaia-app-statusbar-assigneepopup{
   left: auto!important;
   right: 2rem;
 }
 
-.body-record .gaia-app-statusbar-action .gaia-app-statusbar-assigneepopup{
+.gaia-app-statusbar-action .gaia-app-statusbar-assigneepopup{
   right: 0;
 }
 
-.body-record .gaia-app-statusbar-statusmenu{
+.gaia-app-statusbar-statusmenu{
   display: flex;
   /* gap: .2rem;
   flex-wrap: wrap; */
@@ -206,7 +206,7 @@
   margin: .5rem !important;
 }
 
-.body-record .gaia-app-status-assignee-user, .gaia-app-statusbar-state-label{
+.gaia-app-status-assignee-user, .gaia-app-statusbar-state-label{
   margin-right: 1rem;
   padding: .2em;
   border-bottom: dotted 1px;
