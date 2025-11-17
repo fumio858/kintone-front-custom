@@ -219,7 +219,7 @@
 
 
 /* * * * * * * * * * *　一覧 * * * * * * * * * * */
-.recordlist-gaia .recordlist-show-gaia {
+/* .recordlist-gaia .recordlist-show-gaia {
   width: 100%;
   position: absolute;
   z-index: 1;
@@ -231,7 +231,7 @@
   position: relative;
   z-index: 2;
 }
-
+ */
 
 
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
