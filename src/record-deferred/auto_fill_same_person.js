@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  // 「被疑者と相談者が同じ」にチェックが入ったときのイベント
+  // 「被疑者と相談者が同じ」にチェックが入ったとき
   kintone.events.on(
     [
       'app.record.create.change.same_person',
@@ -12,13 +12,18 @@
       const checked = record.same_person.value.includes('はい');
 
       if (checked) {
-        // ✅ チェックON時：被疑者名とふりがなを契約者側にコピー
+        // ✅ チェックON時：コピー
         record.contractor_name.value = record.suspect_name.value;
         record.contractor_name_kana.value = record.suspect_name_kana.value;
       } else {
-        // ❎ チェックOFF時：契約者情報をクリア（必要に応じて削除可）
-        record.contractor_name.value = '';
-        record.contractor_name_kana.value = '';
+        // ❎ チェックOFF時：「同一だった場合のみ」クリア
+        if (
+          record.contractor_name.value === record.suspect_name.value &&
+          record.contractor_name_kana.value === record.suspect_name_kana.value
+        ) {
+          record.contractor_name.value = '';
+          record.contractor_name_kana.value = '';
+        }
       }
 
       return event;
@@ -45,5 +50,4 @@
       return event;
     }
   );
-
 })();
