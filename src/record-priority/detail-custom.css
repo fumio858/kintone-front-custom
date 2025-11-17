@@ -223,6 +223,7 @@
   width: 100%;
   position: absolute;
   z-index: 1;
+  opacity: 0;
 }
 
 .recordlist-cell-gaia span a,
