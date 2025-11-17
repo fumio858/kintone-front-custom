@@ -1,4 +1,5 @@
 /* * * * * * * * * * *　一覧カスタマイズ * * * * * * * * * * */
+
 /* 行ごとリンクに変更 */
 .recordlist-gaia .recordlist-show-gaia {
   width: 100%;
@@ -22,6 +23,41 @@
 
 .recordlist-cell-gaia span a,
 .recordlist-cell-gaia button{
+  position: relative;
+  z-index: 2;
+}
+
+/* ポータルも調整 */
+
+.cns-root .vzdxs__xLarge{
+  width: 100%;
+  position: absolute;
+  z-index: 1;
+  transition: .3s;
+  cursor: pointer;
+}
+
+.cns-root .vzdxs__xLarge{
+  width: 100%;
+  position: absolute;
+  z-index: 1;
+  transition: .3s;
+  cursor: pointer;
+}
+
+.cns-root .vzdxs__xLarge .sc-ggWZvA{
+  opacity: 0;
+}
+
+.cns-root .vzdxs__xLarge:hover,
+.cns-root .vzdxs__xLarge:focus {
+  background-color: #fff;
+  opacity: .2;
+}
+
+
+.cns-root ._buttonInner_1dl5c_18,
+.cns-root ._ellipsis_1huxk_1 a{
   position: relative;
   z-index: 2;
 }
