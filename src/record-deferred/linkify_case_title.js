@@ -4,15 +4,12 @@
   kintone.events.on('app.record.index.show', function(event) {
     console.log('🟢 一覧イベント発火');
     const records = event.records;
-    console.log('📄 records:', records);
-
     if (!records || records.length === 0) {
       console.warn('⚠️ recordsが空です。');
       return event;
     }
 
-    console.log('🔍 最初のレコードの内容:', records[0]);
-
+    // 一覧上の「事件番号」セルを取得
     const cells = kintone.app.getFieldElements('case_title');
     console.log('📦 取得したセル要素:', cells);
 
@@ -22,21 +19,21 @@
     }
 
     records.forEach((record, idx) => {
-      console.log(`🔸 ${idx + 1}件目の処理開始`);
       const caseTitle = record.case_title?.value;
       const url = record.sflink?.value;
 
-      console.log('🧾 事件番号:', caseTitle, '🔗 URL:', url);
-
       if (!caseTitle || !url) return;
-
       const cell = cells[idx];
       if (!cell) return;
 
-      // ✅ 内部のdiv.value-gaiaを取得して書き換え
-      const valueDiv = cell.querySelector('.value-gaia');
-      if (!valueDiv) return;
+      // ✅ 一覧DOM構造に合わせて中の span を取得
+      const span = cell.querySelector('span');
+      if (!span) {
+        console.warn(`⚠️ ${idx + 1}件目: spanが見つかりません`);
+        return;
+      }
 
+      // リンクを作成
       const a = document.createElement('a');
       a.href = url;
       a.textContent = caseTitle;
@@ -46,9 +43,9 @@
       a.style.position = 'relative';
       a.style.zIndex = '2';
 
-      // ここだけ変更：textContentで消すのではなく、divの中身を置換
-      valueDiv.innerHTML = '';
-      valueDiv.appendChild(a);
+      // 元のテキストを置換
+      span.textContent = '';
+      span.appendChild(a);
 
       console.log(`✅ ${idx + 1}件目: リンク化成功 → ${url}`);
     });
