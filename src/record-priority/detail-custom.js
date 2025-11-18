@@ -55,30 +55,30 @@
     infoGrid.className = 'custom-info-grid';
 
     const optionsRawVal = record[OPTIONS_FIELD]?.value;
-    let optionsVal = '';
+    let optionsHtml = ''; // HTMLとして組み立てる
     if (Array.isArray(optionsRawVal) && optionsRawVal.length > 0) {
-      optionsVal = optionsRawVal.join('、'); // 「、」で連結
-    } else if (typeof optionsRawVal === 'string') {
-      optionsVal = optionsRawVal.trim(); // 文字列の場合も考慮
+      optionsHtml = optionsRawVal.map(item => `<span class="custom-option-item">${item}</span>`).join('');
+    } else if (typeof optionsRawVal === 'string' && optionsRawVal.trim() !== '') {
+      optionsHtml = `<span class="custom-option-item">${optionsRawVal.trim()}</span>`;
     }
     const notesVal = (record[NOTES_FIELD]?.value ?? '').trim();
     const overviewVal = (record[OVERVIEW_FIELD]?.value ?? '').trim();
 
     // コンテナを追加（いずれかの値が存在する場合のみ）
-    if (optionsVal || notesVal || overviewVal) {
+    if (optionsHtml || notesVal || overviewVal) { // optionsVal -> optionsHtml に変更
       headerBox.appendChild(infoGrid);
     }
 
     // 特記事項
-    if (optionsVal || notesVal) {
+    if (optionsHtml || notesVal) { // optionsVal -> optionsHtml に変更
       const notesItem = document.createElement('div');
       notesItem.className = 'custom-info-item';
       
-      const prefix = optionsVal ? `${optionsVal} ` : ''; // 角括弧を削除し、後にスペース
-      const combinedNotes = prefix + notesVal;
+      const prefixHtml = optionsHtml ? `${optionsHtml} ` : ''; // optionsHtml があれば、後にスペース
+      const combinedNotesHtml = prefixHtml + `<span class="custom-notes-text">${notesVal.replace(/\n/g, '<br>')}</span>`; // notesVal もspanで囲む
 
       // HTMLとして挿入するため、改行を<br>に変換
-      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value custom-notes-value">${combinedNotes.replace(/\n/g, '<br>')}</span>`;
+      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value custom-notes-value">${combinedNotesHtml}</span>`;
       infoGrid.appendChild(notesItem);
     }
 
