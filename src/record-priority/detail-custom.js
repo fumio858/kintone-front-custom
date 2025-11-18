@@ -54,7 +54,13 @@
     const infoGrid = document.createElement('div');
     infoGrid.className = 'custom-info-grid';
 
-    const optionsVal = (record[OPTIONS_FIELD]?.value ?? '').trim();
+    const optionsRawVal = record[OPTIONS_FIELD]?.value;
+    let optionsVal = '';
+    if (Array.isArray(optionsRawVal) && optionsRawVal.length > 0) {
+      optionsVal = optionsRawVal.join('、'); // 「、」で連結
+    } else if (typeof optionsRawVal === 'string') {
+      optionsVal = optionsRawVal.trim(); // 文字列の場合も考慮
+    }
     const notesVal = (record[NOTES_FIELD]?.value ?? '').trim();
     const overviewVal = (record[OVERVIEW_FIELD]?.value ?? '').trim();
 
@@ -68,7 +74,7 @@
       const notesItem = document.createElement('div');
       notesItem.className = 'custom-info-item';
       
-      const prefix = optionsVal ? `[${optionsVal}] ` : '';
+      const prefix = optionsVal ? `${optionsVal} ` : ''; // 角括弧を削除し、後にスペース
       const combinedNotes = prefix + notesVal;
 
       // HTMLとして挿入するため、改行を<br>に変換
