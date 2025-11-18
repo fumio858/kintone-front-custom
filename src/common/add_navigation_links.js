@@ -1,0 +1,140 @@
+(function () {
+  'use strict';
+
+  // ==============================
+  // 😄 設定定義
+  // ==============================
+  const CUSTOM_LINKS = [
+    {
+      title: '刑事事件',
+      href: 'https://atomfirm.cybozu.com/k/22/?view=13312806',
+      // 手錠アイコン (Material Symbols 'lock' を少し調整)
+      svgPath: 'M12 17q.425 0 .713-.288T13 16q0-.425-.288-.713T12 15q-.425 0-.713.288T11 16q0 .425.288.713T12 17Zm-3-7h6v-3q0-1.25-.875-2.125T12 4q-1.25 0-2.125.875T9 7Zm1.5 0h3V7q0-.625.438-1.063T12 5.5q.625 0 1.063.438T13.5 7v3Z',
+    },
+    {
+      title: '交通事故',
+      href: 'https://atomfirm.cybozu.com/k/26/?view=13312808',
+      // 車アイコン (Material Symbols 'directions_car')
+      svgPath: 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-1.5 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z',
+    },
+  ];
+
+  // kintoneのヘッダーはReactで描画されるため、クラス名が変わりやすい。
+  // data-testid属性を持つ、比較的安定している要素を起点に探索する。
+  const BOOKMARK_BUTTON_SELECTOR = '[data-testid="header-global-navigation-bookmark-button"]';
+  const ADDED_FLAG = 'customNavLinksAdded';
+
+
+  /**
+   * アイコンリンクのHTML要素を生成する
+   * @param {object} link - CUSTOM_LINKSの要素
+   * @returns {HTMLLIElement} - 生成されたli要素
+   */
+  function createIconLinkElement(link) {
+    // kintoneの既存のHTML構造を模倣する
+    const li = document.createElement('li');
+    li.style.cssText = 'display: flex; align-items: center;'; // 微調整
+
+    const divContainer = document.createElement('div');
+    // クラス名はkintoneのアップデートで変わりうるが、スタイル適用のため追従
+    divContainer.className = 'sc-jMWyIz dysIPP'; 
+
+    const divButton = document.createElement('div');
+    divButton.className = 'sc-jMWyIz dysIPP__button';
+
+    const divIconContainer = document.createElement('div');
+    divIconContainer.className = 'sc-ejqGWM dMGvGp__container';
+
+    const a = document.createElement('a');
+    a.className = 'sc-ejqGWM dMGvGp sc-ejqGWM dMGvGp__xxxLarge';
+    a.href = link.href;
+    a.title = link.title;
+    a.setAttribute('aria-label', link.title);
+
+    const spanIcon = document.createElement('span');
+    spanIcon.className = 'sc-gaZyOd hxeOmP';
+    spanIcon.setAttribute('role', 'img');
+    spanIcon.setAttribute('aria-label', link.title);
+
+    const spanSvgWrapper = document.createElement('span');
+    spanSvgWrapper.setAttribute('aria-hidden', 'true');
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '28');
+    svg.setAttribute('height', '28');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('viewBox', '0 0 24 24');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('fill', '#888888');
+    path.setAttribute('d', link.svgPath);
+
+    svg.appendChild(path);
+    spanSvgWrapper.appendChild(svg);
+    spanIcon.appendChild(spanSvgWrapper);
+    a.appendChild(spanIcon);
+    divIconContainer.appendChild(a);
+    divButton.appendChild(divIconContainer);
+    divContainer.appendChild(divButton);
+    li.appendChild(divContainer);
+
+    return li;
+  }
+
+  /**
+   * ナビゲーションにカスタムリンクを追加する
+   */
+  function addCustomNavLinks() {
+    // 既にリンクが追加されていたら何もしない
+    if (document.body.dataset[ADDED_FLAG]) {
+      return;
+    }
+
+    const bookmarkButton = document.querySelector(BOOKMARK_BUTTON_SELECTOR);
+    if (!bookmarkButton) {
+      // ブックマークボタンが見つからない場合は何もしない
+      return;
+    }
+
+    // ブックマークボタンの親(li)の、さらに親(ul)を取得
+    const targetList = bookmarkButton.closest('ul');
+    const bookmarkListItem = bookmarkButton.closest('li');
+
+    if (!targetList || !bookmarkListItem) {
+      return;
+    }
+
+    // ブックマークの後ろにカスタムリンクを挿入
+    // insertBefore(newNode, referenceNode) を使うため、逆順でループ
+    [...CUSTOM_LINKS].reverse().forEach(link => {
+      const newLinkElement = createIconLinkElement(link);
+      targetList.insertBefore(newLinkElement, bookmarkListItem.nextSibling);
+    });
+
+    // 追加済みのフラグを立てる
+    document.body.dataset[ADDED_FLAG] = 'true';
+    console.log('Added custom navigation links.');
+  }
+
+  // ==============================
+  // 🚀 初期化処理
+  // ==============================
+
+  // ヘッダーは非同期で描画されるため、DOMの変更を監視する
+  const observer = new MutationObserver((mutations, obs) => {
+    const navBar = document.querySelector(BOOKMARK_BUTTON_SELECTOR);
+    if (navBar) {
+      addCustomNavLinks();
+      // 目的の要素を見つけたら監視を停止しても良いが、
+      // 画面遷移でヘッダーが再描画される可能性を考慮し、監視を続ける
+      // obs.disconnect(); 
+    }
+  });
+
+  // body要素の子要素の変更を監視
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+})();
