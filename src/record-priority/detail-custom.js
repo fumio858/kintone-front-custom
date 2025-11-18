@@ -73,10 +73,9 @@
     if (optionsHtml || notesVal) { // optionsVal -> optionsHtml に変更
       const notesItem = document.createElement('div');
       notesItem.className = 'custom-info-item';
-      
-      const prefixHtml = optionsHtml ? `${optionsHtml} ` : ''; // optionsHtml があれば、後にスペース
-      const combinedNotesHtml = prefixHtml + `<span class="custom-notes-text">${notesVal.replace(/\n/g, '<br>')}</span>`; // notesVal もspanで囲む
 
+      const prefixHtml = optionsHtml; // スペースを削除
+      const combinedNotesHtml = prefixHtml + `<span class="custom-notes-text">${notesVal.replace(/\n/g, '<br>')}</span>`; // notesVal もspanで囲む
       // HTMLとして挿入するため、改行を<br>に変換
       notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value custom-notes-value">${combinedNotesHtml}</span>`;
       infoGrid.appendChild(notesItem);
@@ -112,12 +111,12 @@
         // 移動先のアクションボタン(statusBar)は、ツールバー内にあるはず
         const movedStatusBar = toolbarMenu.querySelector('.gaia-app-statusbar');
         if (movedStatusBar) {
-            toolbarMenu.insertBefore(statusMenu, movedStatusBar);
-            // スタイルを調整
-            statusMenu.style.paddingLeft = '16px';
-            statusMenu.style.borderRight = '1px solid #e3e3e3';
-            statusMenu.style.marginRight = '10px';
-            statusMenu.style.paddingRight = '10px';
+          toolbarMenu.insertBefore(statusMenu, movedStatusBar);
+          // スタイルを調整
+          statusMenu.style.paddingLeft = '16px';
+          statusMenu.style.borderRight = '1px solid #e3e3e3';
+          statusMenu.style.marginRight = '10px';
+          statusMenu.style.paddingRight = '10px';
         }
       }
 
