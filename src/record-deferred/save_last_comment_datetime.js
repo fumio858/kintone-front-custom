@@ -5,46 +5,39 @@
   // 😄 設定定義
   // ==============================
   const FIELD_CODE = 'last_comment_datetime'; // 最終コメント日時を保存するフィールドコード
-  const MAX_RETRIES = 5; // レコード更新時のリトライ回数
 
   // ==============================
   // 💾 レコード更新処理
   // ==============================
   async function updateLastCommentDatetime(recordId) {
-    const now = new Date();
-    const datetime = now.toISOString();
+    try {
+      // コメントAPIを呼び出して最新のコメントを1件だけ取得
+      const commentsResp = await kintone.api(kintone.api.url('/k/v1/record/comments', true), 'GET', {
+        app: kintone.app.getId(),
+        record: recordId,
+        order: 'desc', // 新しい順で取得
+        limit: 1       // 1件だけ取得
+      });
 
-    for (let i = 0; i < MAX_RETRIES; i++) {
-      try {
-        // 最新のrevisionを取得するために一度レコードを取得
-        const resp = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
-          app: kintone.app.getId(),
-          id: recordId
-        });
-        // 【修正点1】レスポンスオブジェクトの record プロパティから revision を取得
-        const revision = resp.record.$revision.value;
-
-        await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
-          app: kintone.app.getId(),
-          id: recordId,
-          record: {
-            [FIELD_CODE]: { value: datetime }
-          },
-          revision: revision
-        });
-        console.log(`[${FIELD_CODE}] Updated to: ${datetime} (Record ID: ${recordId})`);
-        return; // 成功したら終了
-
-      } catch (error) {
-        // CB_VA01 はレコードの競合エラー
-        if (error.code === 'CB_VA01' && i < MAX_RETRIES - 1) {
-          console.warn(`[${FIELD_CODE}] Record conflict detected. Retrying... (${i + 1}/${MAX_RETRIES})`);
-          await new Promise(resolve => setTimeout(resolve, 100 + (Math.random() * 200 * (i + 1))));
-        } else {
-          console.error(`[${FIELD_CODE}] Failed to update last comment datetime for Record ID: ${recordId}`, error);
-          return;
-        }
+      if (!commentsResp.comments || commentsResp.comments.length === 0) {
+        console.warn(`[${FIELD_CODE}] No comments found for Record ID: ${recordId}.`);
+        return;
       }
+
+      const latestComment = commentsResp.comments[0];
+      const datetime = latestComment.createdAt; // APIから直接ISO 8601形式の日時を取得
+
+      // レコードの日時フィールドを更新
+      await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+        app: kintone.app.getId(),
+        id: recordId,
+        record: {
+          [FIELD_CODE]: { value: datetime }
+        }
+      });
+      console.log(`[${FIELD_CODE}] Updated to: ${datetime} (Record ID: ${recordId})`);
+    } catch (error) {
+      console.error(`[${FIELD_CODE}] Failed to update last comment datetime for Record ID: ${recordId}`, error);
     }
   }
 
@@ -89,7 +82,8 @@
       }
 
       if (newCommentAdded) {
-        console.log(`[${FIELD_CODE}] New comment detected. Attempting to update last comment datetime...`);
+        console.log(`[${FIELD_CODE}] New comment detected. Fetching latest comment from API...`);
+        // APIで日時を取得するため、DOM要素を渡す必要はなくなった
         updateLastCommentDatetime(recordId);
       }
     });
@@ -105,7 +99,7 @@
   // レコード詳細画面表示時に初期化
   kintone.events.on('app.record.detail.show', init);
 
-  // 【修正点2】commentPanel-launcher.js が提供するカスタムイベントにもフック
+  // commentPanel-launcher.js が提供するカスタムイベントにもフック
   window.addEventListener('urlchanged', () => {
     const commentArea = document.querySelector('#sidebar-list-gaia');
     if (commentArea) {
