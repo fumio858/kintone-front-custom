@@ -26,6 +26,38 @@
   const BOOKMARK_BUTTON_SELECTOR = '[data-testid="header-global-navigation-bookmark-button"]';
   const ADDED_FLAG = 'customNavLinksAdded';
 
+  /**
+   * カスタムナビゲーション用のCSSをheadに追加する
+   */
+  function addCustomNavStyles() {
+    const styleId = 'custom-nav-styles';
+    if (document.getElementById(styleId)) {
+      return;
+    }
+
+    // ホバー時の色を定義
+    const hoverColors = {
+      '刑事事件': '#e74c3c', // 赤色
+      '交通事故': '#3498db', // 青色
+    };
+
+    // 各リンクに対応するCSSルールを生成
+    const css = Object.entries(hoverColors).map(([title, color]) => `
+      a[data-custom-nav-title="${title}"]:hover svg path {
+        fill: ${color};
+      }
+    `).join('') + `
+      /* 全てのカスタムリンクに共通のトランジション効果 */
+      a[data-custom-nav-title] svg path {
+        transition: fill 0.2s ease;
+      }
+    `;
+
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
 
   /**
    * アイコンリンクのHTML要素を生成する
@@ -38,7 +70,6 @@
     li.style.cssText = 'display: flex; align-items: center;'; // 微調整
 
     const divContainer = document.createElement('div');
-    // クラス名はkintoneのアップデートで変わりうるが、スタイル適用のため追従
     divContainer.className = 'sc-jMWyIz dysIPP'; 
 
     const divButton = document.createElement('div');
@@ -52,6 +83,7 @@
     a.href = link.href;
     a.title = link.title;
     a.setAttribute('aria-label', link.title);
+    a.dataset.customNavTitle = link.title; // CSSで識別するためのdata属性
 
     const spanIcon = document.createElement('span');
     spanIcon.className = 'sc-gaZyOd hxeOmP';
@@ -92,13 +124,13 @@
       return;
     }
 
+    addCustomNavStyles(); // スタイルを注入
+
     const bookmarkButton = document.querySelector(BOOKMARK_BUTTON_SELECTOR);
     if (!bookmarkButton) {
-      // ブックマークボタンが見つからない場合は何もしない
       return;
     }
 
-    // ブックマークボタンの親(li)の、さらに親(ul)を取得
     const targetList = bookmarkButton.closest('ul');
     const bookmarkListItem = bookmarkButton.closest('li');
 
@@ -106,16 +138,13 @@
       return;
     }
 
-    // ブックマークの後ろにカスタムリンクを挿入
-    // insertBefore(newNode, referenceNode) を使うため、逆順でループ
     [...CUSTOM_LINKS].reverse().forEach(link => {
       const newLinkElement = createIconLinkElement(link);
       targetList.insertBefore(newLinkElement, bookmarkListItem.nextSibling);
     });
 
-    // 追加済みのフラグを立てる
     document.body.dataset[ADDED_FLAG] = 'true';
-    console.log('Added custom navigation links.');
+    console.log('Added custom navigation links with hover effects.');
   }
 
   // ==============================
@@ -127,13 +156,9 @@
     const navBar = document.querySelector(BOOKMARK_BUTTON_SELECTOR);
     if (navBar) {
       addCustomNavLinks();
-      // 目的の要素を見つけたら監視を停止しても良いが、
-      // 画面遷移でヘッダーが再描画される可能性を考慮し、監視を続ける
-      // obs.disconnect(); 
     }
   });
 
-  // body要素の子要素の変更を監視
   observer.observe(document.body, {
     childList: true,
     subtree: true,
