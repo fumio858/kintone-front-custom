@@ -8,8 +8,9 @@
     {
       title: '刑事事件',
       href: 'https://atomfirm.cybozu.com/k/22/?view=13312806',
-      // サイレンアイコン (Material Symbols 'emergency')
-      svgPath: 'M12 12c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm-1.95 8.05c-.33.14-.69.14-1.02 0C2.71 18.87 0 15.02 0 10.5V8l3-3 3 3v2.5c0 3.04 1.63 5.74 4 7.25 2.37-1.51 4-4.21 4-7.25V8l3-3 3 3v2.5c0 4.52-2.71 8.37-6.5 10.05z',
+      // サイレンアイコン (ユーザー提供)
+      svgPath: 'M160-200h640v-80H160v80Zm160-240h80v-120q0-33 23.5-56.5T480-640v-80q-66 0-113 47t-47 113v120Zm160 160Zm-200-80h400v-200q0-83-58.5-141.5T480-760q-83 0-141.5 58.5T280-560v200ZM160-120q-33 0-56.5-23.5T80-200v-80q0-33 23.5-56.5T160-360h40v-200q0-117 81.5-198.5T480-840q117 0 198.5 81.5T760-560v200h40q33 0 56.5 23.5T880-280v80q0 33-23.5 56.5T800-120H160Zm320-240Z',
+      viewBox: '0 -960 960 960',
     },
     {
       title: '交通事故',
@@ -63,7 +64,7 @@
     svg.setAttribute('width', '28');
     svg.setAttribute('height', '28');
     svg.setAttribute('fill', 'none');
-    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('viewBox', link.viewBox || '0 0 24 24');
 
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('fill', '#888888');
