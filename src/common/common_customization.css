@@ -7,6 +7,7 @@
   z-index: 1;
   transition: .3s;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .recordlist-gaia .recordlist-show-gaia .recordlist-detail-gaia,
@@ -25,6 +26,10 @@
 .recordlist-cell-gaia button{
   position: relative;
   z-index: 2;
+}
+
+td.recordlist-cell-gaia{
+  min-width: 2rem;
 }
 
 /* ポータルも調整 iframeで当たらず */
