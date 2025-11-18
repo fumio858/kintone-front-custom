@@ -2,6 +2,7 @@
   'use strict';
 
   const TITLE_FIELD = 'case_title';
+  const OPTIONS_FIELD = 'special_note_options';
   const NOTES_FIELD = 'special_notes';
   const OVERVIEW_FIELD = 'description';
 
@@ -53,20 +54,25 @@
     const infoGrid = document.createElement('div');
     infoGrid.className = 'custom-info-grid';
 
+    const optionsVal = (record[OPTIONS_FIELD]?.value ?? '').trim();
     const notesVal = (record[NOTES_FIELD]?.value ?? '').trim();
     const overviewVal = (record[OVERVIEW_FIELD]?.value ?? '').trim();
 
-    // コンテナを追加（どちらかの値が存在する場合のみ）
-    if (notesVal || overviewVal) {
+    // コンテナを追加（いずれかの値が存在する場合のみ）
+    if (optionsVal || notesVal || overviewVal) {
       headerBox.appendChild(infoGrid);
     }
 
     // 特記事項
-    if (notesVal) {
+    if (optionsVal || notesVal) {
       const notesItem = document.createElement('div');
       notesItem.className = 'custom-info-item';
+      
+      const prefix = optionsVal ? `[${optionsVal}] ` : '';
+      const combinedNotes = prefix + notesVal;
+
       // HTMLとして挿入するため、改行を<br>に変換
-      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value custom-notes-value">${notesVal.replace(/\n/g, '<br>')}</span>`;
+      notesItem.innerHTML = `<span class="custom-info-label">⚠️ 特記：</span><span class="custom-info-value custom-notes-value">${combinedNotes.replace(/\n/g, '<br>')}</span>`;
       infoGrid.appendChild(notesItem);
     }
 
