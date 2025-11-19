@@ -85,11 +85,10 @@
 
       .pl-text {
         font-size: 13px;
-        font-weight: 500;
+        font-weight: 600;
         color: #444;
         text-align: center;
-        line-height: 1.3;
-        max-width: 120px;
+        line-height: 1.5;
         overflow-wrap: break-word;
       }
     `;
