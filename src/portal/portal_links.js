@@ -49,6 +49,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
+        padding: 0 1rem;
         margin-bottom: 1rem;
       }
 
@@ -59,7 +60,7 @@
 
       .pl-card {
         width: 100%;
-        height: 120px;
+        height: 140px;
         border-radius: 22px;
         background: #fff;
         border: 1px solid rgba(0,0,0,0.08);
@@ -85,11 +86,19 @@
 
       .pl-text {
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 500;
         color: #444;
         text-align: center;
         line-height: 1.5;
         overflow-wrap: break-word;
+        height: calc(13px * 1.5 * 2); /* 2行分の高さを計算して固定 */
+        display: -webkit-box; /* 複数行省略のためにFlexboxと組み合わせる */
+        -webkit-line-clamp: 2; /* 2行で省略 */
+        -webkit-box-orient: vertical;
+        overflow: hidden; /* はみ出た部分を隠す */
+        text-overflow: ellipsis; /* 省略記号 */
+        align-items: center; /* 垂直方向中央揃え (Flexboxアイテムとして) */
+        justify-content: center; /* 水平方向中央揃え (Flexboxアイテムとして) */
       }
     `;
 
