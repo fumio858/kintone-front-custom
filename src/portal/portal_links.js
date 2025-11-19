@@ -3,6 +3,7 @@
 
   const APP_ID = 59; // ←リンク集管理アプリID
   const LINKS_AREA_ID = "portal-links-area";
+  const STYLE_ID = "portal-links-custom-styles";
 
   // ============================
   // 🔥 Portal 4 の描画開始
@@ -14,48 +15,117 @@
       return;
     }
 
-    // ⭐ 既存ウィジェットの「上」に専用エリアを作成
     let linksArea = document.getElementById(LINKS_AREA_ID);
-
     if (!linksArea) {
       linksArea = document.createElement("div");
       linksArea.id = LINKS_AREA_ID;
-      linksArea.style.marginBottom = "40px"; // 既存ウィジェットとの距離
-      root.prepend(linksArea); // ←←★ ここがポイント！
+      root.prepend(linksArea);
     }
 
     loadLinks(linksArea);
   }
 
   // ============================
+  // 🎨 スタイル定義と注入
+  // ============================
+  function injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+
+    const css = `
+      #${LINKS_AREA_ID} {
+        margin-bottom: 40px;
+      }
+      .pl-container {
+        padding: 10px;
+      }
+      .pl-category-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 26px 1rem 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+      .pl-category-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        justify-content: flex-start;
+      }
+      .pl-item-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 140px;
+        margin: 12px;
+        text-decoration: none;
+      }
+      .pl-card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100px;
+        height: 100px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, #ffffff, #f9f9f9);
+        border: 1px solid rgba(0,0,0,0.08);
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+      .pl-item-wrapper:hover .pl-card {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        border-color: rgba(0,0,0,0.12);
+      }
+      .pl-icon {
+        font-size: 48px;
+        color: #333;
+      }
+      .pl-text {
+        margin-top: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.4;
+        color: #444;
+        text-align: center;
+        transition: color 0.2s ease-in-out;
+      }
+      .pl-item-wrapper:hover .pl-text {
+        color: #007bff;
+      }
+    `;
+
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  // ============================
   // 📡 リンク集読み込み
   // ============================
   async function loadLinks(linksArea) {
+    injectStyles();
 
-    // Material Icons 読み込み（1回だけ）
     if (!document.getElementById("mat-icon-font")) {
       const link = document.createElement("link");
       link.id = "mat-icon-font";
-      link.href = "https://fonts.googleapis.com/icon?family=Material+Icons";
+      link.href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined";
       link.rel = "stylesheet";
       document.head.appendChild(link);
     }
 
     let resp;
     try {
-      resp = await kintone.api(
-        kintone.api.url("/k/v1/records", true),
-        "GET",
-        { app: APP_ID, query: "order by sort_order asc" }
-      );
+      resp = await kintone.api(kintone.api.url("/k/v1/records", true), "GET", {
+        app: APP_ID,
+        query: "order by sort_order asc"
+      });
     } catch (e) {
       console.error("エラー:", e);
       return;
     }
 
     const records = resp.records;
-
-    // カテゴリ別にグループ化
     const groups = {};
     records.forEach(r => {
       const c = r.category.value;
@@ -63,30 +133,19 @@
       groups[c].push(r);
     });
 
-    // ------------------------
-    // ⭐ 専用エリアだけ更新
-    // ------------------------
     linksArea.innerHTML = "";
-
     const container = document.createElement("div");
-    container.style.padding = "10px";
+    container.className = "pl-container";
 
-    // カテゴリごとに描画
     Object.keys(groups).forEach(category => {
       const h3 = document.createElement("div");
+      h3.className = "pl-category-title";
       h3.textContent = category;
-      h3.style.fontSize = "18px";
-      h3.style.fontWeight = "600";
-      h3.style.margin = "26px 1rem 14px";
       container.appendChild(h3);
 
       const wrap = document.createElement("div");
-      wrap.style.display = "flex";
-      wrap.style.flexWrap = "wrap";
-      wrap.style.gap = "12px";
-
-      groups[category].forEach(r => wrap.appendChild(createWhiteCard(r)));
-
+      wrap.className = "pl-category-wrap";
+      groups[category].forEach(r => wrap.appendChild(createLinkItem(r)));
       container.appendChild(wrap);
     });
 
@@ -94,60 +153,28 @@
   }
 
   // ============================
-  // 🍎 白カード（Apple風）
+  // 🍎 リンク要素（カード＋テキスト）
   // ============================
-  function createWhiteCard(rec) {
-    const card = document.createElement("a");
-    card.href = rec.url.value;
-    card.target = "_blank";
+  function createLinkItem(rec) {
+    const wrapper = document.createElement("a");
+    wrapper.className = "pl-item-wrapper";
+    wrapper.href = rec.url.value;
+    wrapper.target = "_blank";
 
-    // レイアウト
-    card.style.display = "flex";
-    card.style.flexDirection = "column";
-    card.style.justifyContent = "center";
-    card.style.alignItems = "center";
-    card.style.textAlign = "center";
-
-    // サイズ
-    card.style.width = "180px";
-    card.style.height = "100px";
-    card.style.margin = "12px";
-    card.style.padding = "20px";
-
-    // 丸角
-    card.style.borderRadius = "20px";
-
-    // 白ライトグラデ
-    card.style.background = "linear-gradient(135deg, #ffffff, #f7f7f7)";
-    card.style.border = "1px solid rgba(0,0,0,0.12)";
-    card.style.color = "#333";
-    card.style.textDecoration = "none";
-    card.style.transition = "background 0.2s ease, border-color 0.2s ease";
-
-    card.addEventListener("mouseover", () => {
-      card.style.background = "linear-gradient(135deg, #f9f9f9, #ededed)";
-      card.style.borderColor = "rgba(0,0,0,0.2)";
-    });
-    card.addEventListener("mouseout", () => {
-      card.style.background = "linear-gradient(135deg, #ffffff, #f7f7f7)";
-      card.style.borderColor = "rgba(0,0,0,0.12)";
-    });
+    const card = document.createElement("div");
+    card.className = "pl-card";
 
     const icon = document.createElement("span");
-    icon.className = "material-icons";
+    icon.className = "material-symbols-outlined pl-icon";
     icon.textContent = rec.icon.value || "description";
-    icon.style.fontSize = "52px";
-    icon.style.marginBottom = "12px";
+    card.appendChild(icon);
 
     const text = document.createElement("div");
+    text.className = "pl-text";
     text.textContent = rec.title.value;
-    text.style.fontSize = "15px";
-    text.style.fontWeight = "500";
-    text.style.lineHeight = "1.6";
 
-    card.append(icon, text);
-
-    return card;
+    wrapper.append(card, text);
+    return wrapper;
   }
 
   // ============================
@@ -164,7 +191,6 @@
       if (lastHash.includes("/portal/4")) {
         onPortal4Loaded();
       } else {
-        // ⭐ Portal4でない時 → 専用エリアだけ消す
         if (linksArea) linksArea.remove();
       }
     }
