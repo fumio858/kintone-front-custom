@@ -41,9 +41,8 @@
       .pl-category-title {
         font-size: 18px;
         font-weight: 600;
-        margin: 26px 1rem 14px;
+        margin: 1rem 1rem 14px;
         padding-bottom: 8px;
-        border-bottom: 2px solid #f0f0f0;
       }
       .pl-category-wrap {
         display: flex;
@@ -77,7 +76,7 @@
         border-color: rgba(0,0,0,0.12);
       }
       .pl-icon {
-        font-size: 48px;
+        font-size: 48px!important;
         color: #333;
       }
       .pl-text {
@@ -137,17 +136,41 @@
     const container = document.createElement("div");
     container.className = "pl-container";
 
-    Object.keys(groups).forEach(category => {
-      const h3 = document.createElement("div");
-      h3.className = "pl-category-title";
-      h3.textContent = category;
-      container.appendChild(h3);
+    // ハードコードされたカテゴリ順
+    const CATEGORY_ORDER = ['マニュアル', '業務関連シート'];
+    const processedCategories = new Set(); // 処理済みのカテゴリを追跡
 
-      const wrap = document.createElement("div");
-      wrap.className = "pl-category-wrap";
-      groups[category].forEach(r => wrap.appendChild(createLinkItem(r)));
-      container.appendChild(wrap);
+    // 定義された順序でカテゴリを描画
+    CATEGORY_ORDER.forEach(category => {
+      if (groups[category]) { // そのカテゴリが存在する場合のみ
+        const h3 = document.createElement("div");
+        h3.className = "pl-category-title";
+        h3.textContent = category;
+        container.appendChild(h3);
+
+        const wrap = document.createElement("div");
+        wrap.className = "pl-category-wrap";
+        groups[category].forEach(r => wrap.appendChild(createLinkItem(r)));
+        container.appendChild(wrap);
+        processedCategories.add(category);
+      }
     });
+
+    // CATEGORY_ORDER に含まれないカテゴリを描画 (アルファベット順など)
+    Object.keys(groups)
+      .filter(category => !processedCategories.has(category))
+      .sort() // 残りのカテゴリはアルファベット順にソート
+      .forEach(category => {
+        const h3 = document.createElement("div");
+        h3.className = "pl-category-title";
+        h3.textContent = category;
+        container.appendChild(h3);
+
+        const wrap = document.createElement("div");
+        wrap.className = "pl-category-wrap";
+        groups[category].forEach(r => wrap.appendChild(createLinkItem(r)));
+        container.appendChild(wrap);
+      });
 
     linksArea.appendChild(container);
   }
