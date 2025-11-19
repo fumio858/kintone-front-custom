@@ -75,9 +75,9 @@
     Object.keys(groups).forEach(category => {
       const h3 = document.createElement("div");
       h3.textContent = category;
-      h3.style.fontSize = "22px";
+      h3.style.fontSize = "18px";
       h3.style.fontWeight = "600";
-      h3.style.margin = "26px 0 14px";
+      h3.style.margin = "26px 1rem 14px";
       container.appendChild(h3);
 
       const wrap = document.createElement("div");
@@ -110,7 +110,7 @@
 
     // サイズ
     card.style.width = "180px";
-    card.style.height = "120px";
+    card.style.height = "100px";
     card.style.margin = "12px";
     card.style.padding = "20px";
 
