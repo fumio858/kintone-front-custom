@@ -42,7 +42,7 @@
         font-weight: 600;
         padding: 1rem;
         margin-top: 1rem;
-        color: #868686;
+        color: #686868;
       }
 
       .pl-category-wrap {
