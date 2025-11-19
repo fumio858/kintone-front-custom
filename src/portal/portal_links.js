@@ -136,13 +136,14 @@
     const icon = document.createElement("span");
     icon.className = "material-icons";
     icon.textContent = rec.icon.value || "description";
-    icon.style.fontSize = "38px";
-    icon.style.marginBottom = "10px";
+    icon.style.fontSize = "52px";
+    icon.style.marginBottom = "12px";
 
     const text = document.createElement("div");
     text.textContent = rec.title.value;
     text.style.fontSize = "15px";
     text.style.fontWeight = "500";
+    text.style.lineHeight = "1.6";
 
     card.append(icon, text);
 
