@@ -219,9 +219,9 @@
       icon: "#333"
     };
   
-    // ⭐ カラー適用
-    card.style.background = color.bg;
-    card.style.border = `1px solid ${color.border}`;
+    // ⭐ カラー適用 (背景とボーダーはカテゴリ別設定を削除)
+    // card.style.background = color.bg;
+    // card.style.border = `1px solid ${color.border}`;
   
     const icon = document.createElement("span");
     icon.className = "material-symbols-outlined pl-icon";
