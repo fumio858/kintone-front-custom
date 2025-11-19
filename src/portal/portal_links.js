@@ -8,17 +8,17 @@
     "マニュアル": {
       bg: "#ffffff",
       border: "#2b5bd7",
-      icon: "#2b5bd7"
+      icon: "#4c7eff"
     },
     "業務関連シート": {
       bg: "#ffffff",
       border: "#1c7c2d",
-      icon: "#1c7c2d"
+      icon: "#3db652"
     },
     "便利ツール": {
       bg: "#ffffff",
       border: "#d88a00",
-      icon: "#d88a00"
+      icon: "#e8b65d"
     },
     "その他": {
       bg: "#ffffff",
