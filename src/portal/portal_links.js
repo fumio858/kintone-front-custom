@@ -175,7 +175,7 @@
 
         const wrap = document.createElement("div");
         wrap.className = "pl-category-wrap";
-        groups[category].forEach(r => wrap.appendChild(createLinkItem(r)));
+        groups[category].forEach(r => wrap.appendChild(createLinkItem(r, category)));
         container.appendChild(wrap);
         processedCategories.add(category);
       }
