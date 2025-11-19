@@ -6,24 +6,24 @@
   const STYLE_ID = "portal-links-custom-styles";
   const CATEGORY_COLOR = {
     "マニュアル": {
-      bg: "linear-gradient(135deg, #e8f0ff, #d2e1ff)",
-      border: "rgba(50, 100, 200, 0.3)",
+      bg: "#ffffff",
+      border: "#2b5bd7",
       icon: "#2b5bd7"
     },
     "業務関連シート": {
-      bg: "linear-gradient(135deg, #e8ffe8, #ccf5d1)",
-      border: "rgba(70, 170, 70, 0.3)",
+      bg: "#ffffff",
+      border: "#1c7c2d",
       icon: "#1c7c2d"
     },
     "便利ツール": {
-      bg: "linear-gradient(135deg, #fff4e3, #ffe3b8)",
-      border: "rgba(200, 150, 50, 0.3)",
+      bg: "#ffffff",
+      border: "#d88a00",
       icon: "#d88a00"
     },
     "その他": {
-      bg: "linear-gradient(135deg, #f0f0f0, #e5e5e5)",
-      border: "rgba(120,120,120,0.2)",
-      icon: "#444"
+      bg: "#ffffff",
+      border: "#777",
+      icon: "#777"
     }
   };
 
