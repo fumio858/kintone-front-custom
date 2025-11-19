@@ -4,7 +4,30 @@
   const APP_ID = 59; // ←リンク集管理アプリID
   const LINKS_AREA_ID = "portal-links-area";
   const STYLE_ID = "portal-links-custom-styles";
+  const CATEGORY_COLOR = {
+    "マニュアル": {
+      bg: "linear-gradient(135deg, #e8f0ff, #d2e1ff)",
+      border: "rgba(50, 100, 200, 0.3)",
+      icon: "#2b5bd7"
+    },
+    "業務関連シート": {
+      bg: "linear-gradient(135deg, #e8ffe8, #ccf5d1)",
+      border: "rgba(70, 170, 70, 0.3)",
+      icon: "#1c7c2d"
+    },
+    "便利ツール": {
+      bg: "linear-gradient(135deg, #fff4e3, #ffe3b8)",
+      border: "rgba(200, 150, 50, 0.3)",
+      icon: "#d88a00"
+    },
+    "その他": {
+      bg: "linear-gradient(135deg, #f0f0f0, #e5e5e5)",
+      border: "rgba(120,120,120,0.2)",
+      icon: "#444"
+    }
+  };
 
+  
   // ============================
   // 🔥 Portal 4 の描画開始
   // ============================
@@ -180,27 +203,43 @@
   // ============================
   // 🍎 リンク要素（カード＋テキスト）
   // ============================
-  function createLinkItem(rec) {
+  function createLinkItem(rec, category) {
     const wrapper = document.createElement("a");
     wrapper.className = "pl-item-wrapper";
     wrapper.href = rec.url.value;
     wrapper.target = "_blank";
-
+  
     const card = document.createElement("div");
     card.className = "pl-card";
-
+  
+    // ⭐ カテゴリカラー取得（なければデフォルト色）
+    const color = CATEGORY_COLOR[category] || {
+      bg: "linear-gradient(135deg, #ffffff, #f9f9f9)",
+      border: "rgba(0,0,0,0.08)",
+      icon: "#333"
+    };
+  
+    // ⭐ カラー適用
+    card.style.background = color.bg;
+    card.style.border = `1px solid ${color.border}`;
+  
     const icon = document.createElement("span");
     icon.className = "material-symbols-outlined pl-icon";
     icon.textContent = rec.icon.value || "description";
+  
+    // アイコン色変更
+    icon.style.color = color.icon;
+  
     card.appendChild(icon);
-
+  
     const text = document.createElement("div");
     text.className = "pl-text";
     text.textContent = rec.title.value;
-
+  
     wrapper.append(card, text);
     return wrapper;
   }
+  
 
   // ============================
   // 🔄 URL変化を監視し Portal4 のみ表示
