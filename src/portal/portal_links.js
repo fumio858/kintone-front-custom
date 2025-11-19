@@ -41,8 +41,9 @@
       .pl-category-title {
         font-size: 18px;
         font-weight: 600;
-        margin: 1rem;
-        padding-top: .5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        color: #4b4b4b;
       }
       .pl-category-wrap {
         display: flex;
@@ -137,7 +138,7 @@
     container.className = "pl-container";
 
     // ハードコードされたカテゴリ順
-    const CATEGORY_ORDER = ['マニュアル', '業務関連シート'];
+    const CATEGORY_ORDER = ['マニュアル', '業務関連シート', '便利ツール', 'その他'];
     const processedCategories = new Set(); // 処理済みのカテゴリを追跡
 
     // 定義された順序でカテゴリを描画
