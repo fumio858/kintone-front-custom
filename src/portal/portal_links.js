@@ -1,42 +1,20 @@
 (() => {
   "use strict";
 
-  const APP_ID = 59; // ←リンク集管理アプリID
+  const APP_ID = 59;
   const LINKS_AREA_ID = "portal-links-area";
   const STYLE_ID = "portal-links-custom-styles";
+
   const CATEGORY_COLOR = {
-    "マニュアル": {
-      bg: "#ffffff",
-      border: "#2b5bd7",
-      icon: "#4c7eff"
-    },
-    "業務関連シート": {
-      bg: "#ffffff",
-      border: "#1c7c2d",
-      icon: "#3db652"
-    },
-    "便利ツール": {
-      bg: "#ffffff",
-      border: "#d88a00",
-      icon: "#e8b65d"
-    },
-    "その他": {
-      bg: "#ffffff",
-      border: "#777",
-      icon: "#777"
-    }
+    "マニュアル": { icon: "#4c7eff" },
+    "業務関連シート": { icon: "#3db652" },
+    "便利ツール": { icon: "#e8b65d" },
+    "その他": { icon: "#777" }
   };
 
-  
-  // ============================
-  // 🔥 Portal 4 の描画開始
-  // ============================
   function onPortal4Loaded() {
     const root = document.getElementById("cns-root");
-    if (!root) {
-      setTimeout(onPortal4Loaded, 300);
-      return;
-    }
+    if (!root) return setTimeout(onPortal4Loaded, 300);
 
     let linksArea = document.getElementById(LINKS_AREA_ID);
     if (!linksArea) {
@@ -48,19 +26,17 @@
     loadLinks(linksArea);
   }
 
-  // ============================
-  // 🎨 スタイル定義と注入
-  // ============================
+  // ======================
+  // 🎨 CSS
+  // ======================
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
 
     const css = `
-      #${LINKS_AREA_ID} {
-        margin-bottom: 40px;
-      }
-      .pl-container {
-        padding: 10px;
-      }
+      #${LINKS_AREA_ID} { margin-bottom: 40px; }
+
+      .pl-container { padding: 10px; }
+
       .pl-category-title {
         font-size: 16px;
         font-weight: 600;
@@ -68,53 +44,52 @@
         margin-top: 1rem;
         color: #222;
       }
+
       .pl-category-wrap {
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
-        justify-content: flex-start;
         margin-bottom: 1rem;
       }
+
       .pl-item-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         width: 140px;
-        margin: 12px;
         text-decoration: none;
       }
+
       .pl-card {
+        width: 140px;
+        height: 140px;
+        border-radius: 22px;
+        background: #fff;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        width: 100px;
-        height: 100px;
-        border-radius: 22px;
-        background: linear-gradient(135deg, #ffffff, #f9f9f9);
-        border: 1px solid rgba(0,0,0,0.08);
+        padding: 12px;
         transition: all 0.2s ease-in-out;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       }
+
       .pl-item-wrapper:hover .pl-card {
         transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        border-color: rgba(0,0,0,0.12);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       }
+
       .pl-icon {
-        font-size: 48px!important;
-        color: #333;
+        font-size: 42px;
+        margin-bottom: 8px;
       }
+
       .pl-text {
-        margin-top: 12px;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 500;
-        line-height: 1.4;
         color: #444;
         text-align: center;
-        transition: color 0.2s ease-in-out;
-      }
-      .pl-item-wrapper:hover .pl-text {
-        color: #007bff;
+        line-height: 1.3;
+        max-width: 120px;
+        overflow-wrap: break-word;
       }
     `;
 
@@ -124,9 +99,9 @@
     document.head.appendChild(style);
   }
 
-  // ============================
-  // 📡 リンク集読み込み
-  // ============================
+  // ======================
+  // 📡 Load Records
+  // ======================
   async function loadLinks(linksArea) {
     injectStyles();
 
@@ -142,10 +117,10 @@
     try {
       resp = await kintone.api(kintone.api.url("/k/v1/records", true), "GET", {
         app: APP_ID,
-        query: "order by sort_order asc"
+        query: "order by sort_order asc",
       });
     } catch (e) {
-      console.error("エラー:", e);
+      console.error(e);
       return;
     }
 
@@ -161,103 +136,83 @@
     const container = document.createElement("div");
     container.className = "pl-container";
 
-    // ハードコードされたカテゴリ順
-    const CATEGORY_ORDER = ['マニュアル', '業務関連シート', '便利ツール', 'その他'];
-    const processedCategories = new Set(); // 処理済みのカテゴリを追跡
+    const ORDER = ['マニュアル', '業務関連シート', '便利ツール', 'その他'];
+    const done = new Set();
 
-    // 定義された順序でカテゴリを描画
-    CATEGORY_ORDER.forEach(category => {
-      if (groups[category]) { // そのカテゴリが存在する場合のみ
-        const h3 = document.createElement("div");
-        h3.className = "pl-category-title";
-        h3.textContent = category;
-        container.appendChild(h3);
-
-        const wrap = document.createElement("div");
-        wrap.className = "pl-category-wrap";
-        groups[category].forEach(r => wrap.appendChild(createLinkItem(r, category)));
-        container.appendChild(wrap);
-        processedCategories.add(category);
-      }
+    ORDER.forEach(cat => {
+      if (!groups[cat]) return;
+      container.appendChild(createCategory(cat, groups[cat]));
+      done.add(cat);
     });
 
-    // CATEGORY_ORDER に含まれないカテゴリを描画 (アルファベット順など)
     Object.keys(groups)
-      .filter(category => !processedCategories.has(category))
-      .sort() // 残りのカテゴリはアルファベット順にソート
-      .forEach(category => {
-        const h3 = document.createElement("div");
-        h3.className = "pl-category-title";
-        h3.textContent = category;
-        container.appendChild(h3);
-
-        const wrap = document.createElement("div");
-        wrap.className = "pl-category-wrap";
-        groups[category].forEach(r => wrap.appendChild(createLinkItem(r, category)));
-        container.appendChild(wrap);
-      });
+      .filter(c => !done.has(c))
+      .sort()
+      .forEach(c => container.appendChild(createCategory(c, groups[c])));
 
     linksArea.appendChild(container);
   }
 
-  // ============================
-  // 🍎 リンク要素（カード＋テキスト）
-  // ============================
+  function createCategory(name, items) {
+    const box = document.createElement("div");
+
+    const title = document.createElement("div");
+    title.className = "pl-category-title";
+    title.textContent = name;
+    box.appendChild(title);
+
+    const wrap = document.createElement("div");
+    wrap.className = "pl-category-wrap";
+
+    items.forEach(r => wrap.appendChild(createLinkItem(r, name)));
+
+    box.appendChild(wrap);
+    return box;
+  }
+
+  // ======================
+  // 🍎 Item Card
+  // ======================
   function createLinkItem(rec, category) {
+    const color = CATEGORY_COLOR[category] || { icon: "#333" };
+
     const wrapper = document.createElement("a");
     wrapper.className = "pl-item-wrapper";
     wrapper.href = rec.url.value;
     wrapper.target = "_blank";
-  
+
     const card = document.createElement("div");
     card.className = "pl-card";
-  
-    // ⭐ カテゴリカラー取得（なければデフォルト色）
-    const color = CATEGORY_COLOR[category] || {
-      bg: "linear-gradient(135deg, #ffffff, #f9f9f9)",
-      border: "rgba(0,0,0,0.08)",
-      icon: "#333"
-    };
-  
-    // ⭐ カラー適用 (背景とボーダーはカテゴリ別設定を削除)
-    // card.style.background = color.bg;
-    // card.style.border = `1px solid ${color.border}`;
-  
+
     const icon = document.createElement("span");
     icon.className = "material-symbols-outlined pl-icon";
-    icon.textContent = rec.icon.value || "description";
-  
-    // アイコン色変更
     icon.style.color = color.icon;
-  
-    card.appendChild(icon);
-  
+    icon.textContent = rec.icon.value || "description";
+
     const text = document.createElement("div");
     text.className = "pl-text";
     text.textContent = rec.title.value;
-  
-    wrapper.append(card, text);
+
+    card.append(icon, text);
+    wrapper.append(card);
+
     return wrapper;
   }
-  
 
-  // ============================
-  // 🔄 URL変化を監視し Portal4 のみ表示
-  // ============================
+  // ======================
+  // 🔄 Portal 4 Only
+  // ======================
   let lastHash = "";
   setInterval(() => {
     if (location.hash !== lastHash) {
       lastHash = location.hash;
 
-      const root = document.getElementById("cns-root");
-      const linksArea = document.getElementById(LINKS_AREA_ID);
-
+      const area = document.getElementById(LINKS_AREA_ID);
       if (lastHash.includes("/portal/4")) {
         onPortal4Loaded();
-      } else {
-        if (linksArea) linksArea.remove();
+      } else if (area) {
+        area.remove();
       }
     }
   }, 300);
-
 })();
