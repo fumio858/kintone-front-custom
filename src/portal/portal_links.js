@@ -39,17 +39,18 @@
         padding: 10px;
       }
       .pl-category-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
         padding: 1rem;
         margin-top: 1rem;
-        color: #4b4b4b;
+        color: #222;
       }
       .pl-category-wrap {
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
         justify-content: flex-start;
+        margin-bottom: 1rem;
       }
       .pl-item-wrapper {
         display: flex;
