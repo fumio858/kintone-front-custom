@@ -67,7 +67,7 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-evenly;
         align-items: center;
         padding: 1rem;
         transition: all 0.2s ease-in-out;
@@ -85,20 +85,24 @@
       }
 
       .pl-text {
+        height: calc(13px * 1.5 * 2); /* 2行分の高さを計算して固定 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden; /* はみ出し防止 */
+      }
+      .pl-text-inner {
         font-size: 13px;
         font-weight: 500;
         color: #444;
         text-align: center;
         line-height: 1.5;
         overflow-wrap: break-word;
-        height: calc(13px * 1.5 * 2); /* 2行分の高さを計算して固定 */
-        display: -webkit-box; /* 複数行省略のためにFlexboxと組み合わせる */
-        -webkit-line-clamp: 2; /* 2行で省略 */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
-        overflow: hidden; /* はみ出た部分を隠す */
-        text-overflow: ellipsis; /* 省略記号 */
-        align-items: center; /* 垂直方向中央揃え (Flexboxアイテムとして) */
-        justify-content: center; /* 水平方向中央揃え (Flexboxアイテムとして) */
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     `;
 
@@ -200,7 +204,10 @@
 
     const text = document.createElement("div");
     text.className = "pl-text";
-    text.textContent = rec.title.value;
+    const textInner = document.createElement("span");
+    textInner.className = "pl-text-inner";
+    textInner.textContent = rec.title.value;
+    text.appendChild(textInner);
 
     card.append(icon, text);
     wrapper.append(card);
