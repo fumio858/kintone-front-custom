@@ -53,13 +53,13 @@
       }
 
       .pl-item-wrapper {
-        width: 140px;
+        width: 180px;
         text-decoration: none;
       }
 
       .pl-card {
-        width: 140px;
-        height: 140px;
+        width: 100%;
+        height: 120px;
         border-radius: 22px;
         background: #fff;
         border: 1px solid rgba(0,0,0,0.08);
@@ -68,8 +68,9 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 12px;
+        padding: 1rem;
         transition: all 0.2s ease-in-out;
+        box-sizing: border-box;
       }
 
       .pl-item-wrapper:hover .pl-card {
@@ -78,7 +79,7 @@
       }
 
       .pl-icon {
-        font-size: 42px;
+        font-size: 42px!important;
         margin-bottom: 8px;
       }
 
