@@ -41,8 +41,8 @@
       .pl-category-title {
         font-size: 18px;
         font-weight: 600;
-        margin: 1rem 1rem 14px;
-        padding-bottom: 8px;
+        margin: 1rem;
+        padding-top: .5rem;
       }
       .pl-category-wrap {
         display: flex;
