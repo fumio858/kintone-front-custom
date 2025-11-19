@@ -92,7 +92,7 @@
         overflow: hidden; /* はみ出し防止 */
       }
       .pl-text-inner {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
         color: #444;
         text-align: center;
