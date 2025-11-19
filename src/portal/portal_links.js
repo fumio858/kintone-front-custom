@@ -39,10 +39,10 @@
 
       .pl-category-title {
         font-size: 16px;
-        font-weight: 00;
+        font-weight: 600;
         padding: 1rem;
         margin-top: 1rem;
-        color: #888;
+        color: #868686;
       }
 
       .pl-category-wrap {
@@ -92,7 +92,7 @@
         overflow: hidden; /* はみ出し防止 */
       }
       .pl-text-inner {
-        font-size: 14px;
+        font-size: 14.5px;
         font-weight: 500;
         color: #444;
         text-align: center;
