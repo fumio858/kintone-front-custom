@@ -60,7 +60,7 @@
         display: flex;
       }
       .portal-left {
-        width: 25%;
+        width: 400px;
         padding:1rem;
         background-color: #eee;
       }
@@ -89,7 +89,7 @@
         transition: .2s;
         font-size: 14px;
         line-height: 1;
-        width: 400px;
+        width:28%;
       }
       .tab-btn.active {
         background: #dcdcdc;
