@@ -17,7 +17,7 @@
     AREA_ID: 'portal-notifications-area',
     // ポータルが複数ある場合、特定のポータルにのみ表示するためのハッシュ (例: '#/portal/4')
     // 空文字 '' にすると、どのポータルでも表示しようとします。
-    TARGET_PORTAL_HASH_PART: '/portal/4',
+    TARGET_PORTAL_HASH_PART: '/portal/5',
 
     // --- 表示フィールド ---
     FIELD_TITLE: 'title', // タイトル

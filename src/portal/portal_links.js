@@ -224,7 +224,7 @@
       lastHash = location.hash;
 
       const area = document.getElementById(LINKS_AREA_ID);
-      if (lastHash.includes("/portal/5")) {
+      if (lastHash.includes("/portal/4")) {
         onPortal4Loaded();
       } else if (area) {
         area.remove();
