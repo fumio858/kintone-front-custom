@@ -8,19 +8,22 @@
     // お知らせを掲載するアプリのID
     APP_ID: 61, // ※※※ お知らせアプリのIDに変更してください ※※※
 
-    // 表示を切り替えるフィールド（"公開する" のような値を持つドロップダウンやチェックボックスを想定）
-    SHOW_FLAG_FIELD: 'is_show',
-    SHOW_FLAG_VALUE: '公開する', // 公開するための値
-    // 公開する際のソート順
-    QUERY_ORDER: 'order by $id desc',
+    // --- 絞り込み条件 ---
+    // 「非公開」を設定するフィールド（チェックボックスなどを想定）
+    HIDE_FLAG_FIELD: 'is_hidden',
+    // 「非公開」にするための値
+    HIDE_FLAG_VALUE: '非公開にする',
 
-    // お知らせを公開するポータルのスペースID
+    // --- 並び順 ---
+    // posting_dateフィールドで降順（新しいものが上）
+    QUERY_ORDER: 'order by posting_date desc',
+
+    // --- 表示場所 ---
     AREA_ID: 'portal-notifications-area',
-    // ポータルが複数ある場合、特定のポータルにのみ公開するためのハッシュ (例: '#/portal/4')
-    // 空文字 '' にすると、どのポータルでも表示しようとします。
     TARGET_PORTAL_HASH_PART: '/portal/5',
 
     // --- 表示フィールド ---
+    FIELD_CATEGORY: 'category', // カテゴリ
     FIELD_TITLE: 'title', // タイトル
     FIELD_CONTENT: 'content', // リッチエディターフィールド
     FIELD_POSTING_DATE: 'posting_date', // 日時フィールド
@@ -58,13 +61,13 @@
     const css = `
       #${CONFIG.AREA_ID} { margin-bottom: 40px; }
       .${CONFIG.AREA_ID}-container { padding: 10px; }
-      .${CONFIG.AREA_ID}-title-header {
+      .${CONFIG.AREA_ID}-category-title {
         font-size: 18px;
         font-weight: 600;
         padding: 1rem;
         color: #686868;
         border-bottom: 2px solid #ff9800;
-        margin: 0 1rem 1rem 1rem;
+        margin: 1rem 1rem 1rem 1rem;
       }
       .${CONFIG.AREA_ID}-wrap {
         display: flex;
@@ -136,7 +139,7 @@
     try {
       resp = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
         app: CONFIG.APP_ID,
-        query: `${CONFIG.SHOW_FLAG_FIELD} in ("${CONFIG.SHOW_FLAG_VALUE}") ${CONFIG.QUERY_ORDER}`,
+        query: `${CONFIG.HIDE_FLAG_FIELD} not in ("${CONFIG.HIDE_FLAG_VALUE}") ${CONFIG.QUERY_ORDER}`,
       });
     } catch (e) {
       console.error(e);
@@ -144,22 +147,49 @@
       return;
     }
 
-    area.innerHTML = '';
-    const container = document.createElement('div');
+    const records = resp.records;
+    const groups = {};
+    records.forEach(r => {
+      const category = r[CONFIG.FIELD_CATEGORY].value || 'その他'; // カテゴリが空の場合は「その他」に
+      if (!groups[category]) groups[category] = [];
+      groups[category].push(r);
+    });
+
+    area.innerHTML = "";
+    const container = document.createElement("div");
     container.className = `${CONFIG.AREA_ID}-container`;
 
-    const title = document.createElement('div');
-    title.className = `${CONFIG.AREA_ID}-title-header`;
-    title.textContent = 'お知らせ';
-    container.appendChild(title);
+    // カテゴリの表示順を投稿日時の新しい順に動的に決定
+    const categoryOrder = Object.keys(groups).sort((a, b) => {
+      const latestA = new Date(groups[a][0][CONFIG.FIELD_POSTING_DATE].value).getTime();
+      const latestB = new Date(groups[b][0][CONFIG.FIELD_POSTING_DATE].value).getTime();
+      return latestB - latestA;
+    });
 
-    const wrap = document.createElement('div');
+    categoryOrder.forEach(catName => {
+      if (groups[catName]) {
+        container.appendChild(createCategory(catName, groups[catName]));
+      }
+    });
+
+    area.appendChild(container);
+  }
+
+  function createCategory(name, items) {
+    const box = document.createElement("div");
+
+    const title = document.createElement("div");
+    title.className = `${CONFIG.AREA_ID}-category-title`;
+    title.textContent = name;
+    box.appendChild(title);
+
+    const wrap = document.createElement("div");
     wrap.className = `${CONFIG.AREA_ID}-wrap`;
 
-    resp.records.forEach(r => wrap.appendChild(createNotificationItem(r)));
-    
-    container.appendChild(wrap);
-    area.appendChild(container);
+    items.forEach(r => wrap.appendChild(createNotificationItem(r)));
+
+    box.appendChild(wrap);
+    return box;
   }
 
   function createNotificationItem(rec) {
