@@ -52,20 +52,20 @@
 
     const css = `
       #${CONFIG.AREA_ID} {
-        padding: 10px 20px;
         box-sizing: border-box;
       }
 
       /* 2カラムレイアウト */
       .portal-layout {
         display: flex;
-        gap: 20px;
       }
       .portal-left {
-        width: 38%;
+        width: 25%;
+        padding:1rem;
+        background-color: #eee;
       }
       .portal-right {
-        width: 62%;
+        width: 75%;
         background: #fff;
         border-radius: 12px;
         padding: 20px;
@@ -84,7 +84,7 @@
         padding: 8px 16px;
         background: transparent;
         border-radius: 50px;
-        border: 1px solid #aaa;
+        border: none;
         cursor: pointer;
         color: #555;
         font-weight: 600;
@@ -122,8 +122,8 @@
       .notice-excerpt {
         font-size: 13px;
         color: #555;
+        line-height: 1.45;
       }
-
       /* 詳細側 */
       .detail-title {
         font-size: 24px;
