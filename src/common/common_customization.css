@@ -64,3 +64,8 @@ td.recordlist-cell-gaia{
   position: relative;
   z-index: 2;
 } */
+
+
+#notification-iframe-gaia{
+  max-height: 80vh;
+}

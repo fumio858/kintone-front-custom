@@ -224,10 +224,6 @@ span.custom-notes-text {
   border-radius: 4px; */
 }
 
-#notification-iframe-gaia{
-  max-height: 80vh;
-}
-
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
 /* 刑事事件 */
 /* .field-5118284,.field-13312476{
