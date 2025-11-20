@@ -105,7 +105,7 @@
       .${CONFIG.AREA_ID}-wrap {
         display: flex;
         flex-wrap: wrap;
-        gap: 1%;
+        gap: 1rem;
         padding: 0 1rem;
         margin-bottom: 1rem;
       }
