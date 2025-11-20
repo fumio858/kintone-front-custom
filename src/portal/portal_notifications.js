@@ -21,11 +21,12 @@
 
     // --- 表示フィールド ---
     FIELD_TITLE: 'title', // タイトル
-    FIELD_ICON: 'icon',   // Material Icon の名前が入るフィールド
+    FIELD_CONTENT: 'content', // リッチエディターフィールド
+    FIELD_POSTING_DATE: 'posting_date', // 日時フィールド
     
     // --- デザイン ---
-    DEFAULT_ICON: 'campaign', // アイコンフィールドが空の場合のデフォルトアイコン
-    ICON_COLOR: '#ff9800',
+    // アイコンは使用しないため削除
+    // ICON_COLOR: '#ff9800', // アイコンを使用しないため削除
   };
   // ==================================
   // --- 設定ここまで ---
@@ -60,12 +61,12 @@
     const css = `
       #${CONFIG.AREA_ID} { margin-bottom: 40px; }
       .${CONFIG.AREA_ID}-container { padding: 10px; }
-      .${CONFIG.AREA_ID}-title {
+      .${CONFIG.AREA_ID}-title-header { /* Renamed from -title */
         font-size: 18px;
         font-weight: 600;
         padding: 1rem;
         color: #686868;
-        border-bottom: 2px solid ${CONFIG.ICON_COLOR};
+        border-bottom: 2px solid #ff9800; /* Hardcode color as ICON_COLOR is removed */
         margin: 0 1rem 1rem 1rem;
       }
       .${CONFIG.AREA_ID}-wrap {
@@ -76,52 +77,50 @@
         margin-bottom: 1rem;
       }
       .${CONFIG.AREA_ID}-item-wrapper {
-        width: 180px;
+        width: 100%; /* Make it full width for better notification display */
+        max-width: 400px; /* Optional: limit width for readability */
         text-decoration: none;
       }
       .${CONFIG.AREA_ID}-card {
         width: 100%;
-        height: 140px;
-        border-radius: 22px;
+        min-height: 100px; /* Add min-height */
+        border-radius: 8px; /* Smaller border-radius for a more standard notification look */
         background: #fff;
         border: 1px solid rgba(0,0,0,0.08);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Softer shadow */
         display: flex;
         flex-direction: column;
-        justify-content: space-evenly;
-        align-items: center;
+        justify-content: flex-start; /* Align content to top */
+        align-items: flex-start; /* Align content to left */
         padding: 1rem;
         transition: all 0.2s ease-in-out;
         box-sizing: border-box;
+        gap: 5px; /* Add gap between elements */
       }
       .${CONFIG.AREA_ID}-item-wrapper:hover .${CONFIG.AREA_ID}-card {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        transform: translateY(-2px); /* Softer hover effect */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
-      .${CONFIG.AREA_ID}-icon {
-        font-size: 42px!important;
-        margin-bottom: 8px;
-        color: ${CONFIG.ICON_COLOR};
+      /* Icon styles removed */
+      .${CONFIG.AREA_ID}-posting-date {
+        font-size: 11px;
+        color: #777;
+        margin-bottom: 5px;
       }
-      .${CONFIG.AREA_ID}-text {
-        height: calc(13px * 1.5 * 2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      }
-      .${CONFIG.AREA_ID}-text-inner {
-        font-size: 14.5px;
-        font-weight: 500;
-        color: #444;
-        text-align: center;
+      .${CONFIG.AREA_ID}-title { /* New style for title */
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        text-align: left;
         line-height: 1.4;
+        margin-bottom: 5px;
+      }
+      .${CONFIG.AREA_ID}-content { /* New style for content */
+        font-size: 13px;
+        color: #555;
+        line-height: 1.5;
         overflow-wrap: break-word;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        /* No truncation by default, let it expand */
       }
     `;
     const style = document.createElement('style');
@@ -138,13 +137,14 @@
 
     injectStyles();
 
-    if (!document.getElementById('mat-icon-font')) {
-      const link = document.createElement('link');
-      link.id = 'mat-icon-font';
-      link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined';
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-    }
+    // Material Iconsはアイコンを使用しないため不要
+    // if (!document.getElementById('mat-icon-font')) {
+    //   const link = document.createElement('link');
+    //   link.id = 'mat-icon-font';
+    //   link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined';
+    //   link.rel = 'stylesheet';
+    //   document.head.appendChild(link);
+    // }
 
     let resp;
     try {
@@ -163,7 +163,7 @@
     container.className = `${CONFIG.AREA_ID}-container`;
 
     const title = document.createElement('div');
-    title.className = `${CONFIG.AREA_ID}-title`;
+    title.className = `${CONFIG.AREA_ID}-title-header`; // Changed class name
     title.textContent = 'お知らせ';
     container.appendChild(title);
 
@@ -185,18 +185,27 @@
     const card = document.createElement('div');
     card.className = `${CONFIG.AREA_ID}-card`;
 
-    const icon = document.createElement('span');
-    icon.className = `material-symbols-outlined ${CONFIG.AREA_ID}-icon`;
-    icon.textContent = (rec[CONFIG.FIELD_ICON] && rec[CONFIG.FIELD_ICON].value) || CONFIG.DEFAULT_ICON;
+    // 投稿日時
+    const postingDateDiv = document.createElement('div');
+    postingDateDiv.className = `${CONFIG.AREA_ID}-posting-date`;
+    if (rec[CONFIG.FIELD_POSTING_DATE] && rec[CONFIG.FIELD_POSTING_DATE].value) {
+      const date = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
+      postingDateDiv.textContent = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+    }
 
-    const text = document.createElement('div');
-    text.className = `${CONFIG.AREA_ID}-text`;
-    const textInner = document.createElement('span');
-    textInner.className = `${CONFIG.AREA_ID}-text-inner`;
-    textInner.textContent = rec[CONFIG.FIELD_TITLE].value;
-    text.appendChild(textInner);
+    // タイトル
+    const titleDiv = document.createElement('div');
+    titleDiv.className = `${CONFIG.AREA_ID}-title`;
+    titleDiv.textContent = rec[CONFIG.FIELD_TITLE].value;
 
-    card.append(icon, text);
+    // コンテンツ (リッチエディター)
+    const contentDiv = document.createElement('div');
+    contentDiv.className = `${CONFIG.AREA_ID}-content`;
+    if (rec[CONFIG.FIELD_CONTENT] && rec[CONFIG.FIELD_CONTENT].value) {
+      contentDiv.innerHTML = rec[CONFIG.FIELD_CONTENT].value;
+    }
+
+    card.append(postingDateDiv, titleDiv, contentDiv);
     wrapper.append(card);
 
     return wrapper;
