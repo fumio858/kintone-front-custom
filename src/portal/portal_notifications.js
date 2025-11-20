@@ -54,10 +54,10 @@
       #${CONFIG.AREA_ID} {
         box-sizing: border-box;
       }
-
       /* 2カラムレイアウト */
       .portal-layout {
         display: flex;
+        background-color: #eee;
       }
       .portal-left {
         width: 400px;
@@ -70,6 +70,8 @@
         padding: 3rem;
         min-height: 500px;
         flex: 1;
+        margin: 1rem;
+        border-radius: 22px;
       }
 
       /* Tabs */
