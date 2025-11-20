@@ -67,9 +67,7 @@
       .portal-right {
         width: 75%;
         background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        padding: 3rem;
         min-height: 500px;
       }
 
