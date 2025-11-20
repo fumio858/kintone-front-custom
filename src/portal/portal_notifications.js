@@ -66,7 +66,7 @@
         font-weight: 600;
         padding: 1rem;
         color: #686868;
-        margin: 1rem 1rem 1rem 1rem;
+        margin: 1rem 1rem 0 1rem;
       }
       .${CONFIG.AREA_ID}-wrap {
         display: flex;
@@ -97,7 +97,6 @@
         gap: 5px;
       }
       .${CONFIG.AREA_ID}-item-wrapper:hover .${CONFIG.AREA_ID}-card {
-        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
       .${CONFIG.AREA_ID}-posting-date {
