@@ -150,7 +150,7 @@
     try {
       resp = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
         app: CONFIG.APP_ID,
-        query: `${CONFIG.SHOW_FLAG_FIELD} = "表示する" ${CONFIG.QUERY_ORDER}`,
+        query: `${CONFIG.SHOW_FLAG_FIELD} = "公開する" ${CONFIG.QUERY_ORDER}`,
       });
     } catch (e) {
       console.error(e);
