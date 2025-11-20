@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const APP_ID = 59;
+  const APP_ID = 61;
   const LINKS_AREA_ID = "portal-links-area";
   const STYLE_ID = "portal-links-custom-styles";
 
@@ -206,7 +206,7 @@
     text.className = "pl-text";
     const textInner = document.createElement("span");
     textInner.className = "pl-text-inner";
-    textInner.textContent = rec.title.value;
+    textInner.innerHTML = rec.title.value.replace(/\n/g, "<br>");
     text.appendChild(textInner);
 
     card.append(icon, text);
@@ -224,7 +224,7 @@
       lastHash = location.hash;
 
       const area = document.getElementById(LINKS_AREA_ID);
-      if (lastHash.includes("/portal/4")) {
+      if (lastHash.includes("/portal/5")) {
         onPortal4Loaded();
       } else if (area) {
         area.remove();
