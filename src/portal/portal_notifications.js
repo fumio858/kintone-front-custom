@@ -89,8 +89,7 @@
         transition: .2s;
         font-size: 14px;
         line-height: 1;
-        width:28%;
-        min-width: 400px;
+        width: 400px;
       }
       .tab-btn.active {
         background: #dcdcdc;
