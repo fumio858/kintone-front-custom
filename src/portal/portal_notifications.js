@@ -77,21 +77,19 @@
       .${CONFIG.AREA_ID}-tab-button {
         padding: 8px 16px; /* Adjust padding for button look */
         cursor: pointer;
-        border: 1px solid #ccc; /* Add border */
-        border-radius: 5px; /* Add border-radius */
+        border: none; /* Add border */
+        border-radius: 50px; /* Add border-radius */
         background-color: #f0f0f0; /* Default background */
-        font-size: 15px;
-        font-weight: 500;
+        font-size: 18px;
+        font-weight: 700;
         color: #777;
         transition: all 0.2s ease;
-        min-width: 100px; /* Ensure minimum width for buttons */
+        min-width: 140px; /* Ensure minimum width for buttons */
         text-align: center;
       }
       .${CONFIG.AREA_ID}-tab-button.active {
-        color: #fff; /* White text for active button */
-        font-weight: 600;
-        background-color: #3498db; /* Active background color */
-        border-color: #3498db; /* Active border color */
+        font-weight: 700;
+        background-color: #bdbdbd; /* Active background color */
       }
 
       /* Tab Content */
