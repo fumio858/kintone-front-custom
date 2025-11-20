@@ -64,6 +64,7 @@
     if (document.getElementById(STYLE_ID)) return;
 
     const css = `
+      .portal-notifications-area-container { background-color: #eee;}
       #${CONFIG.AREA_ID} { margin-bottom: 40px; }
       .${CONFIG.AREA_ID}-container { padding: 10px; }
       
@@ -89,7 +90,8 @@
       }
       .${CONFIG.AREA_ID}-tab-button.active {
         font-weight: 700;
-        background-color: #f0f0f0; /* Active background color */
+        background-color: #4b4b4b;
+        color: #FFF;
       }
 
       /* Tab Content */
