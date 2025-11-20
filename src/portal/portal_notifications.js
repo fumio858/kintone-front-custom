@@ -69,6 +69,7 @@
         background: #fff;
         padding: 3rem;
         min-height: 500px;
+        flex: 1;
       }
 
       /* Tabs */
