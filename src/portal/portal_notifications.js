@@ -100,10 +100,9 @@
       /* 一覧カード */
       .notice-item {
         background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(0,0,0,0.1);
-        padding: 14px;
-        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding: .5rem;
+        margin-bottom:.5rem;
         cursor: pointer;
         transition: .15s;
       }
@@ -121,10 +120,9 @@
         margin: 6px 0;
       }
       .notice-excerpt {
-        font-size: 13px;
+        font-size: 11px;
         color: #555;
         line-height: 1.45;
-        display: none;
       }
       /* 詳細側 */
       .detail-title {
