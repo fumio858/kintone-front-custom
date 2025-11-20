@@ -79,7 +79,7 @@
         margin-bottom: 20px;
       }
       .tab-btn {
-        padding: 4px 16px;
+        padding: 8px 16px;
         background: transparent;
         border-radius: 50px;
         border: none;
@@ -87,12 +87,13 @@
         color: #555;
         font-weight: 500;
         transition: .2s;
-        font-size: 15px;
-        width: 31%;
+        font-size: 14px;
+        line-height: 1;
+        width:28%;
+        min-width: 400px;
       }
       .tab-btn.active {
-        background: #4b4b4b;
-        color: #fff;
+        background: #dcdcdc;
         border-color: #4b4b4b;
       }
 
@@ -268,7 +269,7 @@
 
     const contentHTML = rec[CONFIG.FIELD_CONTENT].value || "";
     const text = contentHTML.replace(/<[^>]+>/g, "");
-    const excerpt = text.length > 60 ? text.slice(0, 60) + "…" : text;
+    const excerpt = text.length > 70 ? text.slice(0, 70) + "…" : text;
 
     div.innerHTML = `
       <div class="notice-date">${dateStr}</div>
