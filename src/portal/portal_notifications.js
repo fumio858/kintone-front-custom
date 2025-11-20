@@ -105,13 +105,13 @@
       .${CONFIG.AREA_ID}-wrap {
         display: flex;
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 1%;
         padding: 0 1rem;
         margin-bottom: 1rem;
       }
       .${CONFIG.AREA_ID}-item-wrapper {
         width: 100%;
-        max-width: 500px;
+        max-width: 33%;
         text-decoration: none;
       }
       .${CONFIG.AREA_ID}-card {
@@ -120,7 +120,6 @@
         border-radius: 16px;
         background: #fff;
         border: 1px solid rgba(0,0,0,0.08);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -139,7 +138,7 @@
         margin-bottom: 5px;
       }
       .${CONFIG.AREA_ID}-title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: bold;
         color: #333;
         text-align: left;
@@ -147,7 +146,7 @@
         margin-bottom: 5px;
       }
       .${CONFIG.AREA_ID}-content {
-        font-size: 13px;
+        font-size: 13.5px;
         color: #555;
         line-height: 1.5;
         overflow-wrap: break-word;
