@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const APP_ID = 61;
+  const APP_ID = 59;
   const LINKS_AREA_ID = "portal-links-area";
   const STYLE_ID = "portal-links-custom-styles";
 
