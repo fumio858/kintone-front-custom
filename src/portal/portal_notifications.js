@@ -79,7 +79,7 @@
         cursor: pointer;
         border: none; /* Add border */
         border-radius: 50px; /* Add border-radius */
-        background-color: #f0f0f0; /* Default background */
+        background-color: transparent;
         font-size: 18px;
         font-weight: 700;
         color: #777;
@@ -89,7 +89,7 @@
       }
       .${CONFIG.AREA_ID}-tab-button.active {
         font-weight: 700;
-        background-color: #bdbdbd; /* Active background color */
+        background-color: #f0f0f0; /* Active background color */
       }
 
       /* Tab Content */
