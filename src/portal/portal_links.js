@@ -1,64 +1,88 @@
-(() => {
-  "use strict";
+(function () {
+  'use strict';
 
-  const APP_ID = 59;
-  const LINKS_AREA_ID = "portal-links-area";
-  const STYLE_ID = "portal-links-custom-styles";
+  // ==================================
+  // ★★★ 設定 ★★★
+  // ==================================
+  const CONFIG = {
+    // リンクを掲載するアプリのID
+    APP_ID: 59, // ※必要に応じてリンク集アプリのIDに変更してください
 
-  const CATEGORY_COLOR = {
-    "マニュアル": { icon: "#4c7eff" },
-    "業務関連シート": { icon: "#3db652" },
-    "便利ツール": { icon: "#e8b65d" },
-    "その他": { icon: "#777" }
+    // リンク一覧を表示するポータルのスペースID
+    AREA_ID: 'portal-links-area',
+    // ポータルが複数ある場合、特定のポータルにのみ表示するためのハッシュ (例: '#/portal/4')
+    // 空文字 '' にすると、どのポータルでも表示しようとします。
+    TARGET_PORTAL_HASH_PART: '/portal/4',
+
+    // --- 表示フィールド ---
+    FIELD_CATEGORY: 'category',
+    FIELD_URL: 'url',
+    FIELD_ICON: 'icon',
+    FIELD_TITLE: 'title',
+    FIELD_SORT_ORDER: 'sort_order',
+
+    // --- デザイン ---
+    CATEGORY_ORDER: ['マニュアル', '業務関連シート', '便利ツール', 'その他'],
+    CATEGORY_COLOR: {
+      "マニュアル": { icon: "#4c7eff" },
+      "業務関連シート": { icon: "#3db652" },
+      "便利ツール": { icon: "#e8b65d" },
+      "その他": { icon: "#777" }
+    },
+    DEFAULT_ICON: 'description',
   };
+  // ==================================
+  // --- 設定ここまで ---
+  // ==================================
 
-  function onPortal4Loaded() {
-    const root = document.getElementById("cns-root");
-    if (!root) return setTimeout(onPortal4Loaded, 300);
+  const STYLE_ID = `${CONFIG.AREA_ID}-styles`;
 
-    let linksArea = document.getElementById(LINKS_AREA_ID);
-    if (!linksArea) {
-      linksArea = document.createElement("div");
-      linksArea.id = LINKS_AREA_ID;
-      root.prepend(linksArea);
+  function onPortalLoaded() {
+    // 指定のポータル以外では表示しない
+    if (CONFIG.TARGET_PORTAL_HASH_PART && !location.hash.includes(CONFIG.TARGET_PORTAL_HASH_PART)) {
+      const oldArea = document.getElementById(CONFIG.AREA_ID);
+      if (oldArea) oldArea.remove();
+      return;
+    }
+    
+    const root = document.getElementById('cns-root');
+    if (!root) return setTimeout(onPortalLoaded, 300);
+
+    let area = document.getElementById(CONFIG.AREA_ID);
+    if (!area) {
+      area = document.createElement('div');
+      area.id = CONFIG.AREA_ID;
+      root.prepend(area);
     }
 
-    loadLinks(linksArea);
+    loadLinks(area);
   }
 
-  // ======================
-  // 🎨 CSS
-  // ======================
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
 
     const css = `
-      #${LINKS_AREA_ID} { margin-bottom: 40px; }
-
-      .pl-container { padding: 10px; }
-
-      .pl-category-title {
+      #${CONFIG.AREA_ID} { margin-bottom: 40px; }
+      .${CONFIG.AREA_ID}-container { padding: 10px; }
+      .${CONFIG.AREA_ID}-category-title {
         font-size: 16px;
         font-weight: 600;
         padding: 1rem;
         margin-top: 1rem;
         color: #686868;
       }
-
-      .pl-category-wrap {
+      .${CONFIG.AREA_ID}-category-wrap {
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
         padding: 0 1rem;
         margin-bottom: 1rem;
       }
-
-      .pl-item-wrapper {
+      .${CONFIG.AREA_ID}-item-wrapper {
         width: 180px;
         text-decoration: none;
       }
-
-      .pl-card {
+      .${CONFIG.AREA_ID}-card {
         width: 100%;
         height: 140px;
         border-radius: 22px;
@@ -73,25 +97,22 @@
         transition: all 0.2s ease-in-out;
         box-sizing: border-box;
       }
-
-      .pl-item-wrapper:hover .pl-card {
+      .${CONFIG.AREA_ID}-item-wrapper:hover .${CONFIG.AREA_ID}-card {
         transform: translateY(-4px);
         box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       }
-
-      .pl-icon {
+      .${CONFIG.AREA_ID}-icon {
         font-size: 42px!important;
         margin-bottom: 8px;
       }
-
-      .pl-text {
-        height: calc(13px * 1.5 * 2); /* 2行分の高さを計算して固定 */
+      .${CONFIG.AREA_ID}-text {
+        height: calc(13px * 1.5 * 2);
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden; /* はみ出し防止 */
+        overflow: hidden;
       }
-      .pl-text-inner {
+      .${CONFIG.AREA_ID}-text-inner {
         font-size: 14.5px;
         font-weight: 500;
         color: #444;
@@ -105,77 +126,79 @@
         text-overflow: ellipsis;
       }
     `;
-
-    const style = document.createElement("style");
+    const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = css;
     document.head.appendChild(style);
   }
 
-  // ======================
-  // 📡 Load Records
-  // ======================
-  async function loadLinks(linksArea) {
+  async function loadLinks(area) {
+    if (CONFIG.APP_ID === 0 || !CONFIG.APP_ID) {
+      area.innerHTML = `<div style="color: red; font-weight: bold; padding: 1rem;">【設定エラー】リンク集アプリのIDが設定されていません。</div>`;
+      return;
+    }
+
     injectStyles();
 
-    if (!document.getElementById("mat-icon-font")) {
-      const link = document.createElement("link");
-      link.id = "mat-icon-font";
-      link.href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined";
-      link.rel = "stylesheet";
+    if (!document.getElementById('mat-icon-font')) {
+      const link = document.createElement('link');
+      link.id = 'mat-icon-font';
+      link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined';
+      link.rel = 'stylesheet';
       document.head.appendChild(link);
     }
 
     let resp;
     try {
-      resp = await kintone.api(kintone.api.url("/k/v1/records", true), "GET", {
-        app: APP_ID,
-        query: "order by sort_order asc",
+      resp = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
+        app: CONFIG.APP_ID,
+        query: `order by ${CONFIG.FIELD_SORT_ORDER} asc`,
       });
     } catch (e) {
       console.error(e);
+      area.innerHTML = `<div style="color: red; padding: 1rem;">リンクの読み込みに失敗しました。</div>`;
       return;
     }
 
     const records = resp.records;
     const groups = {};
     records.forEach(r => {
-      const c = r.category.value;
-      if (!groups[c]) groups[c] = [];
-      groups[c].push(r);
+      const category = r[CONFIG.FIELD_CATEGORY].value;
+      if (!groups[category]) groups[category] = [];
+      groups[category].push(r);
     });
 
-    linksArea.innerHTML = "";
+    area.innerHTML = "";
     const container = document.createElement("div");
-    container.className = "pl-container";
+    container.className = `${CONFIG.AREA_ID}-container`;
 
-    const ORDER = ['マニュアル', '業務関連シート', '便利ツール', 'その他'];
-    const done = new Set();
+    const doneCategories = new Set();
 
-    ORDER.forEach(cat => {
-      if (!groups[cat]) return;
-      container.appendChild(createCategory(cat, groups[cat]));
-      done.add(cat);
+    CONFIG.CATEGORY_ORDER.forEach(catName => {
+      if (groups[catName]) {
+        container.appendChild(createCategory(catName, groups[catName]));
+        doneCategories.add(catName);
+      }
     });
 
     Object.keys(groups)
-      .filter(c => !done.has(c))
+      .filter(c => !doneCategories.has(c))
       .sort()
       .forEach(c => container.appendChild(createCategory(c, groups[c])));
 
-    linksArea.appendChild(container);
+    area.appendChild(container);
   }
 
   function createCategory(name, items) {
     const box = document.createElement("div");
 
     const title = document.createElement("div");
-    title.className = "pl-category-title";
+    title.className = `${CONFIG.AREA_ID}-category-title`;
     title.textContent = name;
     box.appendChild(title);
 
     const wrap = document.createElement("div");
-    wrap.className = "pl-category-wrap";
+    wrap.className = `${CONFIG.AREA_ID}-category-wrap`;
 
     items.forEach(r => wrap.appendChild(createLinkItem(r, name)));
 
@@ -183,30 +206,27 @@
     return box;
   }
 
-  // ======================
-  // 🍎 Item Card
-  // ======================
   function createLinkItem(rec, category) {
-    const color = CATEGORY_COLOR[category] || { icon: "#333" };
+    const color = CONFIG.CATEGORY_COLOR[category] || { icon: "#333" };
 
     const wrapper = document.createElement("a");
-    wrapper.className = "pl-item-wrapper";
-    wrapper.href = rec.url.value;
+    wrapper.className = `${CONFIG.AREA_ID}-item-wrapper`;
+    wrapper.href = rec[CONFIG.FIELD_URL].value;
     wrapper.target = "_blank";
 
     const card = document.createElement("div");
-    card.className = "pl-card";
+    card.className = `${CONFIG.AREA_ID}-card`;
 
     const icon = document.createElement("span");
-    icon.className = "material-symbols-outlined pl-icon";
+    icon.className = `material-symbols-outlined ${CONFIG.AREA_ID}-icon`;
     icon.style.color = color.icon;
-    icon.textContent = rec.icon.value || "description";
+    icon.textContent = (rec[CONFIG.FIELD_ICON] && rec[CONFIG.FIELD_ICON].value) || CONFIG.DEFAULT_ICON;
 
     const text = document.createElement("div");
-    text.className = "pl-text";
+    text.className = `${CONFIG.AREA_ID}-text`;
     const textInner = document.createElement("span");
-    textInner.className = "pl-text-inner";
-    textInner.innerHTML = rec.title.value.replace(/\n/g, "<br>");
+    textInner.className = `${CONFIG.AREA_ID}-text-inner`;
+    textInner.textContent = rec[CONFIG.FIELD_TITLE].value;
     text.appendChild(textInner);
 
     card.append(icon, text);
@@ -215,20 +235,14 @@
     return wrapper;
   }
 
-  // ======================
-  // 🔄 Portal 4 Only
-  // ======================
-  let lastHash = "";
+  let lastHash = '';
   setInterval(() => {
     if (location.hash !== lastHash) {
       lastHash = location.hash;
-
-      const area = document.getElementById(LINKS_AREA_ID);
-      if (lastHash.includes("/portal/4")) {
-        onPortal4Loaded();
-      } else if (area) {
-        area.remove();
-      }
+      onPortalLoaded();
     }
   }, 300);
+
+  // 初期ロード
+  onPortalLoaded();
 })();
