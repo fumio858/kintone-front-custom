@@ -66,7 +66,6 @@
         font-weight: 600;
         padding: 1rem;
         color: #686868;
-        border-bottom: 2px solid #ff9800;
         margin: 1rem 1rem 1rem 1rem;
       }
       .${CONFIG.AREA_ID}-wrap {
@@ -78,13 +77,13 @@
       }
       .${CONFIG.AREA_ID}-item-wrapper {
         width: 100%;
-        max-width: 400px;
+        max-width: 500px;
         text-decoration: none;
       }
       .${CONFIG.AREA_ID}-card {
         width: 100%;
         min-height: 100px;
-        border-radius: 8px;
+        border-radius: 16px;
         background: #fff;
         border: 1px solid rgba(0,0,0,0.08);
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -119,6 +118,7 @@
         color: #555;
         line-height: 1.5;
         overflow-wrap: break-word;
+        width: 100%;
       }
     `;
     const style = document.createElement('style');
@@ -193,10 +193,8 @@
   }
 
   function createNotificationItem(rec) {
-    const wrapper = document.createElement('a');
+    const wrapper = document.createElement('div');
     wrapper.className = `${CONFIG.AREA_ID}-item-wrapper`;
-    wrapper.href = `/k/${CONFIG.APP_ID}/show?record=${rec.$id.value}`;
-    wrapper.target = '_self';
 
     const card = document.createElement('div');
     card.className = `${CONFIG.AREA_ID}-card`;
