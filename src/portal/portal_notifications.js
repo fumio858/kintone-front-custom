@@ -28,6 +28,11 @@
     FIELD_CONTENT: 'content', // リッチエディターフィールド
     FIELD_POSTING_DATE: 'posting_date', // 日時フィールド
     BLANK_CATEGORY_NAME: '未分類', // カテゴリが空のときの表示名
+
+    // --- カテゴリ表示順とフィルタリング ---
+    // 表示したいカテゴリをこの配列で指定します。指定したカテゴリのみが表示され、この配列の順序で並びます。
+    // ここにないカテゴリは表示されません。
+    CATEGORY_ORDER: ['案件', '労務', '未分類'],
   };
   // ==================================
   // --- 設定ここまで ---
@@ -65,25 +70,28 @@
       /* Tab Navigation */
       .${CONFIG.AREA_ID}-tab-nav {
         display: flex;
-        border-bottom: 1px solid #ddd;
         margin: 0 1rem 1rem 1rem;
+        justify-content: center; /* Center the tabs */
+        gap: 10px; /* Add gap between buttons */
       }
       .${CONFIG.AREA_ID}-tab-button {
-        padding: 10px 20px;
+        padding: 8px 16px; /* Adjust padding for button look */
         cursor: pointer;
-        border: none;
-        background-color: transparent;
+        border: 1px solid #ccc; /* Add border */
+        border-radius: 5px; /* Add border-radius */
+        background-color: #f0f0f0; /* Default background */
         font-size: 15px;
         font-weight: 500;
         color: #777;
-        border-bottom: 3px solid transparent;
-        transform: translateY(1px);
         transition: all 0.2s ease;
+        min-width: 100px; /* Ensure minimum width for buttons */
+        text-align: center;
       }
       .${CONFIG.AREA_ID}-tab-button.active {
-        color: #3498db;
+        color: #fff; /* White text for active button */
         font-weight: 600;
-        border-bottom-color: #3498db;
+        background-color: #3498db; /* Active background color */
+        border-color: #3498db; /* Active border color */
       }
 
       /* Tab Content */
@@ -190,35 +198,34 @@
     const tabContent = document.createElement('div');
     tabContent.className = `${CONFIG.AREA_ID}-tab-content`;
 
-    const categoryOrder = Object.keys(groups).sort((a, b) => {
-      const latestA = new Date(groups[a][0][CONFIG.FIELD_POSTING_DATE].value).getTime();
-      const latestB = new Date(groups[b][0][CONFIG.FIELD_POSTING_DATE].value).getTime();
-      return latestB - latestA;
-    });
+    let firstActiveSet = false; // Flag to set the first active tab
 
-    categoryOrder.forEach((catName, index) => {
-      // Create Tab Button
-      const tabButton = document.createElement('button');
-      tabButton.className = `${CONFIG.AREA_ID}-tab-button`;
-      tabButton.textContent = catName;
-      tabButton.dataset.category = catName;
-      tabNav.appendChild(tabButton);
+    CONFIG.CATEGORY_ORDER.forEach(catName => {
+      if (groups[catName]) { // Only create tab if there are notifications for this category
+        // Create Tab Button
+        const tabButton = document.createElement('button');
+        tabButton.className = `${CONFIG.AREA_ID}-tab-button`;
+        tabButton.textContent = catName;
+        tabButton.dataset.category = catName;
+        tabNav.appendChild(tabButton);
 
-      // Create Tab Pane
-      const tabPane = document.createElement('div');
-      tabPane.className = `${CONFIG.AREA_ID}-tab-pane`;
-      tabPane.dataset.category = catName;
-      
-      const wrap = document.createElement("div");
-      wrap.className = `${CONFIG.AREA_ID}-wrap`;
-      groups[catName].forEach(r => wrap.appendChild(createNotificationItem(r)));
-      tabPane.appendChild(wrap);
-      tabContent.appendChild(tabPane);
+        // Create Tab Pane
+        const tabPane = document.createElement('div');
+        tabPane.className = `${CONFIG.AREA_ID}-tab-pane`;
+        tabPane.dataset.category = catName;
+        
+        const wrap = document.createElement("div");
+        wrap.className = `${CONFIG.AREA_ID}-wrap`;
+        groups[catName].forEach(r => wrap.appendChild(createNotificationItem(r)));
+        tabPane.appendChild(wrap);
+        tabContent.appendChild(tabPane);
 
-      // Set first tab as active
-      if (index === 0) {
-        tabButton.classList.add('active');
-        tabPane.classList.add('active');
+        // Set the first valid tab as active
+        if (!firstActiveSet) {
+          tabButton.classList.add('active');
+          tabPane.classList.add('active');
+          firstActiveSet = true;
+        }
       }
     });
 
