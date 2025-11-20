@@ -124,6 +124,7 @@
         font-size: 13px;
         color: #555;
         line-height: 1.45;
+        display: none;
       }
       /* 詳細側 */
       .detail-title {
