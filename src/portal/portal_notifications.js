@@ -111,7 +111,7 @@
       }
       .${CONFIG.AREA_ID}-item-wrapper {
         width: 100%;
-        max-width: 33%;
+        max-width: 32.5%;
         text-decoration: none;
       }
       .${CONFIG.AREA_ID}-card {
@@ -138,7 +138,7 @@
         margin-bottom: 5px;
       }
       .${CONFIG.AREA_ID}-title {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: bold;
         color: #333;
         text-align: left;
@@ -146,7 +146,7 @@
         margin-bottom: 5px;
       }
       .${CONFIG.AREA_ID}-content {
-        font-size: 13.5px;
+        font-size: 14px;
         color: #555;
         line-height: 1.5;
         overflow-wrap: break-word;
