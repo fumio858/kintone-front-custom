@@ -27,6 +27,7 @@
     FIELD_TITLE: 'title', // タイトル
     FIELD_CONTENT: 'content', // リッチエディターフィールド
     FIELD_POSTING_DATE: 'posting_date', // 日時フィールド
+    BLANK_CATEGORY_NAME: '未分類', // カテゴリが空のときの表示名
   };
   // ==================================
   // --- 設定ここまで ---
@@ -35,7 +36,6 @@
   const STYLE_ID = `${CONFIG.AREA_ID}-styles`;
 
   function onPortalLoaded() {
-    // 指定のポータル以外では表示しない
     if (CONFIG.TARGET_PORTAL_HASH_PART && !location.hash.includes(CONFIG.TARGET_PORTAL_HASH_PART)) {
       const oldArea = document.getElementById(CONFIG.AREA_ID);
       if (oldArea) oldArea.remove();
@@ -61,13 +61,39 @@
     const css = `
       #${CONFIG.AREA_ID} { margin-bottom: 40px; }
       .${CONFIG.AREA_ID}-container { padding: 10px; }
-      .${CONFIG.AREA_ID}-category-title {
-        font-size: 18px;
-        font-weight: 600;
-        padding: 1rem;
-        color: #686868;
-        margin: 1rem 1rem 0 1rem;
+      
+      /* Tab Navigation */
+      .${CONFIG.AREA_ID}-tab-nav {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin: 0 1rem 1rem 1rem;
       }
+      .${CONFIG.AREA_ID}-tab-button {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        font-size: 15px;
+        font-weight: 500;
+        color: #777;
+        border-bottom: 3px solid transparent;
+        transform: translateY(1px);
+        transition: all 0.2s ease;
+      }
+      .${CONFIG.AREA_ID}-tab-button.active {
+        color: #3498db;
+        font-weight: 600;
+        border-bottom-color: #3498db;
+      }
+
+      /* Tab Content */
+      .${CONFIG.AREA_ID}-tab-pane {
+        display: none;
+      }
+      .${CONFIG.AREA_ID}-tab-pane.active {
+        display: block;
+      }
+
       .${CONFIG.AREA_ID}-wrap {
         display: flex;
         flex-wrap: wrap;
@@ -91,7 +117,7 @@
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
-        padding: 1rem;
+        padding: 1.5rem;
         transition: all 0.2s ease-in-out;
         box-sizing: border-box;
         gap: 5px;
@@ -128,7 +154,7 @@
 
   async function loadNotifications(area) {
     if (CONFIG.APP_ID === 0) {
-      area.innerHTML = `<div style="color: red; font-weight: bold; padding: 1rem;">【設定エラー】お知らせアプリのIDが設定されていません。</div>`;
+      area.innerHTML = '<div style="color: red; font-weight: bold; padding: 1rem;">【設定エラー】お知らせアプリのIDが設定されていません。</div>';
       return;
     }
 
@@ -142,14 +168,14 @@
       });
     } catch (e) {
       console.error(e);
-      area.innerHTML = `<div style="color: red; padding: 1rem;">お知らせの読み込みに失敗しました。</div>`;
+      area.innerHTML = '<div style="color: red; padding: 1rem;">お知らせの読み込みに失敗しました。</div>';
       return;
     }
 
     const records = resp.records;
     const groups = {};
     records.forEach(r => {
-      const category = r[CONFIG.FIELD_CATEGORY].value || 'その他'; // カテゴリが空の場合は「その他」に
+      const category = (r[CONFIG.FIELD_CATEGORY] && r[CONFIG.FIELD_CATEGORY].value) || CONFIG.BLANK_CATEGORY_NAME;
       if (!groups[category]) groups[category] = [];
       groups[category].push(r);
     });
@@ -158,37 +184,64 @@
     const container = document.createElement("div");
     container.className = `${CONFIG.AREA_ID}-container`;
 
-    // カテゴリの表示順を投稿日時の新しい順に動的に決定
+    const tabNav = document.createElement('div');
+    tabNav.className = `${CONFIG.AREA_ID}-tab-nav`;
+
+    const tabContent = document.createElement('div');
+    tabContent.className = `${CONFIG.AREA_ID}-tab-content`;
+
     const categoryOrder = Object.keys(groups).sort((a, b) => {
       const latestA = new Date(groups[a][0][CONFIG.FIELD_POSTING_DATE].value).getTime();
       const latestB = new Date(groups[b][0][CONFIG.FIELD_POSTING_DATE].value).getTime();
       return latestB - latestA;
     });
 
-    categoryOrder.forEach(catName => {
-      if (groups[catName]) {
-        container.appendChild(createCategory(catName, groups[catName]));
+    categoryOrder.forEach((catName, index) => {
+      // Create Tab Button
+      const tabButton = document.createElement('button');
+      tabButton.className = `${CONFIG.AREA_ID}-tab-button`;
+      tabButton.textContent = catName;
+      tabButton.dataset.category = catName;
+      tabNav.appendChild(tabButton);
+
+      // Create Tab Pane
+      const tabPane = document.createElement('div');
+      tabPane.className = `${CONFIG.AREA_ID}-tab-pane`;
+      tabPane.dataset.category = catName;
+      
+      const wrap = document.createElement("div");
+      wrap.className = `${CONFIG.AREA_ID}-wrap`;
+      groups[catName].forEach(r => wrap.appendChild(createNotificationItem(r)));
+      tabPane.appendChild(wrap);
+      tabContent.appendChild(tabPane);
+
+      // Set first tab as active
+      if (index === 0) {
+        tabButton.classList.add('active');
+        tabPane.classList.add('active');
       }
     });
 
+    container.append(tabNav, tabContent);
     area.appendChild(container);
-  }
 
-  function createCategory(name, items) {
-    const box = document.createElement("div");
+    // Add Tab Click Logic
+    tabNav.addEventListener('click', (e) => {
+      const targetButton = e.target.closest(`.${CONFIG.AREA_ID}-tab-button`);
+      if (!targetButton) return;
 
-    const title = document.createElement("div");
-    title.className = `${CONFIG.AREA_ID}-category-title`;
-    title.textContent = name;
-    box.appendChild(title);
+      const category = targetButton.dataset.category;
 
-    const wrap = document.createElement("div");
-    wrap.className = `${CONFIG.AREA_ID}-wrap`;
+      // Update buttons
+      tabNav.querySelectorAll(`.${CONFIG.AREA_ID}-tab-button`).forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === category);
+      });
 
-    items.forEach(r => wrap.appendChild(createNotificationItem(r)));
-
-    box.appendChild(wrap);
-    return box;
+      // Update panes
+      tabContent.querySelectorAll(`.${CONFIG.AREA_ID}-tab-pane`).forEach(pane => {
+        pane.classList.toggle('active', pane.dataset.category === category);
+      });
+    });
   }
 
   function createNotificationItem(rec) {
@@ -198,7 +251,6 @@
     const card = document.createElement('div');
     card.className = `${CONFIG.AREA_ID}-card`;
 
-    // 投稿日時
     const postingDateDiv = document.createElement('div');
     postingDateDiv.className = `${CONFIG.AREA_ID}-posting-date`;
     if (rec[CONFIG.FIELD_POSTING_DATE] && rec[CONFIG.FIELD_POSTING_DATE].value) {
@@ -206,12 +258,10 @@
       postingDateDiv.textContent = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
     }
 
-    // タイトル
     const titleDiv = document.createElement('div');
     titleDiv.className = `${CONFIG.AREA_ID}-title`;
     titleDiv.textContent = rec[CONFIG.FIELD_TITLE].value;
 
-    // コンテンツ (リッチエディター)
     const contentDiv = document.createElement('div');
     contentDiv.className = `${CONFIG.AREA_ID}-content`;
     if (rec[CONFIG.FIELD_CONTENT] && rec[CONFIG.FIELD_CONTENT].value) {
@@ -232,6 +282,5 @@
     }
   }, 300);
   
-  // 初期ロード
   onPortalLoaded();
 })();
