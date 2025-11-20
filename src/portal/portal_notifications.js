@@ -80,7 +80,7 @@
         margin-bottom: 20px;
       }
       .tab-btn {
-        padding: 8px 16px;
+        padding: 12px 16px;
         background: transparent;
         border-radius: 50px;
         border: none;
@@ -90,11 +90,11 @@
         transition: .2s;
         font-size: 14px;
         line-height: 1;
-        width:28%;
+        width: 28%;
       }
       .tab-btn.active {
-        background: #dcdcdc;
-        border-color: #4b4b4b;
+        background: #4b4b4b;
+        color: #FFF;
       }
 
       /* 一覧カード */
