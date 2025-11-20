@@ -99,7 +99,6 @@
 
       /* 一覧カード */
       .notice-item {
-        background: #fff;
         border-bottom: 1px solid rgba(0,0,0,0.1);
         padding: .5rem;
         margin-bottom:.5rem;
