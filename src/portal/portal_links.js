@@ -62,7 +62,7 @@
     if (document.getElementById(STYLE_ID)) return;
 
     const css = `
-      #${CONFIG.AREA_ID} { margin-bottom: 40px; }
+      #${CONFIG.AREA_ID} { margin-bottom: 40px; background-color: #e8e8e8;}
       .${CONFIG.AREA_ID}-container { padding: 10px; }
       .${CONFIG.AREA_ID}-category-title {
         font-size: 16px;
