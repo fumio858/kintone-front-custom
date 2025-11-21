@@ -19,20 +19,22 @@
 
   const STYLE_ID = CONFIG.AREA_ID + "-styles";
 
-  //--------------------------------------------------
+  //==================================================
   // CSS 注入
-  //--------------------------------------------------
+  //==================================================
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
 
     const css = `
       #${CONFIG.AREA_ID} { box-sizing: border-box; }
+
       .portal-layout {
         display: flex;
         background-color: #eee;
         height: calc(100vh - 140px);
         overflow: hidden;
       }
+
       .portal-left {
         width: 380px;
         padding: 1rem 0.8rem;
@@ -40,10 +42,12 @@
         overflow-y: auto;
         border-right: 1px solid #ddd;
       }
+
       .search-box {
         width: 100%;
         margin: 8px 0 15px 0;
       }
+
       .search-box input {
         width: 100%;
         padding: 10px 14px;
@@ -52,6 +56,7 @@
         font-size: 14px;
         box-sizing: border-box;
       }
+
       .portal-right {
         flex: 1;
         background: #fff;
@@ -62,6 +67,7 @@
         border-radius: 22px;
         box-shadow: 0 4px 18px rgba(0,0,0,0.06);
       }
+
       .tab-nav {
         display: flex;
         gap: 8px;
@@ -84,6 +90,7 @@
         background: #4b4b4b;
         color: #FFF;
       }
+
       .notice-item {
         padding: .6rem .8rem;
         cursor: pointer;
@@ -97,16 +104,19 @@
       .notice-item.active {
         background: #e0e0e0;
       }
+
       .notice-topline {
         display: flex;
         align-items: center;
         gap: 6px;
         line-height: 1;
       }
+
       .notice-date {
         font-size: 11px;
         color: #777;
       }
+
       .badge-new {
         background: #d9534f;
         color: #fff;
@@ -116,12 +126,14 @@
         font-weight: bold;
         line-height: 1;
       }
+
       .notice-title {
         font-size: 15px;
         font-weight: 600;
         margin: 4px 0 2px;
         line-height: 1.35;
       }
+
       .detail-title {
         font-size: 26px;
         font-weight: 700;
@@ -149,6 +161,8 @@
         max-width: 100%;
         height: auto;
       }
+
+      /* 添付ファイル */
       .detail-attachments {
         margin-top: 2rem;
         padding-top: 1.2rem;
@@ -169,33 +183,38 @@
       }
       .attachments-list a {
         color: #3366cc;
-        text-decoration: underline;
         cursor: pointer;
+        text-decoration: underline;
       }
+
+      /* プレビュー枠 */
       .attachment-preview {
         margin: 10px 0 20px;
       }
+
       .attachment-preview.pdf iframe {
         width: 100%;
         height: 600px;
         border: 1px solid #ddd;
         border-radius: 8px;
       }
+
       .attachment-preview.image img {
         max-width: 100%;
         border: 1px solid #ddd;
         border-radius: 8px;
       }
     `;
+
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = css;
     document.head.appendChild(style);
   }
 
-  //--------------------------------------------------
-  // 初期ロード
-  //--------------------------------------------------
+  //==================================================
+  // Portal 初期ロード
+  //==================================================
   function onPortalLoaded() {
     if (
       CONFIG.TARGET_PORTAL_HASH_PART &&
@@ -219,9 +238,9 @@
     loadNotifications(area);
   }
 
-  //--------------------------------------------------
-  // お知らせ読み込み
-  //--------------------------------------------------
+  //==================================================
+  // 通知読み込み
+  //==================================================
   async function loadNotifications(area) {
     injectStyles();
 
@@ -238,19 +257,22 @@
     }
 
     const records = resp.records;
+
+    // 今日
     const today = new Date();
 
-    // カテゴリ分類
+    // カテゴリ別
     const groups = {};
     records.forEach(r => {
       const category =
         (r[CONFIG.FIELD_CATEGORY] && r[CONFIG.FIELD_CATEGORY].value) ||
         CONFIG.BLANK_CATEGORY_NAME;
+
       if (!groups[category]) groups[category] = [];
       groups[category].push(r);
     });
 
-    // HTML構築
+    // HTML 構築
     area.innerHTML = "";
     const layout = document.createElement("div");
     layout.className = "portal-layout";
@@ -268,6 +290,7 @@
     `;
 
     const tabContent = document.createElement("div");
+
     let firstCategory = null;
 
     CONFIG.CATEGORY_ORDER.forEach(cat => {
@@ -304,58 +327,44 @@
 
     activateTab(firstCategory);
 
-    //
-    // ★ 初期表示：firstCategory 内の最新レコードを詳細表示 ★
-    //
-    const firstPane = document.querySelector(`.tab-pane[data-cat="${firstCategory}"]`);
-    if (firstPane) {
-      const firstItem = firstPane.querySelector(".notice-item");
-      if (firstItem) {
-        firstItem.classList.add("active");
+    if (records[0]) showDetail(records[0]);
 
-        const recId = firstItem.dataset.recordId;
-        const rec = records.find(r => r.$id.value === recId);
-        if (rec) showDetail(rec);
-      }
-    }
-
-    // タブ切替
     tabNav.addEventListener("click", e => {
       const btn = e.target.closest(".tab-btn");
       if (!btn) return;
-
       activateTab(btn.dataset.cat);
-
       document.getElementById("notice-search").value = "";
       applySearchFilter("");
     });
 
-    // 検索
-    document.getElementById("notice-search").addEventListener("input", e => {
+    const searchInput = document.getElementById("notice-search");
+    searchInput.addEventListener("input", e => {
       applySearchFilter(e.target.value.trim().toLowerCase());
     });
   }
 
-  //--------------------------------------------------
-  // 一覧アイテム生成
-  //--------------------------------------------------
+  //==================================================
+  // 一覧アイテム作成
+  //==================================================
   function createNoticeItem(rec, today) {
     const div = document.createElement("div");
     div.className = "notice-item";
-    div.dataset.recordId = rec.$id.value; // ★追加★
 
     const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
-    const diffDays = (today - dateObj) / 86400000;
+    const diffDays = (today - dateObj) / 1000 / 60 / 60 / 24;
     const isNew = diffDays <= 7;
 
     const dateStr =
       `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
-        .toString().padStart(2, "0")}/${dateObj
+        .toString()
+        .padStart(2, "0")}/${dateObj
           .getDate()
-          .toString().padStart(2, "0")}`;
+          .toString()
+          .padStart(2, "0")}`;
 
     const contentHTML = rec[CONFIG.FIELD_CONTENT].value || "";
     const excerpt = contentHTML.replace(/<[^>]+>/g, "").slice(0, 80);
+
     div.dataset.search = `${rec[CONFIG.FIELD_TITLE].value} ${dateStr} ${excerpt}`.toLowerCase();
 
     div.innerHTML = `
@@ -367,9 +376,7 @@
     `;
 
     div.addEventListener("click", () => {
-      document.querySelectorAll(".notice-item").forEach(i =>
-        i.classList.remove("active")
-      );
+      document.querySelectorAll(".notice-item").forEach(i => i.classList.remove("active"));
       div.classList.add("active");
       showDetail(rec);
     });
@@ -377,9 +384,9 @@
     return div;
   }
 
-  //--------------------------------------------------
+  //==================================================
   // 詳細表示
-  //--------------------------------------------------
+  //==================================================
   function showDetail(rec) {
     const el = document.getElementById("notice-detail");
     if (!el) return;
@@ -387,49 +394,54 @@
     const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
     const dateStr =
       `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
-        .toString().padStart(2, "0")}/${dateObj
+        .toString()
+        .padStart(2, "0")}/${dateObj
           .getDate()
-          .toString().padStart(2, "0")}`;
+          .toString()
+          .padStart(2, "0")}`;
 
+    // 添付ファイル HTML
     const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
     let attachmentsHTML = "";
 
     if (files.length > 0) {
       attachmentsHTML = `
-        <div class="detail-attachments">
-          <h3 class="attachments-title">📎 添付ファイル</h3>
-          <ul class="attachments-list">
-            ${files
-              .map(f => {
-                const lower = f.name.toLowerCase();
-                const isPDF = lower.endsWith(".pdf");
-                const isImage =
-                  lower.endsWith(".jpg") ||
-                  lower.endsWith(".jpeg") ||
-                  lower.endsWith(".png") ||
-                  lower.endsWith(".gif");
+      <div class="detail-attachments">
+        <h3 class="attachments-title">📎 添付ファイル</h3>
+        <ul class="attachments-list">
+          ${files
+            .map(f => {
+              const lower = f.name.toLowerCase();
+              const isPDF = lower.endsWith(".pdf");
+              const isImage =
+                lower.endsWith(".jpg") ||
+                lower.endsWith(".jpeg") ||
+                lower.endsWith(".png") ||
+                lower.endsWith(".gif");
 
-                let type = "other";
-                if (isPDF) type = "pdf";
-                else if (isImage) type = "image";
+              let type = "other";
+              if (isPDF) type = "pdf";
+              else if (isImage) type = "image";
 
-                return `
-                  <li>
-                    <a href="#" class="attachment-link"
-                      data-file-key="${f.fileKey}"
-                      data-file-type="${type}">
-                      ${f.name}
-                    </a>
-                    <div class="attachment-preview ${type}"
-                      data-file-key="${f.fileKey}"></div>
-                  </li>`;
-              })
-              .join("")}
-          </ul>
-        </div>
-      `;
+              return `
+                <li>
+                  <a href="#"
+                     class="attachment-link"
+                     data-file-key="${f.fileKey}"
+                     data-file-type="${type}">
+                    ${f.name}
+                  </a>
+                  <div class="attachment-preview ${type}"
+                       data-file-key="${f.fileKey}"></div>
+                </li>`;
+            })
+            .join("")}
+        </ul>
+      </div>
+    `;
     }
 
+    // 詳細描画
     el.innerHTML = `
       <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
       <div class="detail-date">${dateStr}</div>
@@ -437,11 +449,11 @@
       ${attachmentsHTML}
     `;
 
-    // 添付ファイル表示イベント
-    el.querySelectorAll(".attachment-link").forEach(link => {
+    // クリックイベント
+    const links = el.querySelectorAll(".attachment-link");
+    links.forEach(link => {
       link.addEventListener("click", e => {
         e.preventDefault();
-
         const fileKey = link.dataset.fileKey;
         const fileType = link.dataset.fileType;
         const previewEl = el.querySelector(
@@ -452,64 +464,84 @@
     });
   }
 
-  //--------------------------------------------------
-  // 添付ファイル preview
-  //--------------------------------------------------
-  async function previewAttachment(fileKey, fileType, previewEl) {
-    previewEl.innerHTML = "プレビュー読込中…";
+  //==================================================
+  // 添付ファイル プレビュー（fetch + blob URL）
+  //==================================================
+  async function previewAttachment(fileKey, fileType, container) {
+    if (!container) return;
+
+    container.innerHTML = "読み込み中…";
 
     try {
-      const blob = await kintone.api(
-        kintone.api.url("/k/v1/file", true),
-        "GET",
-        { fileKey },
-        { responseType: "blob" }
-      );
+      const url =
+        kintone.api.url("/k/v1/file.json", true) +
+        `?fileKey=${encodeURIComponent(fileKey)}`;
 
-      const url = URL.createObjectURL(blob);
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error("HTTP Error " + res.status);
+      }
+
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
 
       if (fileType === "pdf") {
-        previewEl.innerHTML = `<iframe src="${url}"></iframe>`;
+        container.innerHTML = `
+          <iframe src="${blobUrl}" frameborder="0"></iframe>
+        `;
       } else if (fileType === "image") {
-        previewEl.innerHTML = `<img src="${url}" />`;
+        container.innerHTML = `<img src="${blobUrl}" />`;
       } else {
-        previewEl.innerHTML = `<a href="${url}" download>ファイルを開く</a>`;
+        container.innerHTML = `
+          <a href="${blobUrl}" download>ダウンロード</a>
+        `;
       }
-    } catch (err) {
-      console.error(err);
-      previewEl.innerHTML = "プレビューを読み込めませんでした";
+    } catch (e) {
+      console.error(e);
+      container.innerHTML =
+        '<span style="color:red;">読み込み失敗しました。</span>';
     }
   }
 
-  //--------------------------------------------------
+  //==================================================
   // タブ切替
-  //--------------------------------------------------
+  //==================================================
   function activateTab(cat) {
-    document.querySelectorAll(".tab-btn").forEach(b =>
-      b.classList.toggle("active", b.dataset.cat === cat)
-    );
+    document
+      .querySelectorAll(".tab-btn")
+      .forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
 
-    document.querySelectorAll(".tab-pane").forEach(p => {
-      p.style.display = p.dataset.cat === cat ? "block" : "none";
-    });
+    document
+      .querySelectorAll(".tab-pane")
+      .forEach(p => {
+        p.style.display = p.dataset.cat === cat ? "block" : "none";
+      });
   }
 
-  //--------------------------------------------------
-  // 検索
-  //--------------------------------------------------
+  //==================================================
+  // フィルター
+  //==================================================
   function applySearchFilter(query) {
     const activePane = document.querySelector('.tab-pane[style*="block"]');
     if (!activePane) return;
 
-    activePane.querySelectorAll(".notice-item").forEach(item => {
+    const items = activePane.querySelectorAll(".notice-item");
+
+    items.forEach(item => {
       const text = item.dataset.search || "";
       item.style.display = text.includes(query) ? "block" : "none";
     });
   }
 
-  //--------------------------------------------------
+  //==================================================
   // ハッシュ監視
-  //--------------------------------------------------
+  //==================================================
   let lastHash = "";
   setInterval(() => {
     if (location.hash !== lastHash) {
