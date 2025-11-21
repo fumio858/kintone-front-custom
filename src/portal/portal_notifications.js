@@ -395,26 +395,54 @@
     // 添付ファイル（HTML生成）
     //===========================
 
-    function buildFileUrl(fileKey) {
-      const origin = location.origin; // https://atomfirm.cybozu.com
-      return `${origin}/k/api/blob/${fileKey}`;
-    }
-
-    let attachmentsHTML = "";
     const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
+    let attachmentsHTML = "";
+
     if (files.length > 0) {
       attachmentsHTML = `
-    <div class="detail-attachments">
-      <h3 class="attachments-title">📎 添付ファイル</h3>
-      <ul class="attachments-list">
-        ${files
+        <div class="detail-attachments">
+          <h3 class="attachments-title">📎 添付ファイル</h3>
+          <ul class="attachments-list">
+            ${files
           .map(f => {
-            const url = kintone.file.getFileUrl(f.fileKey);
+            const url = `${location.origin}/k/downloadFile?fileKey=${encodeURIComponent(f.fileKey)}`;
+            const lower = f.name.toLowerCase();
+
+            // プレビュー可能な拡張子か判定
+            const isPDF = lower.endsWith(".pdf");
+            const isImage =
+              lower.endsWith(".jpg") ||
+              lower.endsWith(".jpeg") ||
+              lower.endsWith(".png") ||
+              lower.endsWith(".gif");
+
+            if (isPDF) {
+              return `
+                    <li>
+                      <strong>${f.name}</strong>
+                      <div class="attachment-preview pdf">
+                        <iframe src="${url}" frameborder="0"></iframe>
+                      </div>
+                    </li>`;
+            }
+
+            if (isImage) {
+              return `
+                    <li>
+                      <strong>${f.name}</strong>
+                      <div class="attachment-preview image">
+                        <img src="${url}" />
+                      </div>
+                    </li>`;
+            }
+
+            // PDF/画像以外は通常リンク
             return `<li><a href="${url}" target="_blank">${f.name}</a></li>`;
           })
           .join("")}
-      </ul>
-    </div>`;
+          </ul>
+        </div>
+      `;
     }
 
     el.innerHTML = `
