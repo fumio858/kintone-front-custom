@@ -349,9 +349,9 @@
       `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
         .toString()
         .padStart(2, "0")}/${dateObj
-        .getDate()
-        .toString()
-        .padStart(2, "0")}`;
+          .getDate()
+          .toString()
+          .padStart(2, "0")}`;
 
     const contentHTML = rec[CONFIG.FIELD_CONTENT].value || "";
     const excerpt = contentHTML.replace(/<[^>]+>/g, "").slice(0, 80);
@@ -378,52 +378,52 @@
   //==================================================
   // 詳細表示
   //==================================================
- function showDetail(rec) {
-  const el = document.getElementById("notice-detail");
-  if (!el) return;
+  function showDetail(rec) {
+    const el = document.getElementById("notice-detail");
+    if (!el) return;
 
-  const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
-  const dateStr =
-    `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}/${dateObj
-      .getDate()
-      .toString()
-      .padStart(2, "0")}`;
+    const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
+    const dateStr =
+      `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${dateObj
+          .getDate()
+          .toString()
+          .padStart(2, "0")}`;
 
-  //===========================
-  // 添付ファイル（HTML生成）
-  //===========================
+    //===========================
+    // 添付ファイル（HTML生成）
+    //===========================
 
-  function buildFileUrl(fileKey) {
-    const origin = location.origin; // https://atomfirm.cybozu.com
-    return `${origin}/k/api/blob/${fileKey}`;
-  }
-  
-  let attachmentsHTML = "";
-  const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
-  if (files.length > 0) {
-    attachmentsHTML = `
-      <div class="detail-attachments">
-        <h3 class="attachments-title">📎 添付ファイル</h3>
-        <ul class="attachments-list">
-          ${files
-            .map(f => {
-              const url = buildFileUrl(f.fileKey);
-              return `<li><a href="${url}" target="_blank">${f.name}</a></li>`;
-            })
-            .join("")}
-        </ul>
-      </div>`;
-  }
+    function buildFileUrl(fileKey) {
+      const origin = location.origin; // https://atomfirm.cybozu.com
+      return `${origin}/k/api/blob/${fileKey}`;
+    }
 
-  el.innerHTML = `
+    let attachmentsHTML = "";
+    const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
+    if (files.length > 0) {
+      attachmentsHTML = `
+    <div class="detail-attachments">
+      <h3 class="attachments-title">📎 添付ファイル</h3>
+      <ul class="attachments-list">
+        ${files
+          .map(f => {
+            const url = kintone.file.getFileUrl(f.fileKey);
+            return `<li><a href="${url}" target="_blank">${f.name}</a></li>`;
+          })
+          .join("")}
+      </ul>
+    </div>`;
+    }
+
+    el.innerHTML = `
     <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
     <div class="detail-date">${dateStr}</div>
     <div class="detail-body">${rec[CONFIG.FIELD_CONTENT].value}</div>
     ${attachmentsHTML}
   `;
-}
+  }
 
   //==================================================
   // タブ切替
