@@ -20,7 +20,7 @@
   const STYLE_ID = CONFIG.AREA_ID + "-styles";
 
   //==================================================
-  // CSS 注入（NEW＋検索対応版）
+  // CSS 注入
   //==================================================
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -161,51 +161,49 @@
         max-width: 100%;
         height: auto;
       }
+
+      /* 添付ファイル */
       .detail-attachments {
         margin-top: 2rem;
         padding-top: 1.2rem;
         border-top: 1px solid #ddd;
       }
-      
       .attachments-title {
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 10px;
       }
-      
       .attachments-list {
         list-style: none;
         padding: 0;
         margin: 0;
       }
-      
       .attachments-list li {
         margin: 6px 0;
       }
-      
       .attachments-list a {
         color: #3366cc;
-        text-decoration: underline;
         cursor: pointer;
+        text-decoration: underline;
       }
-      
+
+      /* プレビュー枠 */
       .attachment-preview {
         margin: 10px 0 20px;
       }
-      
+
       .attachment-preview.pdf iframe {
         width: 100%;
         height: 600px;
         border: 1px solid #ddd;
         border-radius: 8px;
       }
-      
+
       .attachment-preview.image img {
         max-width: 100%;
         border: 1px solid #ddd;
         border-radius: 8px;
       }
-      
     `;
 
     const style = document.createElement("style");
@@ -215,7 +213,7 @@
   }
 
   //==================================================
-  // 初期ロード
+  // Portal 初期ロード
   //==================================================
   function onPortalLoaded() {
     if (
@@ -241,7 +239,7 @@
   }
 
   //==================================================
-  // お知らせ読み込み
+  // 通知読み込み
   //==================================================
   async function loadNotifications(area) {
     injectStyles();
@@ -260,10 +258,10 @@
 
     const records = resp.records;
 
-    // 判定用：今日
+    // 今日
     const today = new Date();
 
-    // カテゴリごとに分類
+    // カテゴリ別
     const groups = {};
     records.forEach(r => {
       const category =
@@ -274,7 +272,7 @@
       groups[category].push(r);
     });
 
-    // HTML構築
+    // HTML 構築
     area.innerHTML = "";
     const layout = document.createElement("div");
     layout.className = "portal-layout";
@@ -285,7 +283,6 @@
     const tabNav = document.createElement("div");
     tabNav.className = "tab-nav";
 
-    //=== 検索ボックス
     const searchBox = document.createElement("div");
     searchBox.className = "search-box";
     searchBox.innerHTML = `
@@ -330,21 +327,16 @@
 
     activateTab(firstCategory);
 
-    const firstRecord = records[0];
-    if (firstRecord) showDetail(firstRecord);
+    if (records[0]) showDetail(records[0]);
 
-    //=== タブ切替
     tabNav.addEventListener("click", e => {
       const btn = e.target.closest(".tab-btn");
       if (!btn) return;
       activateTab(btn.dataset.cat);
-
-      // タブ切替後検索結果をリセット
       document.getElementById("notice-search").value = "";
       applySearchFilter("");
     });
 
-    //=== 検索機能
     const searchInput = document.getElementById("notice-search");
     searchInput.addEventListener("input", e => {
       applySearchFilter(e.target.value.trim().toLowerCase());
@@ -352,7 +344,7 @@
   }
 
   //==================================================
-  // 一覧アイテム生成（＋NEW判定）
+  // 一覧アイテム作成
   //==================================================
   function createNoticeItem(rec, today) {
     const div = document.createElement("div");
@@ -408,9 +400,7 @@
           .toString()
           .padStart(2, "0")}`;
 
-    //===========================
-    // 添付ファイル（HTML生成）
-    //===========================
+    // 添付ファイル HTML
     const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
     let attachmentsHTML = "";
 
@@ -420,21 +410,20 @@
         <h3 class="attachments-title">📎 添付ファイル</h3>
         <ul class="attachments-list">
           ${files
-          .map(f => {
-            const lower = f.name.toLowerCase();
-            const isPDF = lower.endsWith(".pdf");
-            const isImage =
-              lower.endsWith(".jpg") ||
-              lower.endsWith(".jpeg") ||
-              lower.endsWith(".png") ||
-              lower.endsWith(".gif");
+            .map(f => {
+              const lower = f.name.toLowerCase();
+              const isPDF = lower.endsWith(".pdf");
+              const isImage =
+                lower.endsWith(".jpg") ||
+                lower.endsWith(".jpeg") ||
+                lower.endsWith(".png") ||
+                lower.endsWith(".gif");
 
-            let type = "other";
-            if (isPDF) type = "pdf";
-            else if (isImage) type = "image";
+              let type = "other";
+              if (isPDF) type = "pdf";
+              else if (isImage) type = "image";
 
-            // aタグはダミー。クリック時にJSでfetch→プレビュー
-            return `
+              return `
                 <li>
                   <a href="#"
                      class="attachment-link"
@@ -445,21 +434,22 @@
                   <div class="attachment-preview ${type}"
                        data-file-key="${f.fileKey}"></div>
                 </li>`;
-          })
-          .join("")}
+            })
+            .join("")}
         </ul>
       </div>
     `;
     }
 
+    // 詳細描画
     el.innerHTML = `
-    <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
-    <div class="detail-date">${dateStr}</div>
-    <div class="detail-body">${rec[CONFIG.FIELD_CONTENT].value}</div>
-    ${attachmentsHTML}
-  `;
+      <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
+      <div class="detail-date">${dateStr}</div>
+      <div class="detail-body">${rec[CONFIG.FIELD_CONTENT].value}</div>
+      ${attachmentsHTML}
+    `;
 
-    // === 添付ファイル プレビュー用クリックイベントを登録 ===
+    // クリックイベント
     const links = el.querySelectorAll(".attachment-link");
     links.forEach(link => {
       link.addEventListener("click", e => {
@@ -472,6 +462,51 @@
         previewAttachment(fileKey, fileType, previewEl);
       });
     });
+  }
+
+  //==================================================
+  // 添付ファイル プレビュー（fetch + blob URL）
+  //==================================================
+  async function previewAttachment(fileKey, fileType, container) {
+    if (!container) return;
+
+    container.innerHTML = "読み込み中…";
+
+    try {
+      const url =
+        kintone.api.url("/k/v1/file.json", true) +
+        `?fileKey=${encodeURIComponent(fileKey)}`;
+
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error("HTTP Error " + res.status);
+      }
+
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      if (fileType === "pdf") {
+        container.innerHTML = `
+          <iframe src="${blobUrl}" frameborder="0"></iframe>
+        `;
+      } else if (fileType === "image") {
+        container.innerHTML = `<img src="${blobUrl}" />`;
+      } else {
+        container.innerHTML = `
+          <a href="${blobUrl}" download>ダウンロード</a>
+        `;
+      }
+    } catch (e) {
+      console.error(e);
+      container.innerHTML =
+        '<span style="color:red;">読み込み失敗しました。</span>';
+    }
   }
 
   //==================================================
@@ -490,7 +525,7 @@
   }
 
   //==================================================
-  // 検索フィルタ（選択中のタブだけ対象）
+  // フィルター
   //==================================================
   function applySearchFilter(query) {
     const activePane = document.querySelector('.tab-pane[style*="block"]');
