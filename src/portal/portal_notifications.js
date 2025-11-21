@@ -396,7 +396,6 @@
   //===========================
   let attachmentsHTML = "";
   const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
-
   if (files.length > 0) {
     attachmentsHTML = `
       <div class="detail-attachments">
@@ -404,10 +403,7 @@
         <ul class="attachments-list">
           ${files
             .map(f => {
-              const url = kintone.api.url(
-                `/k/v1/file.json?fileKey=${f.fileKey}`,
-                true
-              );
+              const url = buildFileUrl(f.fileKey);
               return `<li><a href="${url}" target="_blank">${f.name}</a></li>`;
             })
             .join("")}
