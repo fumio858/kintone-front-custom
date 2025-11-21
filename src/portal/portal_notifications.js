@@ -99,7 +99,7 @@
         margin-bottom: 2px;
       }
       .notice-item:hover {
-        background: #fff;
+        background: #fefefe9e;
       }
       .notice-item.active {
         background: #e0e0e0;
