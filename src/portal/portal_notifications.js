@@ -452,32 +452,48 @@
     });
   }
 
-  //--------------------------------------------------
-  // 添付ファイル preview
-  //--------------------------------------------------
-  async function previewAttachment(fileKey, fileType, previewEl) {
-    previewEl.innerHTML = "プレビュー読込中…";
-  
+  //==================================================
+  // 添付ファイル プレビュー（fetch + blob URL）
+  //==================================================
+  async function previewAttachment(fileKey, fileType, container) {
+    if (!container) return;
+
+    container.innerHTML = "読み込み中…";
+
     try {
-      // ★ これが正しい kintone ファイルAPI の使い方
-      const blob = await kintone.api(
-        kintone.api.url("/k/v1/file", true),
-        "GET",
-        { fileKey }
-      );
-  
-      const url = URL.createObjectURL(blob);
-  
-      if (fileType === "pdf") {
-        previewEl.innerHTML = `<iframe src="${url}"></iframe>`;
-      } else if (fileType === "image") {
-        previewEl.innerHTML = `<img src="${url}" />`;
-      } else {
-        previewEl.innerHTML = `<a href="${url}" download>ファイルを開く</a>`;
+      const url =
+        kintone.api.url("/k/v1/file.json", true) +
+        `?fileKey=${encodeURIComponent(fileKey)}`;
+
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error("HTTP Error " + res.status);
       }
-    } catch (err) {
-      console.error(err);
-      previewEl.innerHTML = "プレビューを読み込めませんでした";
+
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      if (fileType === "pdf") {
+        container.innerHTML = `
+          <iframe src="${blobUrl}" frameborder="0"></iframe>
+        `;
+      } else if (fileType === "image") {
+        container.innerHTML = `<img src="${blobUrl}" />`;
+      } else {
+        container.innerHTML = `
+          <a href="${blobUrl}" download>ダウンロード</a>
+        `;
+      }
+    } catch (e) {
+      console.error(e);
+      container.innerHTML =
+        '<span style="color:red;">読み込み失敗しました。</span>';
     }
   }
   
