@@ -95,12 +95,13 @@
         padding: .6rem .8rem;
         cursor: pointer;
         border-radius: 8px;
+        transition: .15s;
       }
       .notice-item:hover {
         background: #e0e0e0;
       }
       .notice-item.active {
-        background: #f3f3f3;
+        background: #f7f9f9;
       }
 
       .notice-topline {
@@ -135,7 +136,7 @@
       .detail-title {
         font-size: 26px;
         font-weight: 700;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.5rem;
       }
       .detail-date {
         font-size: 14px;
