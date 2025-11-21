@@ -189,6 +189,23 @@
         cursor: pointer;
       }
       
+      .attachment-preview {
+        margin: 10px 0 20px;
+      }
+      
+      .attachment-preview.pdf iframe {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      
+      .attachment-preview.image img {
+        max-width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      
     `;
 
     const style = document.createElement("style");
