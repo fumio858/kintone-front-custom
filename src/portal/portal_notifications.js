@@ -76,7 +76,7 @@
       .tab-btn {
         padding: 10px 18px;
         background: transparent;
-        border-radius: 50px;
+        border-radius: 8px;
         border: none;
         cursor: pointer;
         color: #777;
