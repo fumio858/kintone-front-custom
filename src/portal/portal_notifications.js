@@ -13,7 +13,8 @@
     FIELD_CONTENT: "content",
     FIELD_POSTING_DATE: "posting_date",
     BLANK_CATEGORY_NAME: "未分類",
-    CATEGORY_ORDER: ["事務員", "弁護士", "全体"]
+    CATEGORY_ORDER: ["事務員", "弁護士", "全体"],
+    FIELD_ATTACHMENTS: "attachments"
   };
 
   const STYLE_ID = CONFIG.AREA_ID + "-styles";
@@ -160,6 +161,34 @@
         max-width: 100%;
         height: auto;
       }
+      .detail-attachments {
+        margin-top: 2rem;
+        padding-top: 1.2rem;
+        border-top: 1px solid #ddd;
+      }
+      
+      .attachments-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      
+      .attachments-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .attachments-list li {
+        margin: 6px 0;
+      }
+      
+      .attachments-list a {
+        color: #3366cc;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      
     `;
 
     const style = document.createElement("style");
@@ -349,25 +378,50 @@
   //==================================================
   // 詳細表示
   //==================================================
-  function showDetail(rec) {
-    const el = document.getElementById("notice-detail");
-    if (!el) return;
+ function showDetail(rec) {
+  const el = document.getElementById("notice-detail");
+  if (!el) return;
 
-    const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
-    const dateStr =
-      `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}/${dateObj
-        .getDate()
-        .toString()
-        .padStart(2, "0")}`;
+  const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
+  const dateStr =
+    `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}/${dateObj
+      .getDate()
+      .toString()
+      .padStart(2, "0")}`;
 
-    el.innerHTML = `
-      <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
-      <div class="detail-date">${dateStr}</div>
-      <div class="detail-body">${rec[CONFIG.FIELD_CONTENT].value}</div>
-    `;
+  //===========================
+  // 添付ファイル（HTML生成）
+  //===========================
+  let attachmentsHTML = "";
+  const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
+
+  if (files.length > 0) {
+    attachmentsHTML = `
+      <div class="detail-attachments">
+        <h3 class="attachments-title">📎 添付ファイル</h3>
+        <ul class="attachments-list">
+          ${files
+            .map(f => {
+              const url = kintone.api.url(
+                `/k/v1/file.json?fileKey=${f.fileKey}`,
+                true
+              );
+              return `<li><a href="${url}" target="_blank">${f.name}</a></li>`;
+            })
+            .join("")}
+        </ul>
+      </div>`;
   }
+
+  el.innerHTML = `
+    <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
+    <div class="detail-date">${dateStr}</div>
+    <div class="detail-body">${rec[CONFIG.FIELD_CONTENT].value}</div>
+    ${attachmentsHTML}
+  `;
+}
 
   //==================================================
   // タブ切替
