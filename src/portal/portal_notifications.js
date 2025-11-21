@@ -97,12 +97,10 @@
         border-radius: 8px;
       }
       .notice-item:hover {
-        background: #f3f3f3;
+        background: #e0e0e0;
       }
       .notice-item.active {
-        background: #e0e0e0;
-        border-left: 4px solid #4b4b4b;
-        padding-left: calc(.8rem - 4px);
+        background: #f3f3f3;
       }
 
       .notice-topline {
