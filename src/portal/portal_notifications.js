@@ -54,6 +54,7 @@
         border-radius: 50px;
         border: 1px solid #ccc;
         font-size: 14px;
+        box-sizing: border-box;
       }
 
       .portal-right {
@@ -83,6 +84,7 @@
         font-weight: 600;
         transition: .2s;
         font-size: 13px;
+        line-height: 1;
       }
       .tab-btn.active {
         background: #4b4b4b;
@@ -90,7 +92,7 @@
       }
 
       .notice-item {
-        padding: .6rem .4rem;
+        padding: .6rem .8rem;
         cursor: pointer;
         transition: .15s;
         border-radius: 8px;
@@ -101,7 +103,7 @@
       .notice-item.active {
         background: #e0e0e0;
         border-left: 4px solid #4b4b4b;
-        padding-left: calc(.4rem - 4px);
+        padding-left: calc(.8rem - 4px);
       }
 
       .notice-topline {
