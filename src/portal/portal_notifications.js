@@ -124,12 +124,13 @@
         font-size: 11px;
         color: #555;
         line-height: 1.45;
+        display: none;
       }
       /* 詳細側 */
       .detail-title {
         font-size: 24px;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 1rem;
       }
       .detail-date {
         font-size: 14px;
