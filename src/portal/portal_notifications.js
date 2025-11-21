@@ -13,7 +13,7 @@
     FIELD_CONTENT: "content",
     FIELD_POSTING_DATE: "posting_date",
     BLANK_CATEGORY_NAME: "未分類",
-    CATEGORY_ORDER: ["事務員通知", "弁護士通知", "全体通知"]
+    CATEGORY_ORDER: ["事務員", "弁護士", "全体"]
   };
 
   const STYLE_ID = CONFIG.AREA_ID + "-styles";
