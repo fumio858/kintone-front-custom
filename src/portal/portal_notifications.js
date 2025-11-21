@@ -107,6 +107,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
+        line-height: 1;
       }
 
       .notice-date {
@@ -117,16 +118,17 @@
       .badge-new {
         background: #d9534f;
         color: #fff;
-        font-size: 10px;
+        font-size: 9px;
         padding: 2px 6px;
         border-radius: 10px;
         font-weight: bold;
+        line-height: 1;
       }
 
       .notice-title {
         font-size: 15px;
         font-weight: 600;
-        margin: 2px 0;
+        margin: 4px 0 2px;
         line-height: 1.35;
       }
 
