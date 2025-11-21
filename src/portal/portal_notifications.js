@@ -155,9 +155,9 @@
         border-top: 1px solid #ddd;
       }
       .attachments-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
-        margin-bottom: 10px;
+        margin-bottom: 1rem;
       }
       .attachments-list {
         list-style: none;
