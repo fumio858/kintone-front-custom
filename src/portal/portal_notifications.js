@@ -19,7 +19,155 @@
   const STYLE_ID = CONFIG.AREA_ID + "-styles";
 
   //==================================================
-  //  初期ロード
+  // CSS 注入（NEW＋検索対応版）
+  //==================================================
+  function injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+
+    const css = `
+      #${CONFIG.AREA_ID} { box-sizing: border-box; }
+
+      .portal-layout {
+        display: flex;
+        background-color: #eee;
+        padding: 0 1rem;
+        height: calc(100vh - 140px);
+        overflow: hidden;
+      }
+
+      .portal-left {
+        width: 380px;
+        padding: 1rem 0.8rem;
+        background-color: #eee;
+        overflow-y: auto;
+        border-right: 1px solid #ddd;
+      }
+
+      .search-box {
+        width: 100%;
+        margin: 8px 0 15px 0;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 50px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+      }
+
+      .portal-right {
+        flex: 1;
+        background: #fff;
+        padding: 3rem;
+        margin: 1rem;
+        min-height: 500px;
+        overflow-y: auto;
+        border-radius: 22px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+      }
+
+      .tab-nav {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 14px;
+      }
+      .tab-btn {
+        padding: 10px 18px;
+        background: transparent;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        color: #777;
+        font-weight: 600;
+        transition: .2s;
+        font-size: 13px;
+      }
+      .tab-btn.active {
+        background: #4b4b4b;
+        color: #FFF;
+      }
+
+      .notice-item {
+        padding: .6rem .4rem;
+        cursor: pointer;
+        transition: .15s;
+        border-radius: 8px;
+      }
+      .notice-item:hover {
+        background: #f3f3f3;
+      }
+      .notice-item.active {
+        background: #e0e0e0;
+        border-left: 4px solid #4b4b4b;
+        padding-left: calc(.4rem - 4px);
+      }
+
+      .notice-topline {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .notice-date {
+        font-size: 11px;
+        color: #777;
+      }
+
+      .badge-new {
+        background: #d9534f;
+        color: #fff;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: bold;
+      }
+
+      .notice-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 2px 0;
+        line-height: 1.35;
+      }
+
+      .detail-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+      }
+      .detail-date {
+        font-size: 14px;
+        color: #999;
+        margin-bottom: 1.2rem;
+      }
+      .detail-title::after {
+        content: "";
+        display: block;
+        width: 60px;
+        height: 2px;
+        background: #ccc;
+        margin-top: 12px;
+      }
+      .detail-body {
+        font-size: 16px;
+        line-height: 1.7;
+        color: #444;
+      }
+      .detail-body img {
+        max-width: 100%;
+        height: auto;
+      }
+    `;
+
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  //==================================================
+  // 初期ロード
   //==================================================
   function onPortalLoaded() {
     if (
@@ -45,120 +193,7 @@
   }
 
   //==================================================
-  //  CSS 注入
-  //==================================================
-  function injectStyles() {
-    if (document.getElementById(STYLE_ID)) return;
-
-    const css = `
-      #${CONFIG.AREA_ID} {
-        box-sizing: border-box;
-      }
-      /* 2カラムレイアウト */
-      .portal-layout {
-        display: flex;
-        background-color: #eee;
-        padding: 0 1rem;
-      }
-      .portal-left {
-        width: 400px;
-        padding:1rem;
-        background-color: #eee;
-      }
-      .portal-right {
-        width: 75%;
-        background: #fff;
-        padding: 3rem;
-        min-height: 500px;
-        flex: 1;
-        margin: 1rem;
-        border-radius: 22px;
-      }
-
-      /* Tabs */
-      .tab-nav {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-bottom: 20px;
-      }
-      .tab-btn {
-        padding: 12px 16px;
-        background: transparent;
-        border-radius: 50px;
-        border: none;
-        cursor: pointer;
-        color: #555;
-        font-weight: 500;
-        transition: .2s;
-        font-size: 14px;
-        line-height: 1;
-        width: 28%;
-      }
-      .tab-btn.active {
-        background: #4b4b4b;
-        color: #FFF;
-      }
-
-      /* 一覧カード */
-      .notice-item {
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-        padding: .5rem;
-        margin-bottom:.5rem;
-        cursor: pointer;
-        transition: .15s;
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-      }
-      .notice-item:hover {
-        background: #f0f0f0;
-      }
-      .notice-date {
-        font-size: 11px;
-        color: #777;
-      }
-      .notice-title {
-        font-size: 16px;
-        font-weight: bold;
-        margin: 6px 0;
-      }
-      .notice-excerpt {
-        font-size: 11px;
-        color: #555;
-        line-height: 1.45;
-        display: none;
-      }
-      /* 詳細側 */
-      .detail-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 1rem;
-      }
-      .detail-date {
-        font-size: 14px;
-        color: #999;
-        margin-bottom: 20px;
-      }
-      .detail-body {
-        font-size: 15px;
-        line-height: 1.65;
-        color: #444;
-      }
-      .detail-body img {
-        max-width: 100%;
-        height: auto;
-      }
-    `;
-
-    const style = document.createElement("style");
-    style.id = STYLE_ID;
-    style.textContent = css;
-    document.head.appendChild(style);
-  }
-
-  //==================================================
-  //  お知らせ読み込み
+  // お知らせ読み込み
   //==================================================
   async function loadNotifications(area) {
     injectStyles();
@@ -177,66 +212,67 @@
 
     const records = resp.records;
 
+    // 判定用：今日
+    const today = new Date();
+
     // カテゴリごとに分類
     const groups = {};
     records.forEach(r => {
       const category =
         (r[CONFIG.FIELD_CATEGORY] && r[CONFIG.FIELD_CATEGORY].value) ||
         CONFIG.BLANK_CATEGORY_NAME;
+
       if (!groups[category]) groups[category] = [];
       groups[category].push(r);
     });
 
-    // HTML本体構築
+    // HTML構築
     area.innerHTML = "";
     const layout = document.createElement("div");
     layout.className = "portal-layout";
 
-    //===============================
-    // 左：一覧
-    //===============================
     const left = document.createElement("div");
     left.className = "portal-left";
 
-    /** Tabs */
     const tabNav = document.createElement("div");
     tabNav.className = "tab-nav";
 
-    /** Content area for each tab */
+    //=== 検索ボックス
+    const searchBox = document.createElement("div");
+    searchBox.className = "search-box";
+    searchBox.innerHTML = `
+      <input id="notice-search" type="text" placeholder="検索（このタブ内のみ）">
+    `;
+
     const tabContent = document.createElement("div");
 
     let firstCategory = null;
 
     CONFIG.CATEGORY_ORDER.forEach(cat => {
       if (!groups[cat]) return;
-
       if (!firstCategory) firstCategory = cat;
 
-      // tab button
       const btn = document.createElement("button");
       btn.className = "tab-btn";
       btn.textContent = cat;
       btn.dataset.cat = cat;
       tabNav.appendChild(btn);
 
-      // tab pane
       const pane = document.createElement("div");
       pane.className = "tab-pane";
       pane.dataset.cat = cat;
 
       groups[cat].forEach(r => {
-        pane.appendChild(createNoticeItem(r));
+        pane.appendChild(createNoticeItem(r, today));
       });
 
       tabContent.appendChild(pane);
     });
 
     left.appendChild(tabNav);
+    left.appendChild(searchBox);
     left.appendChild(tabContent);
 
-    //===============================
-    // 右：詳細
-    //===============================
     const right = document.createElement("div");
     right.className = "portal-right";
     right.id = "notice-detail";
@@ -244,59 +280,85 @@
     layout.append(left, right);
     area.appendChild(layout);
 
-    // 最初のカテゴリをアクティブ
     activateTab(firstCategory);
 
-    // 初回表示：最新のお知らせを詳細に表示
     const firstRecord = records[0];
     if (firstRecord) showDetail(firstRecord);
 
-    // クリックイベント設定
+    //=== タブ切替
     tabNav.addEventListener("click", e => {
       const btn = e.target.closest(".tab-btn");
       if (!btn) return;
       activateTab(btn.dataset.cat);
+
+      // タブ切替後検索結果をリセット
+      document.getElementById("notice-search").value = "";
+      applySearchFilter("");
+    });
+
+    //=== 検索機能
+    const searchInput = document.getElementById("notice-search");
+    searchInput.addEventListener("input", e => {
+      applySearchFilter(e.target.value.trim().toLowerCase());
     });
   }
 
   //==================================================
-  //  一覧アイテムを生成
+  // 一覧アイテム生成（＋NEW判定）
   //==================================================
-  function createNoticeItem(rec) {
+  function createNoticeItem(rec, today) {
     const div = document.createElement("div");
     div.className = "notice-item";
 
-    const date = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
-    const dateStr = `${date.getFullYear()}/${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
+    const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
+    const diffDays = (today - dateObj) / 1000 / 60 / 60 / 24;
+    const isNew = diffDays <= 7;
+
+    const dateStr =
+      `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${dateObj
+        .getDate()
+        .toString()
+        .padStart(2, "0")}`;
 
     const contentHTML = rec[CONFIG.FIELD_CONTENT].value || "";
-    const text = contentHTML.replace(/<[^>]+>/g, "");
-    const excerpt = text.length > 70 ? text.slice(0, 70) + "…" : text;
+    const excerpt = contentHTML.replace(/<[^>]+>/g, "").slice(0, 80);
+
+    div.dataset.search = `${rec[CONFIG.FIELD_TITLE].value} ${dateStr} ${excerpt}`.toLowerCase();
 
     div.innerHTML = `
-      <div class="notice-date">${dateStr}</div>
+      <div class="notice-topline">
+        <div class="notice-date">${dateStr}</div>
+        ${isNew ? `<span class="badge-new">NEW</span>` : ""}
+      </div>
       <div class="notice-title">${rec[CONFIG.FIELD_TITLE].value}</div>
-      <div class="notice-excerpt">${excerpt}</div>
     `;
 
-    div.addEventListener("click", () => showDetail(rec));
+    div.addEventListener("click", () => {
+      document.querySelectorAll(".notice-item").forEach(i => i.classList.remove("active"));
+      div.classList.add("active");
+      showDetail(rec);
+    });
 
     return div;
   }
 
   //==================================================
-  //  詳細表示
+  // 詳細表示
   //==================================================
   function showDetail(rec) {
     const el = document.getElementById("notice-detail");
     if (!el) return;
 
-    const date = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
-    const dateStr = `${date.getFullYear()}/${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
+    const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
+    const dateStr =
+      `${dateObj.getFullYear()}/${(dateObj.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${dateObj
+        .getDate()
+        .toString()
+        .padStart(2, "0")}`;
 
     el.innerHTML = `
       <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
@@ -306,19 +368,37 @@
   }
 
   //==================================================
-  //  タブ切り替え
+  // タブ切替
   //==================================================
   function activateTab(cat) {
     document
       .querySelectorAll(".tab-btn")
       .forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
+
     document
       .querySelectorAll(".tab-pane")
-      .forEach(p => (p.style.display = p.dataset.cat === cat ? "block" : "none"));
+      .forEach(p => {
+        p.style.display = p.dataset.cat === cat ? "block" : "none";
+      });
   }
 
   //==================================================
-  //  URLハッシュ監視（Portal切替対応）
+  // 検索フィルタ（選択中のタブだけ対象）
+  //==================================================
+  function applySearchFilter(query) {
+    const activePane = document.querySelector('.tab-pane[style*="block"]');
+    if (!activePane) return;
+
+    const items = activePane.querySelectorAll(".notice-item");
+
+    items.forEach(item => {
+      const text = item.dataset.search || "";
+      item.style.display = text.includes(query) ? "block" : "none";
+    });
+  }
+
+  //==================================================
+  // ハッシュ監視
   //==================================================
   let lastHash = "";
   setInterval(() => {
