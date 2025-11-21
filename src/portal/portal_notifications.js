@@ -256,7 +256,7 @@
 
       const btn = document.createElement("button");
       btn.className = "tab-btn";
-      btn.textContent = cat;
+      btn.textContent = cat + "通知";
       btn.dataset.cat = cat;
       tabNav.appendChild(btn);
 
