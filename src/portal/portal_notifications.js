@@ -58,6 +58,7 @@
       .portal-layout {
         display: flex;
         background-color: #eee;
+        padding: 0 1rem;
       }
       .portal-left {
         width: 400px;
@@ -106,11 +107,13 @@
         margin-bottom:.5rem;
         cursor: pointer;
         transition: .15s;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
       }
       .notice-item:hover {
         background: #f0f0f0;
       }
-
       .notice-date {
         font-size: 11px;
         color: #777;
