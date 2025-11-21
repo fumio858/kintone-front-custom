@@ -393,11 +393,14 @@
   }
 
   //==================================================
-  // 詳細表示
+  // 詳細表示 (画像Blob対応版)
   //==================================================
-  function showDetail(rec) {
+  async function showDetail(rec) {
     const el = document.getElementById("notice-detail");
     if (!el) return;
+
+    // 表示を一旦クリア
+    el.innerHTML = '<div style="text-align: center; padding: 2rem;">読み込み中...</div>';
 
     const dateObj = new Date(rec[CONFIG.FIELD_POSTING_DATE].value);
     const dateStr =
@@ -409,65 +412,76 @@
           .padStart(2, "0")}`;
 
     //===========================
-    // 添付ファイル（HTML生成）
+    // 添付ファイル処理
     //===========================
-
     const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
     let attachmentsHTML = "";
 
     if (files.length > 0) {
+      const filePromises = files.map(async f => {
+        const downloadUrl = `${location.origin}/k/v1/file.json?fileKey=${f.fileKey}`;
+        const lower = f.name.toLowerCase();
+        const isPDF = lower.endsWith(".pdf");
+        const isImage = ["jpg", "jpeg", "png", "gif"].some(ext => lower.endsWith("." + ext));
+
+        if (isImage) {
+          try {
+            const resp = await kintone.api(downloadUrl, "GET", {});
+            const blob = new Blob([resp], { type: f.contentType });
+            const localUrl = URL.createObjectURL(blob);
+            return `
+              <li>
+                <strong>${f.name}</strong>
+                <div class="attachment-preview image">
+                  <img src="${localUrl}" />
+                </div>
+              </li>`;
+          } catch (error) {
+            console.error("Image load error:", error);
+            return `<li><strong>${f.name}</strong> (画像読み込み失敗)</li>`;
+          }
+        }
+        
+        if (isPDF) {
+           const directDownloadUrl = `${location.origin}/k/downloadFile?fileKey=${encodeURIComponent(f.fileKey)}`;
+           return `
+            <li>
+              <strong>${f.name}</strong>
+              <div class="attachment-preview pdf">
+                <iframe src="${directDownloadUrl}" frameborder="0"></iframe>
+              </div>
+            </li>`;
+        }
+
+        // PDF/画像以外
+        const directDownloadUrl = `${location.origin}/k/downloadFile?fileKey=${encodeURIComponent(f.fileKey)}`;
+        return `<li><a href="${directDownloadUrl}" target="_blank" rel="noopener noreferrer">${f.name}</a></li>`;
+      });
+
+      const fileListHTML = (await Promise.all(filePromises)).join("");
+
       attachmentsHTML = `
         <div class="detail-attachments">
           <h3 class="attachments-title">📎 添付ファイル</h3>
           <ul class="attachments-list">
-            ${files
-          .map(f => {
-            const url = `${location.origin}/k/downloadFile?fileKey=${encodeURIComponent(f.fileKey)}`;
-            const lower = f.name.toLowerCase();
-
-            // プレビュー可能な拡張子か判定
-            const isPDF = lower.endsWith(".pdf");
-            const isImage =
-              lower.endsWith(".jpg") ||
-              lower.endsWith(".jpeg") ||
-              lower.endsWith(".png") ||
-              lower.endsWith(".gif");
-
-            if (isPDF) {
-              return `
-                    <li>
-                      <strong>${f.name}</strong>
-                      <div class="attachment-preview pdf">
-                        <iframe src="${url}" frameborder="0"></iframe>
-                      </div>
-                    </li>`;
-            }
-
-            if (isImage) {
-              return `
-                    <li>
-                      <strong>${f.name}</strong>
-                      <div class="attachment-preview image">
-                        <img src="${url}" />
-                      </div>
-                    </li>`;
-            }
-
-            // PDF/画像以外は通常リンク
-            return `<li><a href="${url}" target="_blank">${f.name}</a></li>`;
-          })
-          .join("")}
+            ${fileListHTML}
           </ul>
         </div>
       `;
     }
 
+    // 全体のHTMLを生成して挿入
     el.innerHTML = `
-    <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
-    <div class="detail-date">${dateStr}</div>
-    <div class="detail-body">${rec[CONFIG.FIELD_CONTENT].value}</div>
-    ${attachmentsHTML}
-  `;
+      <div class="detail-title">${rec[CONFIG.FIELD_TITLE].value}</div>
+      <div class="detail-date">${dateStr}</div>
+      <div class="detail-body">${rec[CONFIG.FIELD_CONTENT].value}</div>
+      ${attachmentsHTML}
+    `;
+
+    // 古いBlob URLを解放（メモリリーク対策）
+    el.querySelectorAll("img[src^='blob:']").forEach(img => {
+      img.addEventListener('load', () => URL.revokeObjectURL(img.src), { once: true });
+    });
   }
 
   //==================================================
