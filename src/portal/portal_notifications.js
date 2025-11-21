@@ -96,6 +96,7 @@
         cursor: pointer;
         border-radius: 8px;
         transition: .15s;
+        margin-bottom: 2px;
       }
       .notice-item:hover {
         background: #f7f9f9;
