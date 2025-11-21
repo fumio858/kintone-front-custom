@@ -94,7 +94,6 @@
       .notice-item {
         padding: .6rem .8rem;
         cursor: pointer;
-        transition: .15s;
         border-radius: 8px;
       }
       .notice-item:hover {
