@@ -98,10 +98,10 @@
         transition: .15s;
       }
       .notice-item:hover {
-        background: #e0e0e0;
+        background: #f7f9f9;
       }
       .notice-item.active {
-        background: #f7f9f9;
+        background: #e0e0e0;
       }
 
       .notice-topline {
