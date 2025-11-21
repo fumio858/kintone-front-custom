@@ -30,7 +30,6 @@
       .portal-layout {
         display: flex;
         background-color: #eee;
-        padding: 0 1rem;
         height: calc(100vh - 140px);
         overflow: hidden;
       }
