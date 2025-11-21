@@ -394,6 +394,12 @@
   //===========================
   // 添付ファイル（HTML生成）
   //===========================
+
+  function buildFileUrl(fileKey) {
+    const origin = location.origin; // https://atomfirm.cybozu.com
+    return `${origin}/k/api/blob/${fileKey}`;
+  }
+  
   let attachmentsHTML = "";
   const files = rec[CONFIG.FIELD_ATTACHMENTS]?.value || [];
   if (files.length > 0) {
