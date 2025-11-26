@@ -106,7 +106,7 @@
         margin-bottom: 8px;
       }
       .${CONFIG.AREA_ID}-text {
-        height: calc(13px * 1.5 * 2);
+        height: calc(14.5px * 1.4 * 2);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -119,6 +119,7 @@
         text-align: center;
         line-height: 1.4;
         overflow-wrap: break-word;
+        white-space: pre-line;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
