@@ -28,6 +28,7 @@
 
 .gaia-argoui-app-toolbar{
   border-bottom: solid 4px #f5f5f5;
+  z-index: 10;
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar {
