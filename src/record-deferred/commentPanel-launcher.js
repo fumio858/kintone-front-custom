@@ -33,7 +33,6 @@
     `;
 
     // アイコンとテキストを中央揃えにする
-    button.style.display = 'inline-flex';
     button.style.alignItems = 'center';
 
     return button;
