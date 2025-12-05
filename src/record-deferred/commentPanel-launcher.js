@@ -17,6 +17,8 @@
     button.className = 'ocean-ui-comments-commentform-cancel'; // キャンセルボタンのクラスを使用
     button.innerHTML = `<span>${text}</span>`;
     button.style.marginLeft = '2rem'; // マージンを2remに変更
+    button.style.marginTop = '1rem';
+    button.style.float = 'right';
     return button;
   }
 
