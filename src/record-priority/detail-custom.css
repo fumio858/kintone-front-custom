@@ -31,11 +31,12 @@
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar {
-  position: static; /* fixedやabsoluteを解除 */
-  width: auto; /* グリッドに幅の管理を任せる */
-  height: auto; /* グリッドに高さの管理を任せる */
-  overflow-y: scroll; /* コンテンツがはみ出た場合、縦スクロール */
+  /* position: relative !important;
+  top: 0 !important; */
+  /* width: 65vw; */  
+  width: calc( 100vw - 528px);
   box-sizing: border-box;
+  /* max-height: 80vh; */
 }
 
 .report-front-custom .gaia-argoui-app-show-sidebar-content{
@@ -49,13 +50,9 @@
 }
 
 .report-front-custom .layout-gaia {
-  display: grid;
-  grid-template-columns: 528px 1fr; /* 左:固定幅 + 右:残り全部 */
-  grid-template-rows: 1fr;
-  padding: 0 !important;
-  /* ヘッダー高(仮60px)とツールバー下線(4px)を引いた画面高さいっぱいにする */
-  height: calc(100vh - 60px - 4px);
+  padding-right: 0 !important;
   box-sizing: border-box;
+  padding: 1rem;
 }
 
 .report-front-custom .gaia-argoui-app-show-toolbar {
@@ -81,13 +78,14 @@
 
 /* レコード登録画面サイズ調整 */
 .report-front-custom #record-gaia {
-  position: static; /* absoluteを解除 */
-  width: auto; /* グリッドに幅の管理を任せる */
-  height: auto; /* グリッドに高さの管理を任せる */
-  overflow-y: scroll; /* コンテンツがはみ出た場合、縦スクロール */
-  max-height: none;
-  padding: 1rem;
-  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  height: auto;
+  /* width: 35vw; */
+  overflow: scroll;
+  max-height: calc( 100vh - 80px - 60px );
+  width: 528px;
+  padding: 0 0 16px 0;
 }
 
 /* 通知ページ */
