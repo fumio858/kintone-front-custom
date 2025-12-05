@@ -14,10 +14,11 @@
     const button = document.createElement('button');
     button.id = id;
     button.type = 'button';
-    button.className = 'gaia-ui-actionmenu-cancel'; // kintoneのセカンダリボタンクラスを流用
-    button.textContent = text;
+    // DOM構造に合わせてキャンセルボタンのクラスを借用
+    button.className = 'ocean-ui-comments-commentform-cancel';
+    button.innerHTML = `<span>${text}</span>`;
     Object.assign(button.style, {
-      marginLeft: '8px', // 隣のボタンとの間隔
+      marginRight: '8px', // 「書き込む」ボタンとの間隔
     });
     return button;
   }
@@ -60,10 +61,10 @@
   }
 
   function injectLauncherOnce() {
-    const toolbar = document.querySelector('.ocean-ui-comments-commentform-toolbar');
-    if (!toolbar) return false;
+    const form = document.querySelector('.ocean-ui-comments-commentform-form');
+    if (!form) return false;
 
-    const submitButton = toolbar.querySelector('.gaia-comment-submit');
+    const submitButton = form.querySelector('.ocean-ui-comments-commentform-submit');
     if (!submitButton) return false;
 
     const launcherId = 'comment-task-launcher';
@@ -72,12 +73,12 @@
     const btnTask = createKintoneButton('タスク追加', launcherId);
 
     // 「書き込む」ボタンの“前”に設置
-    toolbar.insertBefore(btnTask, submitButton);
+    form.insertBefore(btnTask, submitButton);
 
     // クリックでコメントフォームの直下へ挿入
-    btnTask.addEventListener('click', () => {
-      const form = document.querySelector('.ocean-ui-comments-commentform-form');
-      const textarea = form ? form.querySelector('textarea') : null;
+    btnTask.addEventListener('click', (e) => {
+      e.preventDefault(); // 念のためサブミットを抑制
+      const textarea = form.querySelector('.ocean-ui-comments-commentform-textarea');
       const commentText = textarea ? textarea.value : '';
       ensureSinglePanel(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task', commentText);
     });

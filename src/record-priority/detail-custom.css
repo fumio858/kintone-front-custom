@@ -43,6 +43,10 @@
   padding: 2rem;
 }
 
+.report-front-custom .gaia-argoui-app-show-sidebar-content .itemlist-gaia {
+  padding-bottom: 5rem;
+}
+
 .report-front-custom .gaia-argoui-app-show-sidebar-dragged {
   width: calc(100% - 2rem - 1rem);
   padding: 0;
@@ -222,6 +226,7 @@ span.custom-notes-text {
   /* font-weight: 300;
   border-radius: 4px; */
 }
+
 
 /* * * * * * * * * * *　ユーザーに見せたくない 非表示フィールドを登録 * * * * * * * * * * */
 /* 刑事事件 */
