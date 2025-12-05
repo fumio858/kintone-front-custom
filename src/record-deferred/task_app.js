@@ -100,7 +100,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         </div>
         <style>
           .k-task-panel input, .k-task-panel textarea, .k-task-panel select {
-            border: 1px solid #e3e7e8; border-radius: 6px; color: #333;
+            border: 1px solid #e3e7e8; border-radius: 6px; color: #000;
           }
           .k-task-panel input:focus, .k-task-panel textarea:focus, .k-task-panel select:focus, .k-task-panel button:focus {
             outline: none; box-shadow: 0 0 0 3px rgba(227,231,232,.4); border-color: #e3e7e8;
