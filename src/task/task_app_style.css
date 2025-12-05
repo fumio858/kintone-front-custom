@@ -7,3 +7,12 @@
 #custom-iframe-container .gaia-argoui-app-toolbar-menu{
   display: none;
 }
+
+/* --- タスク追加ボタンの表示制御 --- */
+#comment-task-launcher {
+  display: none;
+}
+
+.ocean-ui-comments-commentform-open #comment-task-launcher {
+  display: inline-flex;
+}
