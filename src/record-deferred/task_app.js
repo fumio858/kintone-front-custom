@@ -80,9 +80,14 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 
       const wrap = document.createElement('div');
       wrap.classList.add('k-task-panel');
-      wrap.style.padding = '12px';
-      wrap.style.background = '#eaf3f9';
-      wrap.style.display = '';
+      Object.assign(wrap.style, {
+        padding: '16px',
+        backgroundColor: '#3598DB', // Kintoneの標準的な青色
+        color: '#FFFFFF', // 文字色を白に
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        display: '', // 既存のdisplayを維持
+      });
 
       wrap.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
@@ -128,11 +133,14 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         `;
       mountEl.appendChild(wrap);
 
-      // ランチャーからコメントが渡されていれば、件名に設定
+      // ランチャーからコメントが渡されていれば、件名に設定（追記モード）
       if (options && options.comment) {
         const taskTitleTextarea = wrap.querySelector('#task-title');
         if (taskTitleTextarea) {
-          taskTitleTextarea.value = options.comment;
+          const currentValue = taskTitleTextarea.value;
+          // 既に値があれば改行して追記、なければそのまま設定
+          const newValue = currentValue ? `${currentValue}\n${options.comment}` : options.comment;
+          taskTitleTextarea.value = newValue;
         }
       }
 
