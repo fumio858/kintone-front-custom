@@ -70,7 +70,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
   }
 
   // ★ 任意のマウント先に描画する本体（呼ばれたら“必ず表示”）
-  async function initTaskPanel(mountEl, rec, recordId, appId) {
+  async function initTaskPanel(mountEl, rec, recordId, appId, options) {
     try {
       mountEl = resolveMountEl(mountEl);
       if (!mountEl) return console.warn('[task] mountEl not found');
@@ -127,6 +127,14 @@ const APP_ID_TO_CASE_TYPE = { // NEW
         </div>
         `;
       mountEl.appendChild(wrap);
+
+      // ランチャーからコメントが渡されていれば、件名に設定
+      if (options && options.comment) {
+        const taskTitleTextarea = wrap.querySelector('#task-title');
+        if (taskTitleTextarea) {
+          taskTitleTextarea.value = options.comment;
+        }
+      }
 
       const listEl = wrap.querySelector('#task-list');
       const selOwner = wrap.querySelector('#task-owner');
@@ -359,11 +367,11 @@ const APP_ID_TO_CASE_TYPE = { // NEW
   });
 
   // ランチャーから呼べるフック
-  window.userTaskPanelInit = async function (mountEl) {
+  window.userTaskPanelInit = async function (mountEl, options) {
     const recObj = kintone.app.record.get();
     const rec = recObj && recObj.record ? recObj.record : {};
     const appId = kintone.app.getId();
     const recordId = recObj && recObj.record ? (recObj.recordId || kintone.app.record.getId()) : kintone.app.record.getId();
-    await initTaskPanel(mountEl, rec, recordId, appId);
+    await initTaskPanel(mountEl, rec, recordId, appId, options);
   };
 })();

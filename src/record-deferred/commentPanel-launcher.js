@@ -9,50 +9,40 @@
     return _origGetSpace.call(this, spaceId) || document.getElementById(spaceId) || null;
   };
 
-  // アイコン（そのまま使う／不要なら空文字でもOK）
-  const ICONS = {
-    task: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#3598db" viewBox="0 0 24 24"><path d="M9 16.17l-3.88-3.88-1.41 1.41L9 19 20.3 7.71l-1.41-1.41z"/></svg>`
-  };
-
-  // テキストリンク（ボタン）生成：下線ナシ、hoverで色だけ濃く
-  function createLink(iconSvg, text) {
-    const link = document.createElement('button');
-    link.type = 'button';
-    link.className = 'launcher-link';
-    link.innerHTML = `${iconSvg ? iconSvg : ''}<span style="margin-left:${iconSvg ? 4 : 0}px;">${text}</span>`;
-    Object.assign(link.style, {
-      fontSize: '13px', lineHeight: '1', fontWeight: '800',
-      color: '#3598db', border: 'none', background: 'transparent',
-      textAlign: 'left', cursor: 'pointer', display: 'flex',
-      alignItems: 'center', padding: '0'
+  // Kintone標準風ボタンを生成
+  function createKintoneButton(text, id) {
+    const button = document.createElement('button');
+    button.id = id;
+    button.type = 'button';
+    button.className = 'gaia-ui-actionmenu-cancel'; // kintoneのセカンダリボタンクラスを流用
+    button.textContent = text;
+    Object.assign(button.style, {
+      marginLeft: '8px', // 隣のボタンとの間隔
     });
-    return link;
+    return button;
   }
 
   // コメントフォーム直後に 1 個だけ作る（再表示/再初期化に対応）
-  function ensureSinglePanel(formEl, baseId, initFnName, eventName) {
+  function ensureSinglePanel(formEl, baseId, initFnName, eventName, commentText) {
     const existing = document.querySelector(`[data-mirror-of="${baseId}"]`);
+    const detail = { mountEl: null, comment: commentText };
+
     if (existing) {
-      // 既存 mirror 内のパネルを確認
       const panel = existing.querySelector('.k-schedule-panel, .k-task-panel');
-      if (panel) {
-        // 非表示なら表示に戻す
-        if (panel.style.display === 'none') {
-          panel.style.display = '';
-        }
-      } else {
-        // パネルが消えている（または初回）→ 再初期化
+      if (panel && panel.style.display === 'none') {
+        panel.style.display = '';
+      } else if (!panel) {
+        detail.mountEl = existing;
         if (typeof window[initFnName] === 'function') {
-          window[initFnName](existing);
+          window[initFnName](detail.mountEl, { comment: detail.comment });
         } else {
-          document.dispatchEvent(new CustomEvent(eventName, { detail: { mountEl: existing } }));
+          document.dispatchEvent(new CustomEvent(eventName, { detail }));
         }
       }
       existing.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
-    // mirror がまだ無い → 作成して初期化
     const mirror = document.createElement('div');
     mirror.dataset.mirrorOf = baseId;
     mirror.style.marginTop = '12px';
@@ -60,46 +50,36 @@
     mirror.style.paddingTop = '12px';
     formEl.insertAdjacentElement('afterend', mirror);
 
+    detail.mountEl = mirror;
     if (typeof window[initFnName] === 'function') {
-      window[initFnName](mirror);
+      window[initFnName](detail.mountEl, { comment: detail.comment });
     } else {
-      document.dispatchEvent(new CustomEvent(eventName, { detail: { mountEl: mirror } }));
+      document.dispatchEvent(new CustomEvent(eventName, { detail }));
     }
     mirror.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-
   function injectLauncherOnce() {
-    const form = document.querySelector('.ocean-ui-comments-commentform-form');
-    if (!form) return false;
-    if (document.querySelector('#comment-panel-launcher')) return true; // 二重設置回避
+    const toolbar = document.querySelector('.ocean-ui-comments-commentform-toolbar');
+    if (!toolbar) return false;
 
-    // ランチャー行（フォームの“上”に横並びで置く）
-    const bar = document.createElement('div');
-    bar.id = 'comment-panel-launcher';
-    Object.assign(bar.style, {
-      display: 'flex', gap: '13px', alignItems: 'center', justifyContent: 'flex-end',
-      marginBottom: '8px', userSelect: 'none'
-    });
+    const submitButton = toolbar.querySelector('.gaia-comment-submit');
+    if (!submitButton) return false;
 
-    // 文字色のホバー濃色（下線なし）
-    const style = document.createElement('style');
-    style.textContent = `
-      #comment-panel-launcher .launcher-link { color:#3598db; transition: color .15s ease; }
-      #comment-panel-launcher .launcher-link:hover { color:#217dbb; }
-    `;
-    document.head.appendChild(style);
+    const launcherId = 'comment-task-launcher';
+    if (document.getElementById(launcherId)) return true; // 二重設置回避
 
-    const btnTask = createLink(ICONS.task, 'タスク追加');
+    const btnTask = createKintoneButton('タスク追加', launcherId);
 
-    bar.appendChild(btnTask);
+    // 「書き込む」ボタンの“前”に設置
+    toolbar.insertBefore(btnTask, submitButton);
 
-    // フォームの“直前”に設置
-    form.parentElement.insertBefore(bar, form);
-
-    // クリックでコメントフォームの直下へ挿入（各1個だけ）
+    // クリックでコメントフォームの直下へ挿入
     btnTask.addEventListener('click', () => {
-      ensureSinglePanel(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task');
+      const form = document.querySelector('.ocean-ui-comments-commentform-form');
+      const textarea = form ? form.querySelector('textarea') : null;
+      const commentText = textarea ? textarea.value : '';
+      ensureSinglePanel(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task', commentText);
     });
 
     return true;
@@ -146,22 +126,16 @@
 
   // URL変更時にもインジェクションを試みる
   window.addEventListener('urlchanged', (e) => {
-    console.log('[Launcher] URL changed detected:', e.detail.url);
-    // 少し遅延させて、kintoneのDOM構築を待つ
     setTimeout(() => {
-      console.log('[Launcher] Attempting to re-inject launcher and panels.');
-
-      // 既存のランチャーを削除
-      const existingLauncher = document.querySelector('#comment-panel-launcher');
+      // 既存のランチャーボタンを削除
+      const existingLauncher = document.getElementById('comment-task-launcher');
       if (existingLauncher) {
-        console.log('[Launcher] Removing existing launcher.');
         existingLauncher.remove();
       }
 
-      // 既存のパネル（ミラー）も削除して、中身が古くなるのを防ぐ
+      // 既存のパネル（ミラー）も削除
       const taskMirror = document.querySelector('[data-mirror-of="user-js-taskPanel"]');
       if (taskMirror) {
-        console.log('[Launcher] Removing existing task panel mirror.');
         taskMirror.remove();
       }
 
