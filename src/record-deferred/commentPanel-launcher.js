@@ -14,9 +14,9 @@
     const button = document.createElement('button');
     button.id = id;
     button.type = 'button';
-    button.className = 'ocean-ui-comments-commentform-submit'; // 「書き込む」ボタンのクラスを借用
+    button.className = 'ocean-ui-comments-commentform-cancel'; // キャンセルボタンのクラスを使用
     button.innerHTML = `<span>${text}</span>`;
-    button.style.marginLeft = '8px'; // 隣のボタンとの間隔
+    button.style.marginLeft = '2rem'; // マージンを2remに変更
     return button;
   }
 
