@@ -16,6 +16,7 @@
     button.type = 'button';
     button.className = 'ocean-ui-comments-commentform-submit'; // 「書き込む」ボタンのクラスを借用
     button.innerHTML = `<span>${text}</span>`;
+    button.style.marginLeft = '8px'; // 隣のボタンとの間隔
     return button;
   }
 
@@ -57,31 +58,16 @@
   }
 
   function injectLauncherOnce() {
-    const formWrapper = document.querySelector('.ocean-ui-comments-commentform');
-    if (!formWrapper) return false;
-
-    const form = formWrapper.querySelector('.ocean-ui-comments-commentform-form');
+    const form = document.querySelector('.ocean-ui-comments-commentform-form');
     if (!form) return false;
 
     const launcherId = 'comment-task-launcher';
     if (document.getElementById(launcherId)) return true;
 
-    // ラッパーを相対位置の基準にする
-    formWrapper.style.position = 'relative';
-
     const btnTask = createKintoneButton('タスク追加', launcherId);
 
-    // absoluteで右上に配置
-    Object.assign(btnTask.style, {
-      position: 'absolute',
-      top: '-40px', // フォームの上部に見えるように調整
-      right: '0px',
-      width: 'auto',
-      padding: '0 16px',
-    });
-
-    // ラッパーの子要素として追加
-    formWrapper.appendChild(btnTask);
+    // フォームの子要素の末尾（＝「書き込む」ボタンの右横）に追加
+    form.appendChild(btnTask);
 
     // クリックイベントの修正
     btnTask.addEventListener('click', (e) => {
