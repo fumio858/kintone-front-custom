@@ -15,7 +15,10 @@
     button.id = id;
     button.type = 'button';
     button.className = 'ocean-ui-comments-commentform-cancel'; // キャンセルボタンのクラスを使用
-    button.style.marginRight = '8px'; // 他ボタンとの間隔
+    button.style.marginLeft = '2rem'; // マージンを2remに変更
+    button.style.marginTop = '1rem';
+    button.style.float = 'right';
+    // button.style.display = 'none'; // ★ デフォルトで非表示
 
     // アイコン情報
     const svgPath = 'm424-318 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm280-590q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z';
@@ -32,6 +35,7 @@
     // アイコンとテキストを中央揃えにする
     button.style.display = 'inline-flex';
     button.style.alignItems = 'center';
+    button.style.visibility = 'hidden'; // ★ visibilityで表示制御
 
     return button;
   }
@@ -77,38 +81,55 @@
     const form = document.querySelector('.ocean-ui-comments-commentform-form');
     if (!form) return false;
 
-    // ★ ボタンを配置するコンテナ
-    const buttonContainer = form.querySelector('.ocean-ui-comments-commentform-buttons');
-    if (!buttonContainer) return false;
-
     const launcherId = 'comment-task-launcher';
-    if (document.getElementById(launcherId)) return true;
+    if (document.getElementById(launcherId)) return true; // 既に存在すれば何もしない
 
     const btnTask = createKintoneButton('タスク追加', launcherId);
+    form.appendChild(btnTask); // 先にDOMに追加
 
-    // ★「書き込む」ボタンの左隣にボタンを挿入
-    buttonContainer.prepend(btnTask);
-
-    // クリックイベントの修正
+    // クリックイベント
     btnTask.addEventListener('click', (e) => {
       e.preventDefault();
-
       let commentText = '';
-      // リッチエディタ（編集中のdiv）からテキストを取得
       const richEditor = form.querySelector('.ocean-ui-editor-field.editable');
       if (richEditor) {
         commentText = richEditor.innerText;
       } else {
-        // フォールバックとしてtextareaから取得
         const textarea = form.querySelector('.ocean-ui-comments-commentform-textarea');
-        if (textarea) {
-          commentText = textarea.value;
-        }
+        if (textarea) commentText = textarea.value;
       }
-
       ensureSinglePanel(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task', commentText);
     });
 
+    // --- 表示制御ロジック ---
+    const commentArea = document.querySelector('.ocean-ui-comments-commentarea');
+    if (!commentArea) return true; // 監視対象がなければ終了
+
+    const observer = new MutationObserver(mutations => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const target = mutation.target;
+          if (target.classList.contains('ocean-ui-comments-commentform-open')) {
+            btnTask.style.visibility = 'visible';
+          } else {
+            btnTask.style.visibility = 'hidden';
+          }
+        }
+      }
+    });
+
+    observer.observe(commentArea, {
+      attributes: true,
+      attributeFilter: ['class'],
+      subtree: false,
+    });
+
+    // 初期状態のチェック
+    if (commentArea.classList.contains('ocean-ui-comments-commentform-open')) {
+      btnTask.style.visibility = 'visible';
+    }
+
+    // SPA遷移で監視が止まらないように、切断処理は含めない
     return true;
   }
 
