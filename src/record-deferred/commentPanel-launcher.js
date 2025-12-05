@@ -9,17 +9,13 @@
     return _origGetSpace.call(this, spaceId) || document.getElementById(spaceId) || null;
   };
 
-  // Kintone標準風ボタンを生成
+  // Kintone標準風ボタンを生成（「書き込む」ボタンのスタイルを借用）
   function createKintoneButton(text, id) {
     const button = document.createElement('button');
     button.id = id;
     button.type = 'button';
-    // DOM構造に合わせてキャンセルボタンのクラスを借用
-    button.className = 'ocean-ui-comments-commentform-cancel';
+    button.className = 'ocean-ui-comments-commentform-submit'; // 「書き込む」ボタンのクラスを借用
     button.innerHTML = `<span>${text}</span>`;
-    Object.assign(button.style, {
-      marginRight: '8px', // 「書き込む」ボタンとの間隔
-    });
     return button;
   }
 
@@ -61,25 +57,49 @@
   }
 
   function injectLauncherOnce() {
-    const form = document.querySelector('.ocean-ui-comments-commentform-form');
+    const formWrapper = document.querySelector('.ocean-ui-comments-commentform');
+    if (!formWrapper) return false;
+
+    const form = formWrapper.querySelector('.ocean-ui-comments-commentform-form');
     if (!form) return false;
 
-    const submitButton = form.querySelector('.ocean-ui-comments-commentform-submit');
-    if (!submitButton) return false;
-
     const launcherId = 'comment-task-launcher';
-    if (document.getElementById(launcherId)) return true; // 二重設置回避
+    if (document.getElementById(launcherId)) return true;
+
+    // ラッパーを相対位置の基準にする
+    formWrapper.style.position = 'relative';
 
     const btnTask = createKintoneButton('タスク追加', launcherId);
 
-    // 「書き込む」ボタンの“前”に設置
-    form.insertBefore(btnTask, submitButton);
+    // absoluteで右上に配置
+    Object.assign(btnTask.style, {
+      position: 'absolute',
+      top: '-40px', // フォームの上部に見えるように調整
+      right: '0px',
+      width: 'auto',
+      padding: '0 16px',
+    });
 
-    // クリックでコメントフォームの直下へ挿入
+    // ラッパーの子要素として追加
+    formWrapper.appendChild(btnTask);
+
+    // クリックイベントの修正
     btnTask.addEventListener('click', (e) => {
-      e.preventDefault(); // 念のためサブミットを抑制
-      const textarea = form.querySelector('.ocean-ui-comments-commentform-textarea');
-      const commentText = textarea ? textarea.value : '';
+      e.preventDefault();
+
+      let commentText = '';
+      // リッチエディタ（編集中のdiv）からテキストを取得
+      const richEditor = form.querySelector('.ocean-ui-editor-field.editable');
+      if (richEditor) {
+        commentText = richEditor.innerText;
+      } else {
+        // フォールバックとしてtextareaから取得
+        const textarea = form.querySelector('.ocean-ui-comments-commentform-textarea');
+        if (textarea) {
+          commentText = textarea.value;
+        }
+      }
+
       ensureSinglePanel(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task', commentText);
     });
 
