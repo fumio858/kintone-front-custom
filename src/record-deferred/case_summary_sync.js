@@ -1,3 +1,5 @@
+import { kUrl } from '../common/kintone-api';
+
 (function () {
   'use strict';
 
@@ -34,7 +36,7 @@
 
       // --- 既存チェック ---
       const query = `${FIELD_APP_ID} = "${appId}" and ${FIELD_RECORD_ID} = "${recordId}"`;
-      const resp = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', {
+      const resp = await kintone.api(kUrl('/k/v1/records.json'), 'GET', {
         app: AGGREGATE_APP_ID,
         query: query
       });
@@ -42,7 +44,7 @@
       if (resp.records.length > 0) {
         // 既存 → 更新
         const existingId = resp.records[0].$id.value;
-        await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+        await kintone.api(kUrl('/k/v1/record.json'), 'PUT', {
           app: AGGREGATE_APP_ID,
           id: existingId,
           record: recordData
@@ -50,7 +52,7 @@
         console.log(`🌀 更新しました（ID:${existingId}）`);
       } else {
         // 新規 → 追加
-        await kintone.api(kintone.api.url('/k/v1/record', true), 'POST', {
+        await kintone.api(kUrl('/k/v1/record.json'), 'POST', {
           app: AGGREGATE_APP_ID,
           record: recordData
         });

@@ -1,3 +1,5 @@
+import { kUrl } from '../common/kintone-api';
+
 (function () {
   'use strict';
 
@@ -14,7 +16,7 @@
   // 🔁 リアクションログ取得・保存
   // ==============================
   async function getRecord(recordId) {
-    const resp = await kintone.api(kintone.api.url('/k/v1/record', true), 'GET', {
+    const resp = await kintone.api(kUrl('/k/v1/record.json'), 'GET', {
       app: kintone.app.getId(),
       id: recordId
     });
@@ -23,7 +25,7 @@
 
 
   async function saveLog(recordId, log, revision) {
-    await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+    await kintone.api(kUrl('/k/v1/record.json'), 'PUT', {
       app: kintone.app.getId(),
       id: recordId,
       record: { [FIELD_CODE]: { value: JSON.stringify(log) } },
@@ -36,7 +38,7 @@
   // ==============================
   async function loadAllUserPhotos() {
     if (Object.keys(photoCache).length) return;
-    const resp = await kintone.api(kintone.api.url('/v1/users.json', true), 'GET', {});
+    const resp = await kintone.api(kUrl('/v1/users.json'), 'GET', {});
     resp.users.forEach(u => {
       const baseUrl = `https://${location.hostname}/api/user/photo.do/-/user.png?id=${u.id}&size=NORMAL`;
       photoCache[u.email] = {

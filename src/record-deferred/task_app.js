@@ -27,10 +27,11 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 };
 // ==== 設定ここまで ====
 
+import { kUrl } from '../common/kintone-api.js';
+
 (function () {
   'use strict';
 
-  const kUrl = (p) => kintone.api.url(p.endsWith('.json') ? p : `${p}.json`, true);
   const esc = (s='') => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
   // NEW: 現在のアプリIDを安全に取得（kintone.app.getId()優先、だめならURL解析）

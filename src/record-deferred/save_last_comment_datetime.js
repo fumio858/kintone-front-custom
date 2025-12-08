@@ -1,3 +1,5 @@
+import { kUrl } from '../common/kintone-api';
+
 (function () {
   'use strict';
 
@@ -12,7 +14,7 @@
   async function updateLastCommentDatetime(recordId) {
     try {
       // コメントAPIを呼び出して最新のコメントを1件だけ取得
-      const commentsResp = await kintone.api(kintone.api.url('/k/v1/record/comments', true), 'GET', {
+      const commentsResp = await kintone.api(kUrl('/k/v1/record/comments.json'), 'GET', {
         app: kintone.app.getId(),
         record: recordId,
         order: 'desc', // 新しい順で取得
@@ -28,7 +30,7 @@
       const datetime = latestComment.createdAt; // APIから直接ISO 8601形式の日時を取得
 
       // レコードの日時フィールドを更新
-      await kintone.api(kintone.api.url('/k/v1/record', true), 'PUT', {
+      await kintone.api(kUrl('/k/v1/record.json'), 'PUT', {
         app: kintone.app.getId(),
         id: recordId,
         record: {
