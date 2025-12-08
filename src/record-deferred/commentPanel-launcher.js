@@ -88,12 +88,20 @@
     btnTask.addEventListener('click', (e) => {
       e.preventDefault();
       let commentText = '';
-      const richEditor = form.querySelector('.ocean-ui-editor-field.editable');
-      if (richEditor) {
-        commentText = richEditor.innerText;
+      // 新しいリッチテキストエディタ v3 のセレクタを試す
+      const editorV3 = form.querySelector('.ocean-ui-editor-v3');
+      if (editorV3) {
+        commentText = editorV3.textContent || '';
       } else {
-        const textarea = form.querySelector('.ocean-ui-comments-commentform-textarea');
-        if (textarea) commentText = textarea.value;
+        // 古いリッチテキストエディタ
+        const richEditor = form.querySelector('.ocean-ui-editor-field.editable');
+        if (richEditor) {
+          commentText = richEditor.innerText;
+        } else {
+          // 通常のテキストエリア（フォールバック）
+          const textarea = form.querySelector('.ocean-ui-comments-commentform-textarea');
+          if (textarea) commentText = textarea.value;
+        }
       }
       ensureSinglePanel(form, BASE_TASK_ID, 'userTaskPanelInit', 'user-js-open-task', commentText);
     });
