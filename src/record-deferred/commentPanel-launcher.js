@@ -25,7 +25,7 @@
 
     // ボタンにSVGアイコンとテキストをセット
     button.innerHTML = `
-      <svg viewBox="${viewBox}" style="width: 1em; height: 1em; fill: currentColor; margin-right: 0.4em; vertical-align: middle;">
+      <svg viewBox="${viewBox}" style="width: 1.2em; height: 1.2em; fill: currentColor; margin-right: 0.2em; vertical-align: middle;">
         <path d="${svgPath}"></path>
       </svg>
       <span>${text}</span>
