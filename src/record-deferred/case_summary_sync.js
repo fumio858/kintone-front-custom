@@ -1,18 +1,16 @@
 import { kUrl } from '../common/kintone-api';
+import { APP_ID_TO_CASE_TYPE, AGGREGATE_APP_ID } from '../common/kintone-constants';
 
-(function () {
-  'use strict';
+'use strict';
 
-  const TARGET_APPS = [22, 26, 55];
-  const AGGREGATE_APP_ID = 58;
+const TARGET_APPS = Object.keys(APP_ID_TO_CASE_TYPE).map(Number);
 
-  const FIELD_APP_ID = 'app_id';
-  const FIELD_RECORD_ID = 'record_id';
-  const FIELD_CASE_GROUP = 'case_group';
-  const FIELD_STAFF = 'staff'; // 文字列（1行）
+const FIELD_APP_ID = 'app_id';
+const FIELD_RECORD_ID = 'record_id';
+const FIELD_CASE_GROUP = 'case_group';
+const FIELD_STAFF = 'staff'; // 文字列（1行）
 
-  if (!TARGET_APPS.includes(kintone.app.getId())) return;
-
+if (TARGET_APPS.includes(kintone.app.getId())) {
   const events = ['app.record.create.submit.success', 'app.record.edit.submit.success'];
 
   kintone.events.on(events, async (event) => {
@@ -65,4 +63,4 @@ import { kUrl } from '../common/kintone-api';
 
     return event;
   });
-})();
+}
