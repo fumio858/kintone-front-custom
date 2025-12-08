@@ -27,7 +27,7 @@ const APP_ID_TO_CASE_TYPE = { // NEW
 };
 // ==== 設定ここまで ====
 
-import { kUrl } from '../common/kintone-api.js';
+import { kUrl } from '../common/kintone-api';
 
 (function () {
   'use strict';
