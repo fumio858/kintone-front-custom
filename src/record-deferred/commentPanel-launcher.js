@@ -39,33 +39,20 @@
 
   // コメントフォーム直後に 1 個だけ作る（再表示/再初期化に対応）
   function ensureSinglePanel(formEl, baseId, initFnName, eventName, commentText) {
-    const existing = document.querySelector(`[data-mirror-of="${baseId}"]`);
-    const detail = { mountEl: null, comment: commentText };
+    let mirror = document.querySelector(`[data-mirror-of="${baseId}"]`);
+    const detail = { comment: commentText };
 
-    if (existing) {
-      const panel = existing.querySelector('.k-schedule-panel, .k-task-panel');
-      if (panel && panel.style.display === 'none') {
-        panel.style.display = '';
-      } else if (!panel) {
-        detail.mountEl = existing;
-        if (typeof window[initFnName] === 'function') {
-          window[initFnName](detail.mountEl, { comment: detail.comment });
-        } else {
-          document.dispatchEvent(new CustomEvent(eventName, { detail }));
-        }
-      }
-      existing.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
+    if (!mirror) {
+        mirror = document.createElement('div');
+        mirror.dataset.mirrorOf = baseId;
+        mirror.style.marginTop = '12px';
+        mirror.style.borderTop = '1px dashed #e5e7eb';
+        mirror.style.paddingTop = '12px';
+        formEl.insertAdjacentElement('afterend', mirror);
     }
 
-    const mirror = document.createElement('div');
-    mirror.dataset.mirrorOf = baseId;
-    mirror.style.marginTop = '12px';
-    mirror.style.borderTop = '1px dashed #e5e7eb';
-    mirror.style.paddingTop = '12px';
-    formEl.insertAdjacentElement('afterend', mirror);
-
     detail.mountEl = mirror;
+
     if (typeof window[initFnName] === 'function') {
       window[initFnName](detail.mountEl, { comment: detail.comment });
     } else {
