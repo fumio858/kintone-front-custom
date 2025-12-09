@@ -185,14 +185,13 @@ function attachQuoteClickHandler() {
     const commentElem = e.target.closest('.itemlist-item-gaia');
     if (!commentElem) return;
 
-    const authorName = commentElem.querySelector('.itemlist-header-left-gaia a')?.textContent || '不明なユーザー';
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
     const commentText = (commentBody?.textContent || '').trim();
 
     if (!commentText) return;
 
-    // 引用文を生成
-    const quoteStr = `> ${authorName}さんのコメント:\n> ${commentText.split('\n').join('\n> ')}\n\n`;
+    // 引用文を生成 (本文のみ)
+    const quoteStr = `> ${commentText.split('\n').join('\n> ')}\n\n`;
 
     // より堅牢なセレクタでリッチテキストエディタを特定
     const editor = document.querySelector('.ocean-ui-editor-field.editable');
