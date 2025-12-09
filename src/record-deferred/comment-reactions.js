@@ -115,6 +115,36 @@ async function renderReactions(commentElem, commentId, log, user) {
     bar.appendChild(btn);
   });
 
+  // ★「+タスク追加」ボタンを追加
+  const btnAddTask = document.createElement('button');
+  btnAddTask.className = 'cw-add-task-btn';
+  btnAddTask.textContent = '＋タスク追加';
+  Object.assign(btnAddTask.style, {
+    fontSize: '11px',
+    marginLeft: '8px',
+    padding: '2px 8px',
+    color: '#333',
+    background: '#f7f7f7',
+    border: '1px solid #e3e3e3',
+    borderRadius: '4px',
+    cursor: 'pointer'
+  });
+
+  btnAddTask.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
+    if (!commentBody) return;
+
+    const commentText = commentBody.textContent || '';
+    
+    if (window.userTaskPanelInit) {
+      window.userTaskPanelInit(null, { comment: commentText.trim() });
+    }
+  });
+  bar.appendChild(btnAddTask);
+
   wrapper.appendChild(userList);
   wrapper.appendChild(bar);
 
