@@ -134,6 +134,12 @@ async function renderReactions(commentElem, commentId, log, user) {
     e.preventDefault();
     e.stopPropagation();
 
+    // フォームにスクロール
+    const form = document.querySelector('.ocean-ui-comments-commentform');
+    if (form) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
     if (!commentBody) return;
 
@@ -182,6 +188,12 @@ function attachQuoteClickHandler() {
     e.preventDefault();
     e.stopPropagation();
 
+    // フォームにスクロール
+    const form = document.querySelector('.ocean-ui-comments-commentform');
+    if (form) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     const commentElem = e.target.closest('.itemlist-item-gaia');
     if (!commentElem) return;
 
@@ -198,16 +210,16 @@ function attachQuoteClickHandler() {
 
     if (!commentText) return;
 
-    // 引用文を生成 (本文のみ)
-    const quoteStr = `> ${commentText.split('\n').join('\n> ')}\n\n`;
-
     // より堅牢なセレクタでリッチテキストエディタを特定
     const editor = document.querySelector('.ocean-ui-editor-field.editable');
     if (editor) {
+      // リッチテキストエディタの場合：insertHTMLでblockquoteを使う
+      const quoteHtml = `<blockquote>${commentText.replace(/\n/g, '<br>')}</blockquote>`;
       editor.focus();
-      document.execCommand('insertText', false, quoteStr);
+      document.execCommand('insertHTML', false, quoteHtml);
     } else {
       // フォールバック（通常テキストエリア）
+      const quoteStr = `> ${commentText.split('\n').join('\n> ')}\n\n`;
       const textarea = document.querySelector('.ocean-ui-comments-commentform-textarea');
       if (textarea) {
         // カーソル位置に挿入
