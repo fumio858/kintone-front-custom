@@ -144,10 +144,10 @@ async function renderReactions(commentElem, commentId, log, user) {
     // ================= デバッグログ追加 =================
     console.log('【デバッグ】1. commentElem (コメント全体):', commentElem);
 
-    const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
+    const commentBodyContainer = commentElem.querySelector('.commentlist-body-gaia');
     let commentText = '';
-    if (commentBody) {
-      const lineDivs = commentBody.querySelectorAll(':scope > div');
+    if (commentBodyContainer) {
+      const lineDivs = commentBodyContainer.querySelectorAll(':scope > div');
 
       if (lineDivs.length > 0) {
         // 複数行構造の場合 (内部にさらにdivがある)
@@ -160,7 +160,7 @@ async function renderReactions(commentElem, commentId, log, user) {
         commentText = lines.join('\n').trim();
       } else {
         // 単行構造の場合 (テキストが直接入っている)
-        commentText = (commentBody.textContent || '').trim();
+        commentText = (commentBodyContainer.textContent || '').trim();
       }
     }
     
@@ -220,10 +220,10 @@ function attachQuoteClickHandler() {
     // ================= デバッグログ追加 =================
     console.log('【デバッグ】1. commentElem (コメント全体):', commentElem);
 
-    const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
+    const commentBodyContainer = commentElem.querySelector('.commentlist-body-gaia');
     let commentText = '';
-    if (commentBody) {
-      const lineDivs = commentBody.querySelectorAll(':scope > div');
+    if (commentBodyContainer) {
+      const lineDivs = commentBodyContainer.querySelectorAll(':scope > div');
 
       if (lineDivs.length > 0) {
         // 複数行構造の場合 (内部にさらにdivがある)
@@ -236,7 +236,7 @@ function attachQuoteClickHandler() {
         commentText = lines.join('\n').trim();
       } else {
         // 単行構造の場合 (テキストが直接入っている)
-        commentText = (commentBody.textContent || '').trim();
+        commentText = (commentBodyContainer.textContent || '').trim();
       }
     }
 
