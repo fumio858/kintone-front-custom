@@ -200,12 +200,19 @@ function attachQuoteClickHandler() {
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
     let commentText = '';
     if (commentBody) {
-      // innerHTMLを取得し、<br>タグを改行コードに変換
-      let processedHtml = commentBody.innerHTML.replace(/<br\s*\/?>/gi, '\n');
-      // 一時的な要素を作成し、textContentで純粋なテキストを抽出（他のHTMLタグを除去）
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = processedHtml;
-      commentText = tempDiv.textContent.trim();
+      const lines = [];
+      // 各行がDIVで囲まれている構造に対応
+      for (const node of commentBody.children) {
+        if (node.tagName === 'DIV') {
+          // DIVの中が<br>のみの場合は空行として扱う
+          if (node.innerHTML.trim().toLowerCase() === '<br>') {
+            lines.push('');
+          } else {
+            lines.push(node.textContent || '');
+          }
+        }
+      }
+      commentText = lines.join('\n').trim();
     }
 
     if (!commentText) return;
