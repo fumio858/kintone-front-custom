@@ -145,24 +145,23 @@ async function renderReactions(commentElem, commentId, log, user) {
     console.log('【デバッグ】1. commentElem (コメント全体):', commentElem);
 
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
-    // ================= デバッグログ追加 =================
-    console.log('【デバッグ】2. commentBody (本文エリア):', commentBody);
-
     let commentText = '';
     if (commentBody) {
-      // コメントボディ内の各行（div）を明示的に取得して連結する
       const lineDivs = commentBody.querySelectorAll(':scope > div');
-      // ================= デバッグログ追加 =================
-      console.log('【デバッグ】3. lineDivs (行のリスト):', lineDivs);
 
-      const lines = Array.from(lineDivs).map(div => {
-        // <br>のみのdivは空行として扱う
-        if (div.innerHTML.trim().toLowerCase() === '<br>') {
-          return '';
-        }
-        return div.textContent || '';
-      });
-      commentText = lines.join('\n').trim();
+      if (lineDivs.length > 0) {
+        // 複数行構造の場合 (内部にさらにdivがある)
+        const lines = Array.from(lineDivs).map(div => {
+          if (div.innerHTML.trim().toLowerCase() === '<br>') {
+            return '';
+          }
+          return div.textContent || '';
+        });
+        commentText = lines.join('\n').trim();
+      } else {
+        // 単行構造の場合 (テキストが直接入っている)
+        commentText = (commentBody.textContent || '').trim();
+      }
     }
     
     // デバッグ用に取得したテキストをコンソールに出力
@@ -222,24 +221,23 @@ function attachQuoteClickHandler() {
     console.log('【デバッグ】1. commentElem (コメント全体):', commentElem);
 
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
-    // ================= デバッグログ追加 =================
-    console.log('【デバッグ】2. commentBody (本文エリア):', commentBody);
-
     let commentText = '';
     if (commentBody) {
-      // コメントボディ内の各行（div）を明示的に取得して連結する
       const lineDivs = commentBody.querySelectorAll(':scope > div');
-      // ================= デバッグログ追加 =================
-      console.log('【デバッグ】3. lineDivs (行のリスト):', lineDivs);
 
-      const lines = Array.from(lineDivs).map(div => {
-        // <br>のみのdivは空行として扱う
-        if (div.innerHTML.trim().toLowerCase() === '<br>') {
-          return '';
-        }
-        return div.textContent || '';
-      });
-      commentText = lines.join('\n').trim();
+      if (lineDivs.length > 0) {
+        // 複数行構造の場合 (内部にさらにdivがある)
+        const lines = Array.from(lineDivs).map(div => {
+          if (div.innerHTML.trim().toLowerCase() === '<br>') {
+            return '';
+          }
+          return div.textContent || '';
+        });
+        commentText = lines.join('\n').trim();
+      } else {
+        // 単行構造の場合 (テキストが直接入っている)
+        commentText = (commentBody.textContent || '').trim();
+      }
     }
 
     // デバッグ用に取得したテキストをコンソールに出力
