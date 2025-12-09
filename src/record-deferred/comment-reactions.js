@@ -141,8 +141,19 @@ async function renderReactions(commentElem, commentId, log, user) {
     }
 
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
-    // innerTextを使用して、表示されている通りの改行を維持したテキストを取得
-    const commentText = commentBody ? (commentBody.innerText || '').trim() : '';
+    let commentText = '';
+    if (commentBody) {
+      // コメントボディ内の各行（div）を明示的に取得して連結する
+      const lineDivs = commentBody.querySelectorAll(':scope > div');
+      const lines = Array.from(lineDivs).map(div => {
+        // <br>のみのdivは空行として扱う
+        if (div.innerHTML.trim().toLowerCase() === '<br>') {
+          return '';
+        }
+        return div.textContent || '';
+      });
+      commentText = lines.join('\n').trim();
+    }
     
     // デバッグ用に取得したテキストをコンソールに出力
     console.log('【タスク追加】取得したコメントテキスト:', commentText);
@@ -200,8 +211,19 @@ function attachQuoteClickHandler() {
     if (!commentElem) return;
 
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
-    // innerTextを使用して、表示されている通りの改行を維持したテキストを取得
-    const commentText = commentBody ? (commentBody.innerText || '').trim() : '';
+    let commentText = '';
+    if (commentBody) {
+      // コメントボディ内の各行（div）を明示的に取得して連結する
+      const lineDivs = commentBody.querySelectorAll(':scope > div');
+      const lines = Array.from(lineDivs).map(div => {
+        // <br>のみのdivは空行として扱う
+        if (div.innerHTML.trim().toLowerCase() === '<br>') {
+          return '';
+        }
+        return div.textContent || '';
+      });
+      commentText = lines.join('\n').trim();
+    }
 
     // デバッグ用に取得したテキストをコンソールに出力
     console.log('【引用】取得したコメントテキスト:', commentText);
