@@ -140,11 +140,21 @@ async function renderReactions(commentElem, commentId, log, user) {
       form.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
+    const commentElem = e.target.closest('.itemlist-item-gaia');
+    // ================= デバッグログ追加 =================
+    console.log('【デバッグ】1. commentElem (コメント全体):', commentElem);
+
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
+    // ================= デバッグログ追加 =================
+    console.log('【デバッグ】2. commentBody (本文エリア):', commentBody);
+
     let commentText = '';
     if (commentBody) {
       // コメントボディ内の各行（div）を明示的に取得して連結する
       const lineDivs = commentBody.querySelectorAll(':scope > div');
+      // ================= デバッグログ追加 =================
+      console.log('【デバッグ】3. lineDivs (行のリスト):', lineDivs);
+
       const lines = Array.from(lineDivs).map(div => {
         // <br>のみのdivは空行として扱う
         if (div.innerHTML.trim().toLowerCase() === '<br>') {
@@ -208,13 +218,20 @@ function attachQuoteClickHandler() {
     }
 
     const commentElem = e.target.closest('.itemlist-item-gaia');
-    if (!commentElem) return;
+    // ================= デバッグログ追加 =================
+    console.log('【デバッグ】1. commentElem (コメント全体):', commentElem);
 
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
+    // ================= デバッグログ追加 =================
+    console.log('【デバッグ】2. commentBody (本文エリア):', commentBody);
+
     let commentText = '';
     if (commentBody) {
       // コメントボディ内の各行（div）を明示的に取得して連結する
       const lineDivs = commentBody.querySelectorAll(':scope > div');
+      // ================= デバッグログ追加 =================
+      console.log('【デバッグ】3. lineDivs (行のリスト):', lineDivs);
+
       const lines = Array.from(lineDivs).map(div => {
         // <br>のみのdivは空行として扱う
         if (div.innerHTML.trim().toLowerCase() === '<br>') {
