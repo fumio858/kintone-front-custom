@@ -67,7 +67,7 @@ async function initTaskPanel(mountEl, rec, recordId, appId, options) {
     wrap.classList.add('k-task-panel');
     Object.assign(wrap.style, {
       padding: '16px',
-      backgroundColor: '#FFFFFF', // カードの背景色を白に
+      backgroundColor: '#d6eaf8', // カードの背景色を白に
       color: '#333333', // 文字色を濃い灰色に
       border: '1px solid #D1ECF1', // 薄い青色のボーダーを追加
       borderRadius: '8px',
