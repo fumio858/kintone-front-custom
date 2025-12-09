@@ -19,20 +19,8 @@
     button.style.marginTop = '1rem';
     button.style.float = 'right';
 
-    // アイコン情報
-    const svgPath = 'm424-318 282-282-56-56-226 226-114-114-56 56 170 170ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm280-590q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z';
-    const viewBox = '0 -960 960 960';
-
-    // ボタンにSVGアイコンとテキストをセット
-    button.innerHTML = `
-      <svg viewBox="${viewBox}" style="width: 1.2em; height: 1.2em; fill: currentColor; margin-right: 0.2em; vertical-align: middle;">
-        <path d="${svgPath}"></path>
-      </svg>
-      <span>${text}</span>
-    `;
-
-    // アイコンとテキストを中央揃えにする
-    button.style.alignItems = 'center';
+    // ボタンにテキストをセット
+    button.innerHTML = `＋ <span>${text}</span>`;
 
     return button;
   }
