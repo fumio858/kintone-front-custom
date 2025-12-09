@@ -194,16 +194,20 @@ function attachQuoteClickHandler() {
     // 引用文を生成
     const quoteStr = `> ${authorName}さんのコメント:\n> ${commentText.split('\n').join('\n> ')}\n\n`;
 
-    const editor = document.querySelector('.ocean-ui-editor-v3');
+    // より堅牢なセレクタでリッチテキストエディタを特定
+    const editor = document.querySelector('.ocean-ui-editor-field.editable');
     if (editor) {
-      // 既存の内容に追加
       editor.focus();
       document.execCommand('insertText', false, quoteStr);
     } else {
       // フォールバック（通常テキストエリア）
       const textarea = document.querySelector('.ocean-ui-comments-commentform-textarea');
       if (textarea) {
-        textarea.value += quoteStr;
+        // カーソル位置に挿入
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + quoteStr + textarea.value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + quoteStr.length;
         textarea.focus();
       }
     }
