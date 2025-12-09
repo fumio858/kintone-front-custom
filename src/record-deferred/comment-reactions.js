@@ -141,12 +141,11 @@ async function renderReactions(commentElem, commentId, log, user) {
     }
 
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
-    if (!commentBody) return;
-
-    const commentText = commentBody.textContent || '';
+    // innerTextを使用して、表示されている通りの改行を維持したテキストを取得
+    const commentText = commentBody ? (commentBody.innerText || '').trim() : '';
     
     if (window.userTaskPanelInit) {
-      window.userTaskPanelInit(null, { comment: commentText.trim() });
+      window.userTaskPanelInit(null, { comment: commentText });
     }
   });
   bar.appendChild(btnAddTask);
@@ -198,22 +197,8 @@ function attachQuoteClickHandler() {
     if (!commentElem) return;
 
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
-    let commentText = '';
-    if (commentBody) {
-      const lines = [];
-      // 各行がDIVで囲まれている構造に対応
-      for (const node of commentBody.children) {
-        if (node.tagName === 'DIV') {
-          // DIVの中が<br>のみの場合は空行として扱う
-          if (node.innerHTML.trim().toLowerCase() === '<br>') {
-            lines.push('');
-          } else {
-            lines.push(node.textContent || '');
-          }
-        }
-      }
-      commentText = lines.join('\n').trim();
-    }
+    // innerTextを使用して、表示されている通りの改行を維持したテキストを取得
+    const commentText = commentBody ? (commentBody.innerText || '').trim() : '';
 
     if (!commentText) return;
 
