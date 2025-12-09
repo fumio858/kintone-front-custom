@@ -145,6 +145,23 @@ async function renderReactions(commentElem, commentId, log, user) {
   });
   bar.appendChild(btnAddTask);
 
+  // ★「引用」ボタンを追加
+  const btnQuote = document.createElement('button');
+  btnQuote.className = 'cw-quote-btn';
+  btnQuote.textContent = '引用';
+  Object.assign(btnQuote.style, {
+    fontSize: '11px',
+    marginLeft: '4px',
+    padding: '2px 8px',
+    color: '#333',
+    background: '#f7f7f7',
+    border: '1px solid #e3e3e3',
+    borderRadius: '4px',
+    cursor: 'pointer'
+  });
+  bar.appendChild(btnQuote);
+
+
   wrapper.appendChild(userList);
   wrapper.appendChild(bar);
 
@@ -155,6 +172,45 @@ async function renderReactions(commentElem, commentId, log, user) {
 // ==============================
 // 🚀 初期化 & イベント処理
 // ==============================
+function attachQuoteClickHandler() {
+  if (document.body.dataset.quoteHandlerAttached) return;
+  document.body.dataset.quoteHandlerAttached = 'true';
+
+  document.body.addEventListener('click', e => {
+    if (!e.target.classList.contains('cw-quote-btn')) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const commentElem = e.target.closest('.itemlist-item-gaia');
+    if (!commentElem) return;
+
+    const authorName = commentElem.querySelector('.itemlist-header-left-gaia a')?.textContent || '不明なユーザー';
+    const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
+    const commentText = (commentBody?.textContent || '').trim();
+
+    if (!commentText) return;
+
+    // 引用文を生成
+    const quoteStr = `> ${authorName}さんのコメント:\n> ${commentText.split('\n').join('\n> ')}\n\n`;
+
+    const editor = document.querySelector('.ocean-ui-editor-v3');
+    if (editor) {
+      // 既存の内容に追加
+      editor.focus();
+      document.execCommand('insertText', false, quoteStr);
+    } else {
+      // フォールバック（通常テキストエリア）
+      const textarea = document.querySelector('.ocean-ui-comments-commentform-textarea');
+      if (textarea) {
+        textarea.value += quoteStr;
+        textarea.focus();
+      }
+    }
+  });
+}
+
+
 function attachReactionClickHandler() {
   // ハンドラが重複しないようにガード
   if (document.body.dataset.reactionHandlerAttached) return;
@@ -271,6 +327,7 @@ async function initReactions(ev) {
 
   // クリック処理は一度だけ登録
   attachReactionClickHandler();
+  attachQuoteClickHandler(); // ★引用ハンドラも登録
 }
 
 // ==============================
