@@ -67,10 +67,11 @@ async function initTaskPanel(mountEl, rec, recordId, appId, options) {
     wrap.classList.add('k-task-panel');
     Object.assign(wrap.style, {
       padding: '16px',
-      backgroundColor: '#3598DB', // Kintoneの標準的な青色
-      color: '#FFFFFF', // 文字色を白に
+      backgroundColor: '#FFFFFF', // カードの背景色を白に
+      color: '#333333', // 文字色を濃い灰色に
+      border: '1px solid #D1ECF1', // 薄い青色のボーダーを追加
       borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // シャドウを少し弱める
       marginBottom: '1rem',
       display: '', // 既存のdisplayを維持
     });
@@ -96,8 +97,8 @@ async function initTaskPanel(mountEl, rec, recordId, appId, options) {
         .task-add-left textarea{ width:100%; height:100%; min-height:120px; resize:vertical; padding:10px; box-sizing:border-box; }
         .task-add-right{ display:flex; flex-direction:column; gap:8px; }
         .task-add-right > *{ width:100%; box-sizing:border-box; }
-        .task-add-right button{ height:36px; background:#5DADE2; color:#fff; border-radius: 6px;font-size: .9rem; border: none;}
-        .task-add-right button:hover{ background:#85C1E9;}
+        .task-add-right button{ height:36px; background:#3598DB; color:#fff; border-radius: 6px;font-size: .9rem; border: none;} /* ボタンの背景色を標準Kintoneブルーに */
+        .task-add-right button:hover{ background:#5DADE2;} /* ホバー色も調整 */
         @media (max-width: 640px){ .task-add-row{ grid-template-columns: 1fr; } }
         .k-task-panel .task-add-right .task-owner, .k-task-panel .task-add-right .task-due{ padding:8px 4px; min-height:36px; box-sizing:border-box; }
       </style>
