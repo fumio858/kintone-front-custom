@@ -144,6 +144,9 @@ async function renderReactions(commentElem, commentId, log, user) {
     // innerTextを使用して、表示されている通りの改行を維持したテキストを取得
     const commentText = commentBody ? (commentBody.innerText || '').trim() : '';
     
+    // デバッグ用に取得したテキストをコンソールに出力
+    console.log('【タスク追加】取得したコメントテキスト:', commentText);
+
     if (window.userTaskPanelInit) {
       window.userTaskPanelInit(null, { comment: commentText });
     }
@@ -199,6 +202,9 @@ function attachQuoteClickHandler() {
     const commentBody = commentElem.querySelector('.commentlist-body-gaia > div');
     // innerTextを使用して、表示されている通りの改行を維持したテキストを取得
     const commentText = commentBody ? (commentBody.innerText || '').trim() : '';
+
+    // デバッグ用に取得したテキストをコンソールに出力
+    console.log('【引用】取得したコメントテキスト:', commentText);
 
     if (!commentText) return;
 
