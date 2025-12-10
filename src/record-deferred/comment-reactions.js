@@ -276,8 +276,8 @@ function attachQuoteClickHandler() {
     // より堅牢なセレクタでリッチテキストエディタを特定
     const editor = document.querySelector('.ocean-ui-editor-field.editable');
     if (editor) {
-      // リッチテキストエディタの場合：insertHTMLでblockquoteを使う
-      const quoteHtml = `<blockquote>${commentText.replace(/\n/g, '<br>')}</blockquote>`;
+      // リッチテキストエディタの場合：> を使った引用テキストを挿入
+      const quoteHtml = `&gt; ${commentText.split('\n').join('<br>&gt; ')}<br><br>`;
       editor.focus();
       document.execCommand('insertHTML', false, quoteHtml);
     } else {
