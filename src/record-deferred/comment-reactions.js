@@ -150,14 +150,28 @@ async function renderReactions(commentElem, commentId, log, user) {
       const lineDivs = commentBodyContainer.querySelectorAll(':scope > div');
 
       if (lineDivs.length > 0) {
-        // 複数行構造の場合 (内部にさらにdivがある)
-        const lines = Array.from(lineDivs).map(div => {
-          if (div.innerHTML.trim().toLowerCase() === '<br>') {
-            return '';
+        const processedLines = [];
+        let lastWasEmpty = false;
+
+        Array.from(lineDivs).forEach(div => {
+          let currentLine = (div.textContent || '').trim();
+          const isBrTag = div.innerHTML.trim().toLowerCase() === '<br>';
+
+          if (isBrTag) {
+            currentLine = ''; // Treat <br> as an empty line
           }
-          return div.textContent || '';
+
+          if (currentLine === '') {
+            if (!lastWasEmpty) {
+              processedLines.push('');
+            }
+            lastWasEmpty = true;
+          } else {
+            processedLines.push(currentLine);
+            lastWasEmpty = false;
+          }
         });
-        commentText = lines.join('\n').trim();
+        commentText = processedLines.join('\n').trim();
       } else {
         // 単行構造の場合 (テキストが直接入っている)
         commentText = (commentBodyContainer.textContent || '').trim();
@@ -226,14 +240,28 @@ function attachQuoteClickHandler() {
       const lineDivs = commentBodyContainer.querySelectorAll(':scope > div');
 
       if (lineDivs.length > 0) {
-        // 複数行構造の場合 (内部にさらにdivがある)
-        const lines = Array.from(lineDivs).map(div => {
-          if (div.innerHTML.trim().toLowerCase() === '<br>') {
-            return '';
+        const processedLines = [];
+        let lastWasEmpty = false;
+
+        Array.from(lineDivs).forEach(div => {
+          let currentLine = (div.textContent || '').trim();
+          const isBrTag = div.innerHTML.trim().toLowerCase() === '<br>';
+
+          if (isBrTag) {
+            currentLine = ''; // Treat <br> as an empty line
           }
-          return div.textContent || '';
+
+          if (currentLine === '') {
+            if (!lastWasEmpty) {
+              processedLines.push('');
+            }
+            lastWasEmpty = true;
+          } else {
+            processedLines.push(currentLine);
+            lastWasEmpty = false;
+          }
         });
-        commentText = lines.join('\n').trim();
+        commentText = processedLines.join('\n').trim();
       } else {
         // 単行構造の場合 (テキストが直接入っている)
         commentText = (commentBodyContainer.textContent || '').trim();
